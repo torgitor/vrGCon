@@ -4,12 +4,19 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VgcApis.Libs
 {
     public static class Utils
     {
+        #region Task
+        public static Task RunInBackground(Action worker) =>
+            Task.Factory.StartNew(worker, TaskCreationOptions.LongRunning);
+        #endregion
+
+
         public static void Sleep(int milliseconds) =>
            System.Threading.Thread.Sleep(milliseconds);
 
@@ -38,12 +45,8 @@ namespace VgcApis.Libs
             Models.IServices.ISettingsService vgcSetting)
             where T : class
         {
-            try
-            {
-                var content = Utils.SerializeObject(userSettings);
-                vgcSetting.SavePluginsSetting(pluginName, content);
-            }
-            catch { }
+            var content = Utils.SerializeObject(userSettings);
+            vgcSetting.SavePluginsSetting(pluginName, content);
         }
 
         public static T LoadPluginSetting<T>(
@@ -157,6 +160,31 @@ namespace VgcApis.Libs
         #endregion
 
         #region Misc
+        public static bool IsHttpLink(string link)
+        {
+            if (string.IsNullOrEmpty(link))
+            {
+                return false;
+            }
+            if (link.ToLower().StartsWith("http"))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static string RelativePath2FullPath(string path)
+        {
+            if (string.IsNullOrEmpty(path)
+                || Path.IsPathRooted(path))
+            {
+                return path;
+            }
+
+            var appDir = GetAppDir();
+            return Path.Combine(appDir, path);
+        }
+
         public static bool CopyToClipboard(string content)
         {
             try
@@ -175,13 +203,16 @@ namespace VgcApis.Libs
         {
             // z:\vgc\libs\vgcapi.dll
             var vgcApiDllFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            var parent= new DirectoryInfo(vgcApiDllFile).Parent;
+            var parent = new DirectoryInfo(vgcApiDllFile).Parent;
             if (parent.Name == "libs")
             {
                 parent = parent.Parent;
             }
             return parent.FullName;
         }
+
+        public static string GetCoreFolderFullPath() =>
+            Path.Combine(GetAppDir(), Models.Consts.Files.CoreFolderName);
 
         public static string GetAppDir() => appDirCache;
 

@@ -1,6 +1,7 @@
 ﻿using Luna.Resources.Langs;
 using NLua;
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Luna.Controllers
 
         Services.Settings settings;
         Models.Data.LuaCoreSetting coreSetting;
-        VgcApis.Models.Interfaces.ILuaApis luaApis;
+        Models.Apis.LuaApis luaApis;
         VgcApis.Models.BaseClasses.LuaSignal luaSignal;
 
         Thread luaCoreThread;
@@ -25,7 +26,7 @@ namespace Luna.Controllers
         public void Run(
             Services.Settings settings,
             Models.Data.LuaCoreSetting luaCoreState,
-            VgcApis.Models.Interfaces.ILuaApis luaApis)
+            Models.Apis.LuaApis luaApis)
         {
             this.settings = settings;
             this.coreSetting = luaCoreState;
@@ -144,9 +145,8 @@ namespace Luna.Controllers
             }
 
             SendLog($"{I18N.Start} {coreSetting.name}");
-            luaCoreTask = Task.Factory.StartNew(
-                RunLuaScript,
-                TaskCreationOptions.LongRunning);
+            luaCoreTask = VgcApis.Libs.Utils.RunInBackground(
+                RunLuaScript);
         }
 
         public void Cleanup()
@@ -157,7 +157,7 @@ namespace Luna.Controllers
 
         #region private methods
         void SendLog(string content)
-            => luaApis.Print(content);
+            => luaApis.SendLog(content);
 
         void RunLuaScript()
         {
@@ -167,7 +167,8 @@ namespace Luna.Controllers
             try
             {
                 var core = CreateLuaCore();
-                core.DoString(coreSetting.script);
+                var script = Encoding.UTF8.GetBytes(coreSetting.script);
+                core.DoString(script);
             }
             catch (Exception e)
             {
@@ -181,7 +182,7 @@ namespace Luna.Controllers
             var state = new Lua();
             state["Api"] = luaApis; // bug: lua can access all public functions
             state["Signal"] = luaSignal;
-            state.DoString(luaApis.PerdefinedFunctions());
+            state.DoString(luaApis.PredefinedFunctions());
             return state;
         }
 

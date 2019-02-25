@@ -28,23 +28,46 @@ namespace Luna.Models.Apis
         }
 
         #region ILuaApis
+        public void ResetIndexQuiet() =>
+            vgcServers.ResteIndexQuiet();
+
+        public void RequireFormMainReload() =>
+            vgcServers.RequireFormMainReload();
+
+        public void SortSelectedServersBySummary() =>
+            vgcServers.SortSelectedBySummary();
+
+        public void SortSelectedServersBySpeedTest() =>
+            vgcServers.SortSelectedBySpeedTest();
+
+        public bool RunSpeedTestOnSelectedServers() =>
+            vgcServers.RunSpeedTestOnSelectedServers();
+
+        public string PackSelectedServers(
+            string orgUid, string pkgName) =>
+            vgcServers.PackSelectedServersIntoV4Package(orgUid, pkgName);
+
         public string PatchHref(string url, string href) =>
             vgcWeb.PatchHref(url, href);
 
-        public List<string> FindAllHref(string text) =>
-            vgcWeb.FindAllHref(text);
+        public List<string> FindAllHrefs(string text) =>
+            vgcWeb.FindAllHrefs(text);
 
         public string GetAppDir() => VgcApis.Libs.Utils.GetAppDir();
 
         public string VmessLink2ConfigString(string vmessLink) =>
             vgcConfigMgr.VmessLink2ConfigString(vmessLink);
 
-        public string Search(string query, int start, int proxyPort) =>
-            vgcWeb.Search(query, 0, proxyPort, 20 * 1000);
-        
-        public List<string> ExtractVmessLink(string text) =>
+        public string Search(string keywords, int first, int proxyPort) =>
+            vgcWeb.Search(keywords, first, proxyPort, 20 * 1000);
+
+        public List<string> ExtractVmessLinks(string text) =>
             vgcWeb.ExtractLinks(text,
                 VgcApis.Models.Datas.Enum.LinkTypes.vmess);
+
+        public List<string> ExtractSsLinks(string text) =>
+            vgcWeb.ExtractLinks(text,
+                VgcApis.Models.Datas.Enum.LinkTypes.ss);
 
         public long RunSpeedTest(string rawConfig) =>
             vgcConfigMgr.RunSpeedTest(rawConfig);
@@ -66,15 +89,18 @@ namespace Luna.Models.Apis
         public void Print(params object[] contents)
         {
             var text = "";
-            foreach (var c in contents)
+            foreach (var content in contents)
             {
-                text += c.ToString();
+                text += content.ToString();
             }
-            redirectLogWorker(text);
+            redirectLogWorker?.Invoke(text);
         }
         #endregion
 
         #region public methods
+        public void SendLog(string message) =>
+            redirectLogWorker?.Invoke(message);
+
         public void SetRedirectLogWorker(Action<string> worker)
         {
             if (worker != null)
@@ -83,8 +109,8 @@ namespace Luna.Models.Apis
             }
         }
 
-        public string PerdefinedFunctions() =>
-            VgcApis.Models.Consts.Libs.LuaPerdefinedFunctions;
+        public string PredefinedFunctions() =>
+            Resources.Files.Datas.LuaPredefinedFunctions;
         #endregion
 
         #region private methods

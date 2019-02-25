@@ -9,17 +9,17 @@ namespace V2RayGCon.Lib.Lua.ApiComponents
         public string PatchHref(string url, string href) =>
             Utils.PatchHref(url, href);
 
-        public List<string> FindAllHref(string text) =>
-            Lib.Utils.FindAllHref(text);
+        public List<string> FindAllHrefs(string text) =>
+            Lib.Utils.FindAllHrefs(text);
 
         public List<string> ExtractLinks(
             string text,
             VgcApis.Models.Datas.Enum.LinkTypes linkType) =>
             Lib.Utils.ExtractLinks(text, linkType);
 
-        public string Search(string query, int start, int proxyPort, int timeout)
+        public string Search(string keywords, int first, int proxyPort, int timeout)
         {
-            var url = Lib.Utils.GenSearchUrl(query, start);
+            var url = Lib.Utils.GenSearchUrl(keywords, first);
             return Fetch(url, proxyPort, timeout);
         }
 

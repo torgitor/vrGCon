@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using VgcApis.Resources.Langs;
 
@@ -50,7 +49,7 @@ namespace VgcApis.Libs
         #endregion
 
         #region file
-        static public  string ReadFileContentFromDialog(string extension)
+        static public string ReadFileContentFromDialog(string extension)
         {
             var tuple = ReadFileFromDialog(extension);
             return tuple.Item1;
@@ -79,7 +78,7 @@ namespace VgcApis.Libs
 
             if (readFileDialog.ShowDialog() != DialogResult.OK)
             {
-                return new Tuple<string,string>(null,fileName);
+                return new Tuple<string, string>(null, fileName);
             }
 
             fileName = readFileDialog.FileName;
@@ -89,7 +88,7 @@ namespace VgcApis.Libs
                 content = File.ReadAllText(fileName);
             }
             catch { }
-            return new Tuple<string, string>( content,fileName);
+            return new Tuple<string, string>(content, fileName);
         }
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace VgcApis.Libs
         /// <param name="content"></param>
         /// <param name="extentions"></param>
         /// <returns>file name</returns>
-        static public string SaveToFile( string extentions, string content)
+        static public string SaveToFile(string extentions, string content)
         {
             var err = ShowSaveFileDialog(
                     extentions,
@@ -184,19 +183,21 @@ namespace VgcApis.Libs
             var text = string.Format("{0}\n{1}", msg, url);
             if (Confirm(text))
             {
-                Task.Factory.StartNew(() => System.Diagnostics.Process.Start(url));
+                Utils.RunInBackground(() => System.Diagnostics.Process.Start(url));
             }
         }
 
-        public static void MsgBox(string title, string content)
-        {
-            MessageBox.Show(content ?? string.Empty, title ?? string.Empty);
-        }
+        public static void MsgBox(string content) =>
+            MsgBox("", content);
 
-        public static void MsgBoxAsync(string title, string content)
-        {
-            Task.Factory.StartNew(() => MsgBox(title, content));
-        }
+        public static void MsgBox(string title, string content) =>
+            MessageBox.Show(content ?? string.Empty, title ?? string.Empty);
+
+        public static void MsgBoxAsync(string content) =>
+            Utils.RunInBackground(() => MsgBox("", content));
+
+        public static void MsgBoxAsync(string title, string content) =>
+            Utils.RunInBackground(() => MsgBox(title, content));
 
         public static bool Confirm(string content)
         {

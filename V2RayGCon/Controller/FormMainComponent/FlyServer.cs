@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using V2RayGCon.Resource.Resx;
 
@@ -81,7 +80,7 @@ namespace V2RayGCon.Controller.FormMainComponent
                 .OfType<Views.UserControls.ServerUI>()
                 .Select(e =>
                 {
-                    VgcApis.Libs.UI.RunInUiThread(flyPanel, () =>
+                    VgcApis.Libs.UI.RunInUiThread(formMain, () =>
                     {
                         operation(e);
                     });
@@ -104,7 +103,7 @@ namespace V2RayGCon.Controller.FormMainComponent
         {
             var controlList = GetAllServersControl();
 
-            VgcApis.Libs.UI.RunInUiThread(flyPanel, () =>
+            VgcApis.Libs.UI.RunInUiThread(formMain, () =>
             {
                 flyPanel.SuspendLayout();
                 flyPanel.Controls.Clear();
@@ -117,7 +116,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             }
             else
             {
-                Task.Factory.StartNew(
+                VgcApis.Libs.Utils.RunInBackground(
                     () => DisposeFlyPanelControlByList(
                         controlList));
             }
@@ -139,11 +138,11 @@ namespace V2RayGCon.Controller.FormMainComponent
 
         public override bool RefreshUI()
         {
-            ResetIndex();
+            servers.ResteIndexQuiet();
             var list = this.GetFilteredList();
             var pagedList = GenPagedServerList(list);
 
-            VgcApis.Libs.UI.RunInUiThread(flyPanel, () =>
+            VgcApis.Libs.UI.RunInUiThread(formMain, () =>
             {
                 if (pagedList.Count > 0)
                 {
@@ -205,7 +204,7 @@ namespace V2RayGCon.Controller.FormMainComponent
 
             var showPager = paging[1] > 1;
 
-            VgcApis.Libs.UI.RunInUiThread(flyPanel, () =>
+            VgcApis.Libs.UI.RunInUiThread(formMain, () =>
             {
                 if (showPager)
                 {
@@ -220,6 +219,8 @@ namespace V2RayGCon.Controller.FormMainComponent
                         I18N.StatusBarPagerInfoTpl,
                         paging[0] + 1,
                         paging[1]);
+
+                    formMain.Focus();
                 }
 
                 if (tsdbtnPager.Visible != showPager)
@@ -265,7 +266,6 @@ namespace V2RayGCon.Controller.FormMainComponent
                         // servers.ClearSelection();
 
                         RefreshUI();
-                        formMain.Activate();
                     });
                 tsdbtnPager.DropDownItems.Add(item);
             }
@@ -304,14 +304,12 @@ namespace V2RayGCon.Controller.FormMainComponent
             {
                 paging[0]--;
                 RefreshUI();
-                formMain.Activate();
             };
 
             tslbNextPage.Click += (s, a) =>
             {
                 paging[0]++;
                 RefreshUI();
-                formMain.Activate();
             };
 
             lbMarkFilter.Click +=
@@ -325,7 +323,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             cboxMarkFilter.DropDown += (s, e) =>
             {
                 // cboxMarkFilter has no Invoke method.
-                VgcApis.Libs.UI.RunInUiThread(flyPanel, () =>
+                VgcApis.Libs.UI.RunInUiThread(formMain, () =>
                 {
                     UpdateMarkFilterItemList(cboxMarkFilter);
                     Lib.UI.ResetComboBoxDropdownMenuWidth(cboxMarkFilter);
@@ -360,7 +358,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             {
                 control.Cleanup();
             }
-            VgcApis.Libs.UI.RunInUiThread(flyPanel, () =>
+            VgcApis.Libs.UI.RunInUiThread(formMain, () =>
             {
                 foreach (var control in controlList)
                 {
@@ -381,7 +379,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             }
 
             flyPanel.ResumeLayout();
-            Task.Factory.StartNew(() => DisposeFlyPanelControlByList(deletedControlList));
+            VgcApis.Libs.Utils.RunInBackground(() => DisposeFlyPanelControlByList(deletedControlList));
         }
 
         List<Views.UserControls.ServerUI> GetDeletedControlList(
@@ -442,18 +440,6 @@ namespace V2RayGCon.Controller.FormMainComponent
             if (welcome == null)
             {
                 flyPanel.Controls.Add(welcomeItem);
-            }
-        }
-
-        private void ResetIndex()
-        {
-            var list = servers.GetAllServersOrderByIndex().ToList();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                var index = i + 1.0; // closure
-                var item = list[i];
-                item.GetCoreStates().SetIndex(index);
             }
         }
 

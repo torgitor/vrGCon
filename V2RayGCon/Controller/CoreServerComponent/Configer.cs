@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Threading.Tasks;
 using V2RayGCon.Resource.Resx;
 
 namespace V2RayGCon.Controller.CoreServerComponent
@@ -43,11 +42,39 @@ namespace V2RayGCon.Controller.CoreServerComponent
         }
 
         #region public methods
+        public JObject GetFinalConfig()
+        {
+            JObject finalConfig = configMgr.DecodeConfig(
+                GetConfig(),
+                true,
+                false,
+                coreInfo.isInjectImport);
+
+            if (finalConfig == null)
+            {
+                return null;
+            }
+
+            if (!configMgr.ModifyInboundByCustomSetting(
+                ref finalConfig,
+                coreInfo.customInbType,
+                coreInfo.inbIp,
+                coreInfo.inbPort))
+            {
+                return null;
+            }
+
+            InjectSkipCnSitesConfigOnDemand(ref finalConfig);
+            InjectStatisticsConfigOnDemand(ref finalConfig);
+
+            return finalConfig;
+        }
+
         public string GetConfig() => coreInfo.config;
 
         public void UpdateSummaryThen(Action next = null)
         {
-            Task.Run(() =>
+            VgcApis.Libs.Utils.RunInBackground(() =>
             {
                 var configString = coreInfo.isInjectImport ?
                     configMgr.InjectImportTpls(coreInfo.config, false, true) :
@@ -117,7 +144,7 @@ namespace V2RayGCon.Controller.CoreServerComponent
         public void GetterInboundInfoThen(Action<string> next)
         {
             var serverName = coreInfo.name;
-            Task.Factory.StartNew(() =>
+            VgcApis.Libs.Utils.RunInBackground(() =>
             {
                 var inInfo = GetterParsedInboundInfo(GetConfig());
                 if (inInfo == null)
@@ -138,7 +165,10 @@ namespace V2RayGCon.Controller.CoreServerComponent
             });
         }
 
-        public void InjectSkipCnSitesConfigOnDemand(ref JObject config)
+        #endregion
+
+        #region private methods
+        void InjectSkipCnSitesConfigOnDemand(ref JObject config)
         {
             if (!coreInfo.isInjectSkipCNSite)
             {
@@ -151,7 +181,7 @@ namespace V2RayGCon.Controller.CoreServerComponent
                 false);
         }
 
-        public void InjectStatisticsConfigOnDemand(ref JObject config)
+        void InjectStatisticsConfigOnDemand(ref JObject config)
         {
             if (!setting.isEnableStatistics)
             {
@@ -175,9 +205,6 @@ namespace V2RayGCon.Controller.CoreServerComponent
             Lib.Utils.CombineConfig(ref result, statsTpl);
             config = result;
         }
-        #endregion
-
-        #region private methods
 
         void UpdateSummary(JObject config)
         {
@@ -216,9 +243,9 @@ namespace V2RayGCon.Controller.CoreServerComponent
             }
 
             var parsedConfig = configMgr.DecodeConfig(
-                rawConfig, 
-                true, 
-                false, 
+                rawConfig,
+                true,
+                false,
                 coreInfo.isInjectImport);
 
             if (parsedConfig == null)
