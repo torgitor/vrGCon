@@ -270,6 +270,14 @@ namespace V2RayGCon.Lib
             scintilla.ClearCmdKey(Keys.Control | Keys.S);
             scintilla.ClearCmdKey(Keys.Control | Keys.F);
 
+            // Configure a margin to display line number
+            if (!readOnlyMode)
+            {
+                scintilla.Margins[0].Type = MarginType.Number;
+                scintilla.Margins[0].Width = 16;
+                scintilla.Styles[Style.LineNumber].ForeColor = Color.DarkGray;
+            }
+
             return scintilla;
         }
 

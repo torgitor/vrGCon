@@ -5,7 +5,7 @@ using System.Linq;
 namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
 {
     internal sealed class Vee0a :
-        VgcApis.Models.BaseClasses.ComponentOf<VeeCodecs>,
+        VgcApis.Models.BaseClasses.ComponentOf<VeeDecoder>,
         IVeeDecoder
     {
         Cache cache;
@@ -69,6 +69,9 @@ namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
             var mainParam = "";
             switch (vee.streamType)
             {
+                case "tcp":
+                    mainParam = GetStr(subPrefix, "tcpSettings.header.type");
+                    break;
                 case "kcp":
                     mainParam = GetStr(subPrefix, "kcpSettings.header.type");
                     break;
@@ -142,6 +145,9 @@ namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
             {
                 switch (streamType)
                 {
+                    case "tcp":
+                        streamToken["tcpSettings"]["header"]["type"] = mainParam;
+                        break;
                     case "kcp":
                         streamToken["kcpSettings"]["header"]["type"] = mainParam;
                         break;
