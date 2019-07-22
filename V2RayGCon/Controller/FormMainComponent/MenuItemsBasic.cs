@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using V2RayGCon.Resource.Resx;
 
@@ -9,8 +10,15 @@ namespace V2RayGCon.Controller.FormMainComponent
         Service.Servers servers;
         Service.ShareLinkMgr slinkMgr;
         Service.Updater updater;
+        Service.PluginsServer pluginServ;
+
+        ToolStripMenuItem pluginToolStrip;
+        Form formMain;
 
         public MenuItemsBasic(
+            Form formMain,
+            ToolStripMenuItem pluginToolStrip,
+
             ToolStripMenuItem miSimVmessServer,
             ToolStripMenuItem miImportLinkFromClipboard,
             ToolStripMenuItem miExportAllServer,
@@ -28,6 +36,11 @@ namespace V2RayGCon.Controller.FormMainComponent
             servers = Service.Servers.Instance;
             slinkMgr = Service.ShareLinkMgr.Instance;
             updater = Service.Updater.Instance;
+            pluginServ = Service.PluginsServer.Instance;
+
+            this.formMain = formMain;
+
+            InitMenuPlugin(pluginToolStrip);
 
             InitMenuFile(miSimVmessServer, miImportLinkFromClipboard, miExportAllServer, miImportFromFile);
             InitMenuWindows(miFormConfigEditor, miFormQRCode, miFormLog, miFormOptions);
@@ -74,11 +87,45 @@ namespace V2RayGCon.Controller.FormMainComponent
         }
 
         public override bool RefreshUI() { return false; }
-        public override void Cleanup() { }
+        public override void Cleanup()
+        {
+            pluginServ.OnRequireMenuUpdate -= OnRequireMenuUpdateHandler;
+        }
         #endregion
 
         #region private method
+        void UpdatePluginMenu()
+        {
+            var plugins = pluginServ.GetAllEnabledPlugins();
+            pluginToolStrip.DropDownItems.Clear();
 
+            if (plugins.Count <= 0)
+            {
+                pluginToolStrip.Visible = false;
+                return;
+            }
+
+            foreach (var plugin in plugins)
+            {
+                var mi = new ToolStripMenuItem(
+                    plugin.Name, plugin.Icon, (s, a) => plugin.Show());
+                pluginToolStrip.DropDownItems.Add(mi);
+                mi.ToolTipText = plugin.Description;
+            }
+            pluginToolStrip.Visible = true;
+        }
+
+        void OnRequireMenuUpdateHandler(object sender, EventArgs evs)
+        {
+            VgcApis.Libs.UI.RunInUiThread(formMain, UpdatePluginMenu);
+        }
+
+        void InitMenuPlugin(ToolStripMenuItem pluginToolStrip)
+        {
+            this.pluginToolStrip = pluginToolStrip;
+            OnRequireMenuUpdateHandler(this, EventArgs.Empty);
+            pluginServ.OnRequireMenuUpdate += OnRequireMenuUpdateHandler;
+        }
 
         private void InitMenuAbout(
             ToolStripMenuItem aboutVGC,

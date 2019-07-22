@@ -23,6 +23,7 @@ namespace Luna.Models.Apis.Components
         public void ResetIndexQuiet() =>
             vgcServers.ResetIndexQuiet();
 
+        // expose for ILuaServer
         public long RunSpeedTest(string rawConfig) =>
             vgcConfigMgr.RunSpeedTest(rawConfig);
 
@@ -34,6 +35,9 @@ namespace Luna.Models.Apis.Components
 
         public void RequireFormMainReload() =>
             vgcServers.RequireFormMainReload();
+
+        public void SortSelectedServersByLastModifiedDate() =>
+            vgcServers.SortSelectedByLastModifiedDate();
 
         public void SortSelectedServersBySummary() =>
             vgcServers.SortSelectedBySummary();

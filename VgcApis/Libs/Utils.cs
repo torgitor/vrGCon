@@ -16,8 +16,77 @@ namespace VgcApis.Libs
 {
     public static class Utils
     {
+        #region string
+        public static string ReverseSummary(string summary)
+        {
+
+            if (string.IsNullOrEmpty(summary))
+            {
+                return "";
+            }
+
+            const char separator = '@';
+            if (summary.IndexOf(separator) < 0)
+            {
+                return summary;
+            }
+
+            var rs = summary.Split(separator).Reverse();
+            return string.Join(separator.ToString(), rs);
+        }
+
+        public static List<string> SortPacList(IEnumerable<string> pacList)
+        {
+            var tmpList = new List<string>();
+            var result = new List<string>();
+            foreach (var item in pacList)
+            {
+                if (!string.IsNullOrWhiteSpace(item)
+                    && !string.IsNullOrEmpty(item)
+                    && !item.StartsWith(@"//"))
+                {
+                    tmpList.Add(item);
+                    continue;
+                }
+
+                tmpList.Sort(StringComparer.Ordinal);
+                result.AddRange(tmpList);
+                result.Add(item);
+                tmpList.Clear();
+            }
+            tmpList.Sort(StringComparer.Ordinal);
+            result.AddRange(tmpList);
+            return result;
+        }
+
+        #endregion
 
         #region net
+        public static bool TryParseIPAddr(string address, out string ip, out int port)
+        {
+            ip = VgcApis.Models.Consts.Webs.LoopBackIP;
+            port = 1080;
+
+            int index = address.LastIndexOf(':');
+            if (index < 0)
+            {
+                return false;
+            }
+
+            var ipStr = address.Substring(0, index);
+            var portStr = address.Substring(index + 1);
+            var portInt = Clamp(Str2Int(portStr), 0, 65536);
+
+            if (string.IsNullOrEmpty(ipStr) || portInt == 0)
+            {
+                return false;
+            }
+
+            ip = ipStr;
+            port = portInt;
+            return true;
+        }
+
         static readonly IPEndPoint _defaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
         static readonly object getFreeTcpPortLocker = new object();
         public static int GetFreeTcpPort()
@@ -45,6 +114,46 @@ namespace VgcApis.Libs
         #endregion
 
         #region Json
+        public static bool ClumsyWriter(string content, string mainFilename, string bakFilename)
+        {
+            try
+            {
+                File.WriteAllText(mainFilename, content);
+                var read = File.ReadAllText(mainFilename);
+                if (content.Equals(read))
+                {
+                    File.WriteAllText(bakFilename, content);
+                    read = File.ReadAllText(bakFilename);
+                    return content.Equals(read);
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        /// <summary>
+        /// return parsed T object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static T LoadAndParseJsonFile<T>(string filename)
+           where T : class
+        {
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    var content = File.ReadAllText(filename);
+                    var result = JsonConvert.DeserializeObject<T>(content);
+                    return result;
+                }
+                catch { }
+            }
+            return null;
+        }
+
+
         /// <summary>
         /// a<b: -, a=b: 0, a>b: +
         /// </summary>     
@@ -450,6 +559,51 @@ namespace VgcApis.Libs
         #endregion
 
         #region numbers
+        public static bool AreEqual(double left, double right)
+        {
+            return Math.Abs(left - right) < Models.Consts.Config.FloatPointNumberTolerance;
+        }
+
+        public static long SpeedtestMean(long left, long right, double weight) =>
+            (long)SpeedtestMean((double)left, (double)right, weight);
+
+        public static double SpeedtestMean(double left, double right, double weight)
+        {
+            if (weight <= 0 || weight >= 1)
+            {
+                throw new ArgumentOutOfRangeException("firstWeight should between 0 to 1");
+            }
+
+            if (left <= 0 || right <= 0)
+            {
+                return Math.Max(left, right);
+            }
+
+            /*
+             * 预期：
+             * 由于最后一次测速服务器速度已经稳定，很有价值。
+             * 而首次测速通常是没有缓存的，对分析服务器的速度也很重要，
+             * 中间测速结果的重要程度则随测速次数递增。
+             * 
+             * 假设：
+             * 连续做三次速度测试，权重为0.6，
+             * 将三次速度测试迭代进这个求平均函数中将得到：
+             * first * 0.6 * 0.6 + second * 0.6 * 0.4 + third * 0.4;
+             * 即 first * 0.36 + second * 0.24 + third * 0.4;
+             * 可见首次和末次测速结果占比较重，中间那次占比较低，符合预期。
+             * 
+             * 测试3至6次结果如下，均符合预期
+             * 3	36%	24%	40%			
+             * 4	22%	14%	24%	40%		
+             * 5	13%	 9%	14%	24%	40%	
+             * 6	 8%	 5%	 9%	14%	24%	40%
+             * 
+             * p.s.我不会告诉你，其实是因为我懒得写个列表存中间结果才这么搞的。
+             */
+
+            return left * weight + right * (1 - weight);
+        }
+
         public static int GetLenInBitsOfInt(int value)
         {
             var k = 0;

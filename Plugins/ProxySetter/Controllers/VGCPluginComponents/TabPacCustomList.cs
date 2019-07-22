@@ -1,4 +1,7 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace ProxySetter.Controllers.VGCPluginComponents
 {
@@ -8,12 +11,16 @@ namespace ProxySetter.Controllers.VGCPluginComponents
 
         string[] oldCustomPacList;
         RichTextBox rtboxWhiteList, rtboxBlackList;
+        Button btnSetSortWhitelist, btnSetSortBlacklist;
 
         public TabPacCustomList(
             Services.PsSettings setting,
 
             RichTextBox rtboxWhiteList,
-            RichTextBox rtboxBlackList)
+            RichTextBox rtboxBlackList,
+
+                Button btnSetSortWhitelist,
+            Button btnSetSortBlacklist)
         {
             this.setting = setting;
 
@@ -22,11 +29,32 @@ namespace ProxySetter.Controllers.VGCPluginComponents
 
             this.rtboxBlackList = rtboxBlackList;
             this.rtboxWhiteList = rtboxWhiteList;
+            this.btnSetSortWhitelist = btnSetSortWhitelist;
+            this.btnSetSortBlacklist = btnSetSortBlacklist;
 
             InitControls();
+            BindEvents();
         }
 
         #region private methods
+        List<string> Text2List(string text) =>
+            text.Replace("\r", "").Split('\n').ToList();
+
+        void BindEvents()
+        {
+            btnSetSortWhitelist.Click += (s, a) =>
+            {
+                var sorted = VgcApis.Libs.Utils.SortPacList(Text2List(rtboxWhiteList.Text));
+                rtboxWhiteList.Text = string.Join(Environment.NewLine, sorted);
+            };
+
+            btnSetSortBlacklist.Click += (s, a) =>
+            {
+                var sorted = VgcApis.Libs.Utils.SortPacList(Text2List(rtboxBlackList.Text));
+                rtboxBlackList.Text = string.Join(Environment.NewLine, sorted);
+            };
+        }
+
         private void InitControls()
         {
             rtboxWhiteList.Text = oldCustomPacList[0];

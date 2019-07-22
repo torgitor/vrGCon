@@ -56,6 +56,30 @@ namespace V2RayGCon.Service
         }
 
         #region public method
+        public void ScanQrcode()
+        {
+            void Success(string link)
+            {
+                // no comment ^v^
+                if (link == StrConst.Nobody3uVideoUrl)
+                {
+                    Lib.UI.VisitUrl(I18N.VisitWebPage, StrConst.Nobody3uVideoUrl);
+                    return;
+                }
+
+                var msg = Lib.Utils.CutStr(link, 90);
+                setting.SendLog($"QRCode: {msg}");
+                slinkMgr.ImportLinkWithOutV2cfgLinks(link);
+            }
+
+            void Fail()
+            {
+                MessageBox.Show(I18N.NoQRCode);
+            }
+
+            Lib.QRCode.QRCode.ScanQRCode(Success, Fail);
+        }
+
         public void RunInUiThread(Action updater) =>
             VgcApis.Libs.UI.RunInUiThread(ni.ContextMenuStrip, updater);
 
@@ -191,7 +215,7 @@ namespace V2RayGCon.Service
                 new ToolStripMenuItem(
                     I18N.MainWin,
                     Properties.Resources.WindowsForm_16x,
-                    (s,a)=>Views.WinForms.FormMain.ShowForm()),
+                    (s,a)=> Views.WinForms.FormMain.ShowForm()),
 
                 new ToolStripMenuItem(
                     I18N.OtherWin,
@@ -204,42 +228,21 @@ namespace V2RayGCon.Service
                         new ToolStripMenuItem(
                             I18N.GenQRCode,
                             Properties.Resources.AzureVirtualMachineExtension_16x,
-                            (s,a)=>Views.WinForms.FormQRCode.ShowForm()),
+                            (s,a)=> Views.WinForms.FormQRCode.ShowForm()),
                         new ToolStripMenuItem(
                             I18N.Log,
                             Properties.Resources.FSInteractiveWindow_16x,
-                            (s,a)=>Views.WinForms.FormLog.ShowForm() ),
+                            (s,a)=> Views.WinForms.FormLog.ShowForm() ),
                         new ToolStripMenuItem(
                             I18N.Options,
                             Properties.Resources.Settings_16x,
-                            (s,a)=>Views.WinForms.FormOption.ShowForm() ),
+                            (s,a)=> Views.WinForms.FormOption.ShowForm() ),
                     }),
 
                 new ToolStripMenuItem(
                     I18N.ScanQRCode,
                     Properties.Resources.ExpandScope_16x,
-                    (s,a)=>{
-                        void Success(string link)
-                        {
-                            // no comment ^v^
-                            if (link == StrConst.Nobody3uVideoUrl)
-                            {
-                                Lib.UI.VisitUrl(I18N.VisitWebPage, StrConst.Nobody3uVideoUrl);
-                                return;
-                            }
-
-                            var msg=Lib.Utils.CutStr(link,90);
-                            setting.SendLog($"QRCode: {msg}");
-                            slinkMgr.ImportLinkWithOutV2cfgLinks(link);
-                        }
-
-                        void Fail()
-                        {
-                            MessageBox.Show(I18N.NoQRCode);
-                        }
-
-                        Lib.QRCode.QRCode.ScanQRCode(Success,Fail);
-                    }),
+                    (s,a)=> ScanQrcode()                    ),
 
                 new ToolStripMenuItem(
                     I18N.ImportLink,
@@ -252,7 +255,7 @@ namespace V2RayGCon.Service
                 new ToolStripMenuItem(
                     I18N.DownloadV2rayCore,
                     Properties.Resources.ASX_TransferDownload_blue_16x,
-                    (s,a)=>Views.WinForms.FormDownloadCore.GetForm()),
+                    (s,a)=> Views.WinForms.FormDownloadCore.GetForm()),
             });
 
             menu.Items.Add(new ToolStripSeparator());
@@ -277,6 +280,8 @@ namespace V2RayGCon.Service
 
             return menu;
         }
+
+
         #endregion
 
         #region protected methods

@@ -10,16 +10,13 @@ namespace V2RayGCon.Controller.CoreServerComponent
     {
         Lib.V2Ray.Core coreServ;
         Service.Setting setting;
-        Service.Servers servers;
         Service.ConfigMgr configMgr;
 
         public CoreCtrl(
             Service.Setting setting,
-            Service.Servers servers,
             Service.ConfigMgr configMgr)
         {
             this.setting = setting;
-            this.servers = servers;
             this.configMgr = configMgr;
         }
 
@@ -29,7 +26,7 @@ namespace V2RayGCon.Controller.CoreServerComponent
 
         public override void Prepare()
         {
-            this.coreServ = new V2RayGCon.Lib.V2Ray.Core(setting);
+            this.coreServ = new Lib.V2Ray.Core(setting);
 
             coreStates = container.GetComponent<CoreStates>();
             configer = container.GetComponent<Configer>();
@@ -72,6 +69,8 @@ namespace V2RayGCon.Controller.CoreServerComponent
             done.WaitOne();
         }
 
+        public void StopCoreQuiet() => coreServ.StopCore();
+
         public void StopCore()
         {
             AutoResetEvent done = new AutoResetEvent(false);
@@ -107,27 +106,40 @@ namespace V2RayGCon.Controller.CoreServerComponent
 
         void SpeedTestWorker(string rawConfig)
         {
+            long lastDelay = -1;
+            long curDelay = long.MaxValue;
+            var cycles = Math.Max(1, setting.isUseCustomSpeedtestSettings ? setting.CustomSpeedtestCycles : 1);
+
             coreStates.SetStatus(I18N.Testing);
             logger.Log(I18N.Testing);
+            for (int i = 0; i < cycles; i++)
+            {
+                curDelay = configMgr.RunDefaultSpeedTest(rawConfig, coreStates.GetTitle(), (s, a) => logger.Log(a.Data));
+                if (curDelay == long.MaxValue)
+                {
+                    logger.Log(I18N.Timeout);
+                    continue;
+                }
 
-            var delay = configMgr.RunDefaultSpeedTest(
-                rawConfig,
-                coreStates.GetTitle(),
-                (s, a) => logger.Log(a.Data));
+                logger.Log($"{curDelay.ToString()} ms");
+                lastDelay = VgcApis.Libs.Utils.SpeedtestMean(
+                    lastDelay, curDelay, VgcApis.Models.Consts.Config.CustomSpeedtestMeanWeight);
+            }
 
-            coreStates.SetSpeedTestResult(delay);
-
-            var speedTestResult = delay < long.MaxValue ?
-                $"{delay.ToString()} ms" :
-                I18N.Timeout;
-
-            coreStates.SetStatus(speedTestResult);
-            logger.Log(speedTestResult);
+            var lastResult = $"{lastDelay.ToString()} ms";
+            // all speedtest timeout 
+            if (lastDelay <= 0)
+            {
+                lastDelay = long.MaxValue;
+                lastResult = I18N.Timeout;
+            }
+            coreStates.SetStatus(lastResult);
+            coreStates.SetSpeedTestResult(lastDelay);
+            logger.Log(lastResult);
         }
 
         void OnLogHandler(object sender, VgcApis.Models.Datas.StrEvent arg) =>
             logger.Log(arg.Data);
-
 
         void StopCoreWorker(Action next)
         {

@@ -305,7 +305,6 @@ namespace V2RayGCon.Lib.V2Ray
                         done.Set();
                     };
 
-
                     Lib.Sys.SafeNativeMethods.SetConsoleCtrlHandler(null, true);
                     Lib.Sys.SafeNativeMethods.GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
 

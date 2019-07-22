@@ -38,9 +38,12 @@ namespace Luna.Views.WinForms
             genCtrl = new Controllers.TabGeneralCtrl(
                 flyScriptUIContainer,
                 btnStopAllScript,
-                btnKillAllScript);
+                btnKillAllScript,
+                btnDeleteAllScripts,
+                btnImportFromFile,
+                btnExportToFile);
 
-            genCtrl.Run(luaServer);
+            genCtrl.Run(settings, luaServer);
 
             editorCtrl = new Controllers.TabEditorCtrl(
                 cboxScriptName,

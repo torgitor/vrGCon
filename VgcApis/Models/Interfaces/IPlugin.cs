@@ -10,7 +10,7 @@ namespace VgcApis.Models.Interfaces
         string Description { get; }
         Image Icon { get; }
 
-        void Run(Models.IServices.IApiService api);
+        void Run(IServices.IApiService api);
         void Show();
         void Cleanup();
     }

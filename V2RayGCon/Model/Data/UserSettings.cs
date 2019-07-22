@@ -6,6 +6,12 @@ namespace V2RayGCon.Model.Data
     {
         #region public properties
 
+        // FormOption->Defaults->Mode
+        public ImportSharelinkOptions ImportOptions = null;
+
+        // FormOption->Defaults->Speedtest
+        public SpeedTestOptions SpeedtestOptions = null;
+
         // FormDownloadCore
         public bool isDownloadWin32V2RayCore { get; set; } = true;
         public List<string> V2RayCoreDownloadVersionList = null;
@@ -33,9 +39,12 @@ namespace V2RayGCon.Model.Data
         public string WinFormPosList { get; set; }
         #endregion
 
+
         public UserSettings()
         {
-            ServerPanelPageSize = 7;
+            Normalized();
+
+            ServerPanelPageSize = 8;
 
             isCheckUpdateWhenAppStart = false;
 
@@ -58,5 +67,14 @@ namespace V2RayGCon.Model.Data
             ServerTracker = string.Empty;
             WinFormPosList = string.Empty;
         }
+
+        #region public methods
+        public void Normalized()
+        {
+            V2RayCoreDownloadVersionList = V2RayCoreDownloadVersionList ?? new List<string>();
+            ImportOptions = ImportOptions ?? new ImportSharelinkOptions();
+            SpeedtestOptions = SpeedtestOptions ?? new SpeedTestOptions();
+        }
+        #endregion
     }
 }

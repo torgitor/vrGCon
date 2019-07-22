@@ -8,14 +8,13 @@ namespace VgcApis.Models.Interfaces.CoreCtrlComponents
         JObject GetFinalConfig();
 
         string GetConfig();
+
         void SetConfig(string newConfig);
 
-        bool IsSuitableToBeUsedAsSysProxy(
-          bool isGlobal,
-          out bool isSocks,
-          out int port);
+        bool IsSuitableToBeUsedAsSysProxy(bool isGlobal, out bool isSocks, out int port);
 
         void UpdateSummaryThen(Action next = null);
+
         void GetterInfoForNotifyIconf(Action<string> next);
     }
 }

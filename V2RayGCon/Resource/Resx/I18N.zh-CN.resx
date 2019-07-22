@@ -428,9 +428,6 @@ https://github.com/v2ray/v2ray-core</value>
   <data name="ConfirmDeleteControl" xml:space="preserve">
     <value>删除此项？</value>
   </data>
-  <data name="ConfirmAllOptionWillBeReplaced" xml:space="preserve">
-    <value>所有选项将被覆盖。确定要继续？</value>
-  </data>
   <data name="ConfirmImportServers" xml:space="preserve">
     <value>从备份文件中导入服务器（客户端）配置？</value>
   </data>
@@ -583,8 +580,7 @@ https://github.com/v2ray/v2ray-core</value>
     <value>访问以下网址？</value>
   </data>
   <data name="SaveUserSettingsToFileFail" xml:space="preserve">
-    <value>保存配置失败!
-请将本软件移至可写入目录或禁用便携模式。</value>
+    <value>保存配置失败!请将本软件移至可写入目录。</value>
   </data>
   <data name="UnsetPortableModeFail" xml:space="preserve">
     <value>取消便携模式失败，请删除本软件目录中的{0}。</value>
@@ -635,12 +631,42 @@ https://github.com/v2ray/v2ray-core</value>
     <value>确定要清空日志？</value>
   </data>
   <data name="UpdatingPleaseWait" xml:space="preserve">
-    <value>正在检查更新，请稍等！</value>
+    <value>正在检查更新，请稍等！
+如果上次更新期间出错而中断，请重启本软件再尝试更新。</value>
   </data>
   <data name="ChangesColon" xml:space="preserve">
     <value>变动：</value>
   </data>
   <data name="WarningColon" xml:space="preserve">
     <value>警告：</value>
+  </data>
+  <data name="ConfirmLoadDefaultUserSettings" xml:space="preserve">
+    <value>加载用户配置失败！是否使用默认配置？
+是：使用默认配置
+否：结束程序</value>
+  </data>
+  <data name="ConfirmRestorePluginsSetting" xml:space="preserve">
+    <value>导入插件设置并重启所有插件？</value>
+  </data>
+  <data name="ConfirmOriginalSettingWillBeReset" xml:space="preserve">
+    <value>原有配置将被重置，真的要继续吗？</value>
+  </data>
+  <data name="ConfirmRestoreGlobalImportSettings" xml:space="preserve">
+    <value>导入全局Import设置？</value>
+  </data>
+  <data name="ConfirmRestoreSubscriptionSettings" xml:space="preserve">
+    <value>导入订阅设置？</value>
+  </data>
+  <data name="AndThenSaveThisFileAs" xml:space="preserve">
+    <value>然后将此文本另存为 {0}。</value>
+  </data>
+  <data name="OrDisablePortableMode" xml:space="preserve">
+    <value>或禁用便携模式。</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>修改于</value>
+  </data>
+  <data name="MMdd" xml:space="preserve">
+    <value>MM月dd日</value>
   </data>
 </root>

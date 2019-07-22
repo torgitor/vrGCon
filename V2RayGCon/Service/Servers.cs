@@ -44,8 +44,8 @@ namespace V2RayGCon.Service
         Servers()
         {
             serverSaver = new VgcApis.Libs.Tasks.LazyGuy(
-                SaveCurrentServerList,
-                VgcApis.Models.Consts.Intervals.SaveServerListIntreval);
+                SaveServersSettingsNow,
+                VgcApis.Models.Consts.Intervals.LazySaveServerListIntreval);
         }
 
         public void Run(
@@ -80,6 +80,16 @@ namespace V2RayGCon.Service
             {
                 var selectedServers = queryHandler.GetSelectedServers().ToList();
                 indexHandler.SortCoreServCtrlListBySpeedTestResult(ref selectedServers);
+            }
+            RequireFormMainReload();
+        }
+
+        public void SortSelectedByLastModifiedDate()
+        {
+            lock (serverListWriteLock)
+            {
+                var selectedServers = queryHandler.GetSelectedServers().ToList();
+                indexHandler.SortCoreServerCtrlListByLastModifyDate(ref selectedServers);
             }
             RequireFormMainReload();
         }
@@ -233,6 +243,19 @@ namespace V2RayGCon.Service
         #endregion
 
         #region public method
+
+        // expose to launcher for shutdown
+        public void SaveServersSettingsNow()
+        {
+            lock (serverListWriteLock)
+            {
+                var coreInfoList = coreServList
+                    .Select(s => s.GetCoreStates().GetAllRawCoreInfo())
+                    .ToList();
+                setting.SaveServerList(coreInfoList);
+            }
+        }
+
         /// <summary>
         /// Add new only.
         /// </summary>
@@ -541,11 +564,24 @@ namespace V2RayGCon.Service
             var list = coreServList;
             AutoResetEvent isFinished = new AutoResetEvent(false);
 
+
             void worker(int index, Action next)
             {
+                var core = list[index];
+
                 try
                 {
-                    list[index].GetConfiger().UpdateSummaryThen(next);
+                    if (core.GetCoreStates().GetLastModifiedUtcTicks() == 0)
+                    {
+                        var utcTicks = DateTime.UtcNow.Ticks;
+                        core.GetCoreStates().SetLastModifiedUtcTicks(utcTicks);
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    core.GetConfiger().UpdateSummaryThen(next);
                 }
                 catch
                 {
@@ -617,12 +653,19 @@ namespace V2RayGCon.Service
                 return false;
             }
 
-            var newServer = new Controller.CoreServerCtrl(
-                new VgcApis.Models.Datas.CoreInfo
-                {
-                    config = config,
-                    customMark = mark,
-                });
+            var coreInfo = new VgcApis.Models.Datas.CoreInfo
+            {
+                foldingLevel = setting.CustomDefImportIsFold ? 1 : 0,
+                isInjectImport = setting.CustomDefImportGlobalImport,
+                isInjectSkipCNSite = setting.CustomDefImportBypassCnSite,
+                customInbType = setting.CustomDefImportMode,
+                inbIp = setting.CustomDefImportIp,
+                inbPort = setting.CustomDefImportPort,
+                config = config,
+                customMark = mark,
+            };
+
+            var newServer = new Controller.CoreServerCtrl(coreInfo);
             newServer.Run(cache, setting, configMgr, this);
 
             bool duplicated = true;
@@ -668,6 +711,7 @@ namespace V2RayGCon.Service
                 }
 
                 coreServList[index].GetConfiger().SetConfig(newConfig);
+                coreServList[index].GetCoreStates().SetLastModifiedUtcTicks(DateTime.UtcNow.Ticks);
                 return true;
             }
 
@@ -779,17 +823,6 @@ namespace V2RayGCon.Service
             }
         }
 
-        void SaveCurrentServerList()
-        {
-            lock (serverListWriteLock)
-            {
-                var coreInfoList = coreServList
-                    .Select(s => s.GetCoreStates().GetAllRawCoreInfo())
-                    .ToList();
-                setting.SaveServerList(coreInfoList);
-            }
-        }
-
         void RemoveServerItemFromListThen(int index, Action next = null)
         {
             var server = coreServList[index];
@@ -811,13 +844,29 @@ namespace V2RayGCon.Service
         protected override void Cleanup()
         {
             setting.isServerTrackerOn = false;
-            serverSaver.DoItNow();
-            serverSaver.Quit();
+
+            if (setting.ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.Abort)
+            {
+                return;
+            }
+
+            VgcApis.Libs.Sys.FileLogger.Info("Services.Servers.Cleanup");
+
+            VgcApis.Libs.Sys.FileLogger.Info("Services.StopTracking");
+            lazyServerTrackingTimer?.Timeout();
             lazyServerTrackingTimer?.Release();
 
-            AutoResetEvent sayGoodbye = new AutoResetEvent(false);
-            StopAllServersThen(() => sayGoodbye.Set());
-            sayGoodbye.WaitOne();
+            VgcApis.Libs.Sys.FileLogger.Info("Services.SaveSettings");
+            serverSaver.DoItNow();
+            serverSaver.Quit();
+
+            VgcApis.Libs.Sys.FileLogger.Info("Stop cores quiet begin.");
+            var list = coreServList;
+            foreach (var core in list)
+            {
+                core.GetCoreCtrl().StopCoreQuiet();
+            }
+            VgcApis.Libs.Sys.FileLogger.Info("Stop cores quiet done.");
         }
 
         #endregion

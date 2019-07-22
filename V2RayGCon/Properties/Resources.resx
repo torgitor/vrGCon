@@ -188,4 +188,7 @@
     <value>https://raw.githubusercontent.com/UudrSgMEZ/V2RayGCon/version/latest.json</value>
     <comment>auto updater version/latest.json</comment>
   </data>
+  <data name="PortableUserSettingsBackup" xml:space="preserve">
+    <value>userSettings.bak</value>
+  </data>
 </root>

@@ -19,9 +19,14 @@ namespace V2RayGCon.Service
         public Launcher() { }
 
         #region public method
-        public void Run()
+        public bool Run()
         {
             setting = Setting.Instance;
+            if (setting.ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.Abort)
+            {
+                return false;
+            }
+
             servers = Servers.Instance;
             updater = Updater.Instance;
 
@@ -57,6 +62,7 @@ namespace V2RayGCon.Service
 #if DEBUG
             This_Function_Is_Used_For_Debugging();
 #endif
+            return true;
         }
 
         #endregion
@@ -120,10 +126,14 @@ namespace V2RayGCon.Service
         void BindEvents()
         {
             Application.ApplicationExit +=
-                (s, a) => OnApplicationExitHandler(false);
+                (s, a) => OnApplicationExitHandler();
 
             Microsoft.Win32.SystemEvents.SessionEnding +=
-                (s, a) => OnApplicationExitHandler(true);
+                (s, a) =>
+                {
+                    setting.ShutdownReason = VgcApis.Models.Datas.Enum.ShutdownReasons.Poweroff;
+                    OnApplicationExitHandler();
+                };
 
             Application.ThreadException +=
                 (s, a) => ShowExceptionDetailAndExit(
@@ -135,9 +145,15 @@ namespace V2RayGCon.Service
         }
 
         readonly object cleanupLocker = new object();
-        void OnApplicationExitHandler(bool isShutdown)
+        void OnApplicationExitHandler()
         {
             // throw new NullReferenceException("for debugging");
+
+            if (setting.ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.Abort)
+            {
+                // shutdown directly
+                return;
+            }
 
             lock (cleanupLocker)
             {
@@ -146,20 +162,14 @@ namespace V2RayGCon.Service
                     return;
                 }
 
-                if (!setting.isShutdown)
-                {
-                    setting.isShutdown = isShutdown;
-                }
-
+                setting.SetIsShutdown(true);
                 foreach (var service in services)
                 {
                     service.Dispose();
                 }
-
                 isCleanupDone = true;
             }
         }
-
 
         void SetCulture(Model.Data.Enum.Cultures culture)
         {
@@ -204,11 +214,12 @@ namespace V2RayGCon.Service
                 // Why must I write sth. here?
             }
 
-            if (!setting.isShutdown)
+            if (setting.ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.CloseByUser)
             {
                 VgcApis.Libs.Sys.NotepadHelper.ShowMessage(log, "V2RayGCon bug report");
                 MessageBox.Show(I18N.LooksLikeABug);
             }
+
             Application.Exit();
         }
 

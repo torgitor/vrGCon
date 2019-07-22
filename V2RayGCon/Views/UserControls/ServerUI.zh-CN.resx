@@ -200,6 +200,9 @@
   <data name="btnMultiboxing.ToolTip" xml:space="preserve">
     <value>和其他服务器并行运行（注意错开端口）</value>
   </data>
+  <data name="lbAddTimestamp.ToolTip" xml:space="preserve">
+    <value>添加日期</value>
+  </data>
   <data name="startToolStripMenuItem.Text" xml:space="preserve">
     <value>开启</value>
   </data>

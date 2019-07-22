@@ -18,14 +18,29 @@ namespace V2RayGCon.Service
     {
         Model.Data.UserSettings userSettings;
 
+        string serializedUserSettingsCache = @"";
+
         // Singleton need this private ctor.
         Setting()
         {
             userSettings = LoadUserSettings();
-            isShutdown = false;
+            userSettings.Normalized();  // replace null with empty object.
         }
 
         #region Properties
+        public string AllPluginsSetting
+        {
+            get => userSettings.PluginsSetting;
+            set
+            {
+                userSettings.PluginsSetting = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public VgcApis.Models.Datas.Enum.ShutdownReasons ShutdownReason { get; set; } =
+            VgcApis.Models.Datas.Enum.ShutdownReasons.CloseByUser;
+
         public bool isDownloadWin32V2RayCore
         {
             get => userSettings.isDownloadWin32V2RayCore;
@@ -35,8 +50,6 @@ namespace V2RayGCon.Service
                 LazySaveUserSettings();
             }
         }
-
-        public bool isShutdown { get; set; }
 
         public string decodeCache
         {
@@ -67,6 +80,126 @@ namespace V2RayGCon.Service
             set
             {
                 userSettings.isUseV4Format = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public bool CustomDefImportGlobalImport
+        {
+            get => userSettings.ImportOptions.IsInjectGlobalImport;
+            set
+            {
+                userSettings.ImportOptions.IsInjectGlobalImport = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public bool CustomDefImportBypassCnSite
+        {
+            get => userSettings.ImportOptions.IsBypassCnSite;
+            set
+            {
+                userSettings.ImportOptions.IsBypassCnSite = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public bool CustomDefImportIsFold
+        {
+            get => userSettings.ImportOptions.IsFold;
+            set
+            {
+                userSettings.ImportOptions.IsFold = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public bool CustomDefImportSsShareLink
+        {
+            get => userSettings.ImportOptions.IsImportSsShareLink;
+            set
+            {
+                userSettings.ImportOptions.IsImportSsShareLink = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public int CustomDefImportMode
+        {
+            get => VgcApis.Libs.Utils.Clamp(userSettings.ImportOptions.Mode, 0, 4);
+            set
+            {
+                userSettings.ImportOptions.Mode = VgcApis.Libs.Utils.Clamp(value, 0, 4);
+                LazySaveUserSettings();
+            }
+        }
+
+        public string CustomDefImportIp
+        {
+            get => userSettings.ImportOptions.Ip;
+            set
+            {
+                userSettings.ImportOptions.Ip = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public int CustomDefImportPort
+        {
+            get => userSettings.ImportOptions.Port;
+            set
+            {
+                userSettings.ImportOptions.Port = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public string CustomSpeedtestUrl
+        {
+            get => userSettings.SpeedtestOptions.Url;
+            set
+            {
+                userSettings.SpeedtestOptions.Url = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public int CustomSpeedtestTimeout
+        {
+            get => userSettings.SpeedtestOptions.Timeout;
+            set
+            {
+                userSettings.SpeedtestOptions.Timeout = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public int CustomSpeedtestExpectedSizeInKib
+        {
+            get => userSettings.SpeedtestOptions.ExpectedSize;
+            set
+            {
+                userSettings.SpeedtestOptions.ExpectedSize = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public int CustomSpeedtestCycles
+        {
+            get => userSettings.SpeedtestOptions.Cycles;
+            set
+            {
+                userSettings.SpeedtestOptions.Cycles = value;
+                LazySaveUserSettings();
+            }
+        }
+
+        public bool isUseCustomSpeedtestSettings
+        {
+            get => userSettings.SpeedtestOptions.IsUse;
+            set
+            {
+                userSettings.SpeedtestOptions.IsUse = value;
                 LazySaveUserSettings();
             }
         }
@@ -176,8 +309,7 @@ namespace V2RayGCon.Service
         public void SaveV2RayCoreVersionList(List<string> versions)
         {
             // clone version list
-            userSettings.V2RayCoreDownloadVersionList =
-                new List<string>(versions);
+            userSettings.V2RayCoreDownloadVersionList = new List<string>(versions);
             LazySaveUserSettings();
         }
 
@@ -189,7 +321,9 @@ namespace V2RayGCon.Service
         }
 
         // ISettingService thing
-        public bool IsShutdown() => isShutdown;
+        bool isClosing = false;
+        public bool IsClosing() => isClosing;
+        public bool SetIsShutdown(bool isShutdown) => this.isClosing = isShutdown;
 
         /// <summary>
         /// return null if fail
@@ -227,42 +361,38 @@ namespace V2RayGCon.Service
             LazySaveUserSettings();
         }
 
-        private Dictionary<string, string> DeserializePluginsSetting()
-        {
-            var empty = new Dictionary<string, string>();
-            Dictionary<string, string> pluginsSetting = null;
-
-            try
-            {
-                pluginsSetting = JsonConvert
-                    .DeserializeObject<Dictionary<string, string>>(
-                        userSettings.PluginsSetting);
-            }
-            catch { }
-            if (pluginsSetting == null)
-            {
-                pluginsSetting = empty;
-            }
-
-            return pluginsSetting;
-        }
-
-        readonly object saveUserSettingsLocker = new object();
+        VgcApis.Libs.Tasks.Bar saveUserSettingsBar = new VgcApis.Libs.Tasks.Bar();
         public void SaveUserSettingsNow()
         {
-            lock (saveUserSettingsLocker)
+            if (!saveUserSettingsBar.Install())
+            {
+                return;
+            }
+
+            var serializedUserSettings = JsonConvert.SerializeObject(userSettings);
+            if (ValidateSerializedUserSettings(serializedUserSettings))
             {
                 if (userSettings.isPortable)
                 {
-                    DebugSendLog("Try save settings to file.");
-                    SaveUserSettingsToFile();
-                    return;
+                    // DebugSendLog("Try save settings to file.");
+                    SaveUserSettingsToFile(serializedUserSettings);
                 }
-
-                DebugSendLog("Try save settings to properties");
-                SetUserSettingFileIsPortableToFalse();
-                SaveUserSettingsToProperties();
+                else
+                {
+                    // DebugSendLog("Try save settings to properties");
+                    SetUserSettingFileIsPortableToFalse();
+                    SaveUserSettingsToProperties(serializedUserSettings);
+                }
             }
+            else
+            {
+                if (ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.CloseByUser)
+                {
+                    SendLog("UserSettings: " + Environment.NewLine + serializedUserSettings);
+                    throw new ArgumentException("Validate serialized user settings fail!");
+                }
+            }
+            saveUserSettingsBar.Remove();
         }
 
         /*
@@ -277,7 +407,7 @@ namespace V2RayGCon.Service
             {
                 lazyGCTimer = new Lib.Sys.CancelableTimeout(
                     () => GC.Collect(),
-                    VgcApis.Models.Consts.Intervals.LazyGCDelay);
+                    VgcApis.Models.Consts.Intervals.LazyGcDelay);
             }
 
             lazyGCTimer.Start();
@@ -293,60 +423,58 @@ namespace V2RayGCon.Service
         public Model.Data.ServerTracker GetServerTrackerSetting()
         {
             var empty = new Model.Data.ServerTracker();
-            Model.Data.ServerTracker r = null;
+            Model.Data.ServerTracker result;
             try
             {
-                r = JsonConvert
+                result = JsonConvert
                     .DeserializeObject<Model.Data.ServerTracker>(
                         userSettings.ServerTracker);
-
-                if (r.serverList == null)
+                if (result != null && result.serverList == null)
                 {
-                    r.serverList = new List<string>();
+                    result.serverList = new List<string>();
                 }
             }
             catch
             {
                 return empty;
             }
-            return r ?? empty;
+            return result ?? empty;
         }
 
         public List<VgcApis.Models.Datas.CoreInfo> LoadCoreInfoList()
         {
-            var empty = new List<VgcApis.Models.Datas.CoreInfo>();
-
-            List<VgcApis.Models.Datas.CoreInfo> list = null;
+            List<VgcApis.Models.Datas.CoreInfo> coreInfos = null;
             try
             {
-                list = JsonConvert
+                coreInfos = JsonConvert
                     .DeserializeObject<List<VgcApis.Models.Datas.CoreInfo>>(
                         userSettings.CoreInfoList);
             }
             catch { }
 
-            if (list == null)
+            if (coreInfos == null)
             {
-                return empty;
+                return new List<VgcApis.Models.Datas.CoreInfo>();
             }
 
             // make sure every config of server can be parsed correctly
-            return list.Where(s =>
-            {
-                try
-                {
-                    return JObject.Parse(s.config) != null;
-                }
-                catch { }
-                return false;
-            }).ToList();
+            var result = coreInfos.Where(c =>
+             {
+                 try
+                 {
+                     return JObject.Parse(c.config) != null;
+                 }
+                 catch { }
+                 return false;
+             }).ToList();
+
+            return result;
         }
 
         public void SaveFormRect(Form form)
         {
             var key = form.GetType().Name;
             var list = GetWinFormRectList();
-
             list[key] = new Rectangle(form.Left, form.Top, form.Width, form.Height);
             userSettings.WinFormPosList = JsonConvert.SerializeObject(list);
             LazySaveUserSettings();
@@ -459,49 +587,83 @@ namespace V2RayGCon.Service
         #endregion
 
         #region private method
+        bool ValidateSerializedUserSettings(string serializedUserSettings)
+        {
+            if (string.IsNullOrEmpty(serializedUserSettings))
+            {
+                return false;
+            }
+            try
+            {
+                var json = JsonConvert.DeserializeObject<Model.Data.UserSettings>(
+                    serializedUserSettings);
+                if (json != null)
+                {
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+
+
+        Dictionary<string, string> DeserializePluginsSetting()
+        {
+            var empty = new Dictionary<string, string>();
+            Dictionary<string, string> pluginsSetting = null;
+
+            try
+            {
+                pluginsSetting = JsonConvert
+                    .DeserializeObject<Dictionary<string, string>>(
+                        userSettings.PluginsSetting);
+            }
+            catch { }
+            if (pluginsSetting == null)
+            {
+                pluginsSetting = empty;
+            }
+
+            return pluginsSetting;
+        }
+
         void SetUserSettingFileIsPortableToFalse()
         {
-            var filename = Lib.Utils.GetUserSettingsFullFileName();
-            if (!File.Exists(filename))
+            DebugSendLog("Read user setting file");
+
+            var mainUsFilename = Constants.Strings.MainUserSettingsFilename;
+            var bakUsFilename = Constants.Strings.BackupUserSettingsFilename;
+            if (!File.Exists(mainUsFilename) && !File.Exists(bakUsFilename))
             {
                 DebugSendLog("setting file not exists");
                 return;
             }
 
+            DebugSendLog("set portable to false");
+            userSettings.isPortable = false;
             try
             {
-                var s = JsonConvert
-                    .DeserializeObject<Model.Data.UserSettings>(
-                    File.ReadAllText(filename));
-
-                DebugSendLog("Read setting file for unset portable");
-
-                if (s.isPortable)
-                {
-                    s.isPortable = false;
-                    DebugSendLog("Write setting file for unset portable");
-                    File.WriteAllText(filename, JsonConvert.SerializeObject(s));
-                }
-
-                DebugSendLog("unset portable done");
+                var serializedUserSettings = JsonConvert.SerializeObject(userSettings);
+                File.WriteAllText(mainUsFilename, serializedUserSettings);
+                File.WriteAllText(bakUsFilename, serializedUserSettings);
+                DebugSendLog("set portable option done");
+                return;
             }
-            catch
+            catch { }
+
+            if (ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.CloseByUser)
             {
-                if (!isShutdown)
-                {
-                    // this is important do not use task
-                    var msg = string.Format(I18N.UnsetPortableModeFail, filename);
-                    MessageBox.Show(msg);
-                }
+                // this is important do not use task
+                var msg = string.Format(I18N.UnsetPortableModeFail, mainUsFilename);
+                MessageBox.Show(msg);
             }
         }
 
-        void SaveUserSettingsToProperties()
+        void SaveUserSettingsToProperties(string content)
         {
             try
             {
-                Properties.Settings.Default.UserSettings =
-                    JsonConvert.SerializeObject(userSettings);
+                Properties.Settings.Default.UserSettings = content;
                 Properties.Settings.Default.Save();
             }
             catch
@@ -510,21 +672,40 @@ namespace V2RayGCon.Service
             }
         }
 
-        void SaveUserSettingsToFile()
+        void SaveUserSettingsToFile(string content)
         {
-            var filename = Lib.Utils.GetUserSettingsFullFileName();
-            try
+            if (content.Equals(serializedUserSettingsCache))
             {
-                var content = JsonConvert.SerializeObject(userSettings);
-                File.WriteAllText(filename, content);
+                VgcApis.Libs.Sys.FileLogger.Info("User settings equal to cache, skip.");
+                return;
             }
-            catch
+
+            VgcApis.Libs.Sys.FileLogger.Info("Write user settings to file.");
+            if (VgcApis.Libs.Utils.ClumsyWriter(
+                content,
+                Constants.Strings.MainUserSettingsFilename,
+                Constants.Strings.BackupUserSettingsFilename))
             {
-                if (!isShutdown)
+                serializedUserSettingsCache = content;
+                return;
+            }
+
+            // main file or bak file write fail, clear cache
+            serializedUserSettingsCache = @"";
+
+            if (ShutdownReason == VgcApis.Models.Datas.Enum.ShutdownReasons.CloseByUser)
+            {
+                var msg = I18N.SaveUserSettingsToFileFail;
+                if (isClosing)
                 {
-                    // this is important do not use task!
-                    MessageBox.Show(I18N.SaveUserSettingsToFileFail);
+                    // 兄弟只能帮你到这了
+                    VgcApis.Libs.Sys.NotepadHelper.ShowMessage(content, Properties.Resources.PortableUserSettingsFilename);
+                    msg += Environment.NewLine + string.Format(I18N.AndThenSaveThisFileAs, Properties.Resources.PortableUserSettingsFilename);
                 }
+
+                // this is important do not use task!
+                msg += Environment.NewLine + I18N.OrDisablePortableMode;
+                MessageBox.Show(msg);
             }
         }
 
@@ -532,10 +713,8 @@ namespace V2RayGCon.Service
         {
             try
             {
-                var us = JsonConvert
-                    .DeserializeObject<Model.Data.UserSettings>(
-                        Properties.Settings.Default.UserSettings);
-
+                var serializedUserSettings = Properties.Settings.Default.UserSettings;
+                var us = JsonConvert.DeserializeObject<Model.Data.UserSettings>(serializedUserSettings);
                 if (us != null)
                 {
                     DebugSendLog("Read user settings from Properties.Usersettings");
@@ -544,30 +723,49 @@ namespace V2RayGCon.Service
             }
             catch { }
 
-            return new Model.Data.UserSettings();
+            return null;
         }
 
         Model.Data.UserSettings LoadUserSettingsFromFile()
         {
-            DebugSendLog("Try read setting from file");
-            var filename = Lib.Utils.GetUserSettingsFullFileName();
-            if (File.Exists(filename))
+            // try to load userSettings.json
+            Model.Data.UserSettings result = null;
+            try
             {
-                try
-                {
-                    var result = JsonConvert
-                        .DeserializeObject<Model.Data.UserSettings>(
-                            File.ReadAllText(filename));
-                    return result.isPortable ? result : null;
-                }
-                catch { }
+                var content = File.ReadAllText(Constants.Strings.MainUserSettingsFilename);
+                serializedUserSettingsCache = content;
+                result = JsonConvert.DeserializeObject<Model.Data.UserSettings>(content);
+            }
+            catch { }
+
+            // try to load userSettings.bak
+            if (result == null)
+            {
+                result = VgcApis.Libs.Utils.LoadAndParseJsonFile<Model.Data.UserSettings>(
+                    Constants.Strings.BackupUserSettingsFilename);
+            }
+
+            if (result != null && result.isPortable)
+            {
+                return result;
             }
             return null;
         }
 
         Model.Data.UserSettings LoadUserSettings()
         {
-            return LoadUserSettingsFromFile() ?? LoadUserSettingsFromPorperties();
+            var mainUsFile = Constants.Strings.MainUserSettingsFilename;
+            var bakUsFile = Constants.Strings.BackupUserSettingsFilename;
+
+            var result = LoadUserSettingsFromFile() ?? LoadUserSettingsFromPorperties();
+            if (result == null
+                && (File.Exists(mainUsFile) || File.Exists(bakUsFile))
+                && !Lib.UI.Confirm(I18N.ConfirmLoadDefaultUserSettings))
+            {
+                ShutdownReason = VgcApis.Models.Datas.Enum.ShutdownReasons.Abort;
+            }
+
+            return result ?? new Model.Data.UserSettings();
         }
 
         Lib.Sys.CancelableTimeout lazySaveUserSettingsTimer = null;

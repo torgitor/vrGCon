@@ -62,8 +62,10 @@
             this.tabPac = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnSetSortWhitelist = new System.Windows.Forms.Button();
             this.rtboxPacWhiteList = new System.Windows.Forms.RichTextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnSetSortBlacklist = new System.Windows.Forms.Button();
             this.rtboxPacBlackList = new System.Windows.Forms.RichTextBox();
             this.tabUsage = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -348,10 +350,18 @@
             // groupBox3
             // 
             resources.ApplyResources(this.groupBox3, "groupBox3");
+            this.groupBox3.Controls.Add(this.btnSetSortWhitelist);
             this.groupBox3.Controls.Add(this.rtboxPacWhiteList);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.TabStop = false;
             this.toolTip1.SetToolTip(this.groupBox3, resources.GetString("groupBox3.ToolTip"));
+            // 
+            // btnSetSortWhitelist
+            // 
+            resources.ApplyResources(this.btnSetSortWhitelist, "btnSetSortWhitelist");
+            this.btnSetSortWhitelist.Name = "btnSetSortWhitelist";
+            this.toolTip1.SetToolTip(this.btnSetSortWhitelist, resources.GetString("btnSetSortWhitelist.ToolTip"));
+            this.btnSetSortWhitelist.UseVisualStyleBackColor = true;
             // 
             // rtboxPacWhiteList
             // 
@@ -362,10 +372,18 @@
             // groupBox4
             // 
             resources.ApplyResources(this.groupBox4, "groupBox4");
+            this.groupBox4.Controls.Add(this.btnSetSortBlacklist);
             this.groupBox4.Controls.Add(this.rtboxPacBlackList);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.TabStop = false;
             this.toolTip1.SetToolTip(this.groupBox4, resources.GetString("groupBox4.ToolTip"));
+            // 
+            // btnSetSortBlacklist
+            // 
+            resources.ApplyResources(this.btnSetSortBlacklist, "btnSetSortBlacklist");
+            this.btnSetSortBlacklist.Name = "btnSetSortBlacklist";
+            this.toolTip1.SetToolTip(this.btnSetSortBlacklist, resources.GetString("btnSetSortBlacklist.ToolTip"));
+            this.btnSetSortBlacklist.UseVisualStyleBackColor = true;
             // 
             // rtboxPacBlackList
             // 
@@ -526,5 +544,7 @@
         private System.Windows.Forms.LinkLabel linkLabelUsageTxthinkingPac;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Button btnSetSortWhitelist;
+        private System.Windows.Forms.Button btnSetSortBlacklist;
     }
 }

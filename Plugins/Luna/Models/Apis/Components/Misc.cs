@@ -3,7 +3,7 @@
 namespace Luna.Models.Apis.Components
 {
     public sealed class Misc :
-         VgcApis.Models.BaseClasses.ComponentOf<LuaApis>,
+        VgcApis.Models.BaseClasses.ComponentOf<LuaApis>,
         VgcApis.Models.Interfaces.Lua.ILuaMisc
     {
         Services.Settings settings;
@@ -50,6 +50,12 @@ namespace Luna.Models.Apis.Components
 
         public string ReadLocalStorage(string key) =>
             settings.GetLuaShareMemory(key);
+
+        public bool RemoveLocalStorage(string key) =>
+            settings.RemoveShareMemory(key);
+
+        public List<string> LocalStorageKeys() =>
+            settings.ShareMemoryKeys();
 
         public string Config2VeeLink(string config) =>
             vgcSlinkMgr.EncodeConfigToShareLink(

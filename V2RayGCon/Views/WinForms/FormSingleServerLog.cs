@@ -58,7 +58,9 @@ namespace V2RayGCon.Views.WinForms
         private void FormSingleServerLog_FormClosed(object sender, FormClosedEventArgs e)
         {
             logUpdater.Dispose();
-            qLogger.Dispose();
+
+            // Potential memory leaks
+            // qLogger.Dispose();
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)

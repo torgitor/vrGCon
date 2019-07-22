@@ -12,7 +12,6 @@ namespace V2RayGCon.Service
     {
         Setting setting;
         Servers servers;
-        Cache cache;
 
         ShareLinkComponents.Codecs codecs;
 
@@ -82,10 +81,14 @@ namespace V2RayGCon.Service
         {
             var decoders = new List<VgcApis.Models.Interfaces.IShareLinkDecoder>
             {
-                codecs.GetComponent<ShareLinkComponents.SsDecoder>(),
                 codecs.GetComponent<ShareLinkComponents.VmessDecoder>(),
                 codecs.GetComponent<ShareLinkComponents.VeeDecoder>(),
             };
+
+            if (setting.CustomDefImportSsShareLink)
+            {
+                decoders.Add(codecs.GetComponent<ShareLinkComponents.SsDecoder>());
+            }
 
             if (isIncludeV2cfgDecoder)
             {
@@ -140,7 +143,6 @@ namespace V2RayGCon.Service
         {
             this.setting = setting;
             this.servers = servers;
-            this.cache = cache;
 
             codecs.Run(cache, setting);
         }

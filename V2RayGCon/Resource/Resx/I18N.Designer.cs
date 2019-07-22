@@ -19,7 +19,7 @@ namespace V2RayGCon.Resource.Resx {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class I18N {
@@ -120,6 +120,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string AnalysingImport {
             get {
                 return ResourceManager.GetString("AnalysingImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 And then save this text file as {0}. 的本地化字符串。
+        /// </summary>
+        internal static string AndThenSaveThisFileAs {
+            get {
+                return ResourceManager.GetString("AndThenSaveThisFileAs", resourceCulture);
             }
         }
         
@@ -232,16 +241,6 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 All options will be replaced!
-        ///Are you sure want to continue? 的本地化字符串。
-        /// </summary>
-        internal static string ConfirmAllOptionWillBeReplaced {
-            get {
-                return ResourceManager.GetString("ConfirmAllOptionWillBeReplaced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Are you sure to clear logs? 的本地化字符串。
         /// </summary>
         internal static string ConfirmClearLog {
@@ -323,12 +322,32 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Load user settings fail! Use default settings?
+        ///Yes, use default settings.
+        ///No, abort. 的本地化字符串。
+        /// </summary>
+        internal static string ConfirmLoadDefaultUserSettings {
+            get {
+                return ResourceManager.GetString("ConfirmLoadDefaultUserSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Current config will be cleared!
         ///Load new config? 的本地化字符串。
         /// </summary>
         internal static string ConfirmLoadNewServer {
             get {
                 return ResourceManager.GetString("ConfirmLoadNewServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The original settings will be reset. Do you really want to continue? 的本地化字符串。
+        /// </summary>
+        internal static string ConfirmOriginalSettingWillBeReset {
+            get {
+                return ResourceManager.GetString("ConfirmOriginalSettingWillBeReset", resourceCulture);
             }
         }
         
@@ -365,6 +384,33 @@ namespace V2RayGCon.Resource.Resx {
         internal static string ConfirmRestartAllServer {
             get {
                 return ResourceManager.GetString("ConfirmRestartAllServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restore global import settings? 的本地化字符串。
+        /// </summary>
+        internal static string ConfirmRestoreGlobalImportSettings {
+            get {
+                return ResourceManager.GetString("ConfirmRestoreGlobalImportSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restore plugins setting and restart all plugins? 的本地化字符串。
+        /// </summary>
+        internal static string ConfirmRestorePluginsSetting {
+            get {
+                return ResourceManager.GetString("ConfirmRestorePluginsSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restore subscription settings? 的本地化字符串。
+        /// </summary>
+        internal static string ConfirmRestoreSubscriptionSettings {
+            get {
+                return ResourceManager.GetString("ConfirmRestoreSubscriptionSettings", resourceCulture);
             }
         }
         
@@ -910,6 +956,15 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Last modified  的本地化字符串。
+        /// </summary>
+        internal static string LastModified {
+            get {
+                return ResourceManager.GetString("LastModified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Last test is not finished yet. Please wait till test finish. 的本地化字符串。
         /// </summary>
         internal static string LastTestNoFinishYet {
@@ -979,6 +1034,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string MainWin {
             get {
                 return ResourceManager.GetString("MainWin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 MM-dd 的本地化字符串。
+        /// </summary>
+        internal static string MMdd {
+            get {
+                return ResourceManager.GetString("MMdd", resourceCulture);
             }
         }
         
@@ -1088,6 +1152,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string Options {
             get {
                 return ResourceManager.GetString("Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 or disable portable mode. 的本地化字符串。
+        /// </summary>
+        internal static string OrDisablePortableMode {
+            get {
+                return ResourceManager.GetString("OrDisablePortableMode", resourceCulture);
             }
         }
         
@@ -1238,7 +1311,7 @@ namespace V2RayGCon.Resource.Resx {
         
         /// <summary>
         ///   查找类似 Save settings to file fail!
-        ///Try move this app to writeable folder or disable portable mode. 的本地化字符串。
+        ///Please move this app to a writeable folder. 的本地化字符串。
         /// </summary>
         internal static string SaveUserSettingsToFileFail {
             get {
@@ -1347,7 +1420,7 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 Page {0} of {1} 的本地化字符串。
+        ///   查找类似 Page {0}/{1} 的本地化字符串。
         /// </summary>
         internal static string StatusBarPagerInfoTpl {
             get {
@@ -1356,7 +1429,7 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 Show page {0}. 的本地化字符串。
+        ///   查找类似 Page {0} 的本地化字符串。
         /// </summary>
         internal static string StatusBarPagerMenuTpl {
             get {
@@ -1365,7 +1438,7 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 Total {0} of {1} server(s). 的本地化字符串。
+        ///   查找类似 Total {0}/{1} 的本地化字符串。
         /// </summary>
         internal static string StatusBarServerCountTpl {
             get {
@@ -1374,7 +1447,7 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 Selecte {0}/{1} item(s) 的本地化字符串。
+        ///   查找类似 Selected {0}/{1} 的本地化字符串。
         /// </summary>
         internal static string StatusBarTplSelectedItem {
             get {
@@ -1497,7 +1570,8 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 Checking for update, please wait... 的本地化字符串。
+        ///   查找类似 Checking for update, please wait.
+        ///If last update fail, please restart this software and try again. 的本地化字符串。
         /// </summary>
         internal static string UpdatingPleaseWait {
             get {

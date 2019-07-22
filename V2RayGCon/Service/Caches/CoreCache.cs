@@ -94,6 +94,10 @@ namespace V2RayGCon.Service.Caches
             try
             {
                 var temp = JsonConvert.DeserializeObject<Dictionary<string, string>>(decodeRawStr);
+                if (temp == null)
+                {
+                    return result;
+                }
                 foreach (var item in temp)
                 {
                     try

@@ -21,7 +21,6 @@ namespace V2RayGCon.Controller.FormMainComponent
         readonly Views.UserControls.WelcomeUI welcomeItem = null;
         readonly int[] paging = new int[] { 0, 1 }; // 0: current page 1: total page
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public FlyServer(
             Form formMain,
             FlowLayoutPanel panel,
@@ -33,8 +32,8 @@ namespace V2RayGCon.Controller.FormMainComponent
             ToolStripStatusLabel tslbNextPage,
             ToolStripMenuItem miResizeFormMain)
         {
-            this.servers = Service.Servers.Instance;
-            this.setting = Service.Setting.Instance;
+            servers = Service.Servers.Instance;
+            setting = Service.Setting.Instance;
 
             this.formMain = formMain;
             this.flyPanel = panel;
@@ -43,6 +42,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             this.tslbTotal = tslbTotal;
             this.tslbPrePage = tslbPrePage;
             this.tslbNextPage = tslbNextPage;
+
             this.welcomeItem = new Views.UserControls.WelcomeUI();
 
             InitFormControls(lbMarkFilter, miResizeFormMain);
@@ -58,20 +58,17 @@ namespace V2RayGCon.Controller.FormMainComponent
         public List<VgcApis.Models.Interfaces.ICoreServCtrl> GetFilteredList()
         {
             var list = servers.GetAllServersOrderByIndex();
-            var keywords = (searchKeywords ?? "").Split(
-                new char[] { ' ', ',' },
-                StringSplitOptions.RemoveEmptyEntries);
+            var keyword = searchKeywords?.Replace(@" ", "");
 
-            if (keywords.Length < 1)
+            if (string.IsNullOrEmpty(keyword))
             {
                 return list.ToList();
             }
 
             return list
                 .Where(serv => serv.GetCoreStates().GetterInfoForSearch(
-                    infos => keywords.All(
-                        kw => infos.Any(
-                            info => VgcApis.Libs.Utils.PartialMatchCi(info, kw)))))
+                    infos => infos.Any(
+                        info => VgcApis.Libs.Utils.PartialMatchCi(info, keyword))))
                 .ToList();
         }
 
@@ -169,6 +166,7 @@ namespace V2RayGCon.Controller.FormMainComponent
         #endregion
 
         #region private method
+
         List<VgcApis.Models.Interfaces.ICoreServCtrl> GenPagedServerList(
             List<VgcApis.Models.Interfaces.ICoreServCtrl> serverList)
         {
@@ -293,7 +291,7 @@ namespace V2RayGCon.Controller.FormMainComponent
 
                             RefreshUI();
                         },
-                        600);
+                        1000);
             }
 
             lazyShowSearchResultTimer.Start();
@@ -325,7 +323,7 @@ namespace V2RayGCon.Controller.FormMainComponent
         private void ResizeFormMain()
         {
             var num = setting.serverPanelPageSize;
-            if (num < 1 || num > 10)
+            if (num < 1 || num > 16)
             {
                 return;
             }

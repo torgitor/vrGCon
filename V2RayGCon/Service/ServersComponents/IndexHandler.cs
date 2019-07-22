@@ -31,6 +31,15 @@ namespace V2RayGCon.Service.ServersComponents
             }
         }
 
+        public void SortCoreServerCtrlListByLastModifyDate(
+         ref List<VgcApis.Models.Interfaces.ICoreServCtrl> coreList)
+        {
+            lock (writeLocker)
+            {
+                SortServerItemList(ref coreList, UtcTicksDecComparer);
+            }
+        }
+
         public void SortCoreServCtrlListBySummary(
            ref List<VgcApis.Models.Interfaces.ICoreServCtrl> coreList)
         {
@@ -39,6 +48,7 @@ namespace V2RayGCon.Service.ServersComponents
                 SortServerItemList(ref coreList, SummaryComparer);
             }
         }
+
 
         public void ResetIndex()
         {
@@ -87,13 +97,26 @@ namespace V2RayGCon.Service.ServersComponents
             return spa.CompareTo(spb);
         }
 
+        int UtcTicksDecComparer(
+           VgcApis.Models.Interfaces.ICoreServCtrl a,
+           VgcApis.Models.Interfaces.ICoreServCtrl b)
+        {
+            var ticksA = a.GetCoreStates().GetLastModifiedUtcTicks();
+            var ticksB = b.GetCoreStates().GetLastModifiedUtcTicks();
+            return ticksB.CompareTo(ticksA);
+        }
+
         int SummaryComparer(
             VgcApis.Models.Interfaces.ICoreServCtrl a,
             VgcApis.Models.Interfaces.ICoreServCtrl b)
         {
-            var spa = a.GetCoreStates().GetSummary();
-            var spb = b.GetCoreStates().GetSummary();
-            return spa.CompareTo(spb);
+            var sma = a.GetCoreStates().GetSummary();
+            var smb = b.GetCoreStates().GetSummary();
+
+            var rsma = VgcApis.Libs.Utils.ReverseSummary(sma);
+            var rsmb = VgcApis.Libs.Utils.ReverseSummary(smb);
+
+            return rsma.CompareTo(rsmb);
         }
 
         void SortServerItemList(

@@ -2,6 +2,7 @@
 {
     public interface ILuaSignal
     {
+        // check whether user click "■" stop button.
         bool Stop();
     }
 }

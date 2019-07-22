@@ -142,7 +142,10 @@ namespace ProxySetter.Views.WinForms
             ctrl.Plug(new Controllers.VGCPluginComponents.TabPacCustomList(
                 setting,
                 rtboxPacWhiteList,
-                rtboxPacBlackList));
+                rtboxPacBlackList,
+
+                btnSetSortWhitelist,
+                btnSetSortBlacklist));
 
             return ctrl;
         }

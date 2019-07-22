@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -14,6 +15,148 @@ namespace VgcApisTests
     [TestClass]
     public class UtilsTests
     {
+
+        [DataTestMethod]
+        [DataRow("vmess.mkcp.tls@whatsurproblem.com", "whatsurproblem.com@vmess.mkcp.tls")]
+        [DataRow("vmess.ws.tls@1.2.3.4", "1.2.3.4@vmess.ws.tls")]
+        [DataRow("a@b@c", "c@b@a")]
+        [DataRow("a@b", "b@a")]
+        [DataRow("", "")]
+        [DataRow(null, "")]
+        [DataRow("a", "a")]
+        public void ReverseSummaryTest(string summary, string expect)
+        {
+            var result = ReverseSummary(summary);
+            Assert.AreEqual(expect, result);
+        }
+
+
+        [DataTestMethod]
+        [DataRow(
+            @"c,,a,//---,中文,3,,2,1,//abc中文,中文,a,1,,中文,a,1",
+            @"c,,a,//---,3,中文,,1,2,//abc中文,1,a,中文,,1,a,中文")]
+        [DataRow(@"a,b,中文,3,2,1", @"1,2,3,a,b,中文")]
+        [DataRow(@"3,2,1", @"1,2,3")]
+        public void SortPacListTest(string source, string expStr)
+        {
+            var testList = source.Split(new char[] { ',' }, StringSplitOptions.None);
+            var expectList = expStr.Split(',');
+            var result = SortPacList(testList);
+
+            Assert.IsTrue(expectList.SequenceEqual(result));
+
+        }
+
+        [TestMethod]
+        public void ClumsyWriterTest()
+        {
+            var rand = new Random();
+            var mainFile = "mainClumsyWriterTest.txt";
+            var bakFile = "bakClumsyWriterTest.txt";
+
+            int failCounter = 0;
+            int successCounter = 1;
+
+            string lastSuccess = null;
+
+            var cts = new CancellationTokenSource(1000);
+            Task.WaitAll(
+                Task.Run(() =>
+                {
+                    while (!cts.Token.IsCancellationRequested)
+                    {
+                        var content = rand.Next().ToString();
+                        if (ClumsyWriter(content, mainFile, bakFile))
+                        {
+                            successCounter++;
+                            lastSuccess = content;
+                        }
+                        else
+                        {
+                            failCounter++;
+                        };
+                    }
+                }),
+                Task.Run(() =>
+                {
+                    while (!cts.Token.IsCancellationRequested)
+                    {
+                        var content = rand.Next().ToString();
+                        try
+                        {
+                            File.WriteAllText(mainFile, content);
+                        }
+                        catch { }
+                    }
+                }));
+
+            Console.WriteLine($"success: {successCounter}, fail: {failCounter}");
+            var read = File.ReadAllText(bakFile);
+            Assert.IsTrue(read.Equals(lastSuccess));
+        }
+
+        [DataTestMethod]
+        [DataRow("a::b:123", true, "a::b", 123)]
+        [DataRow("ab123", false, "127.0.0.1", 1080)]
+        [DataRow("ab123:", false, "127.0.0.1", 1080)]
+        [DataRow(":123", false, "127.0.0.1", 1080)]
+        [DataRow(":", false, "127.0.0.1", 1080)]
+        public void TryParseIPAddrTest(string address, bool expResult, string expIp, int expPort)
+        {
+            var result = VgcApis.Libs.Utils.TryParseIPAddr(address, out string ip, out int port);
+            Assert.AreEqual(expResult, result);
+            Assert.AreEqual(expIp, ip);
+            Assert.AreEqual(expPort, port);
+
+        }
+
+        [TestMethod]
+        public void AreEqualTest()
+        {
+            var minVal = VgcApis.Models.Consts.Config.FloatPointNumberTolerance;
+            var a = 0.1;
+            var b1 = a + minVal * 2;
+            var b2 = a - minVal * 2;
+            var c1 = a + minVal / 2;
+            var c2 = a - minVal / 2;
+
+            Assert.IsFalse(AreEqual(a, b1));
+            Assert.IsFalse(AreEqual(a, b2));
+            Assert.IsTrue(AreEqual(a, c1));
+            Assert.IsTrue(AreEqual(a, c2));
+        }
+
+
+        [DataTestMethod]
+        [DataRow(1, 2, 0.6, (long)(0.6 * 1 + 0.4 * 2))]
+        [DataRow(-1, 2, 0.6, 2)]
+        [DataRow(1, -2, 0.6, 1)]
+        [DataRow(-1, -2, 0.6, -1)]
+        public void IntegerSpeedtestMeanTest(
+            long first,
+            long second,
+            double weight,
+            long expect)
+        {
+            var result = SpeedtestMean(first, second, weight);
+            Assert.AreEqual(expect, result);
+        }
+
+        [DataTestMethod]
+        [DataRow(0.1, 0.2, 0.3, 0.1 * 0.3 + 0.2 * 0.7)]
+        [DataRow(-0.1, 0.2, 0.3, 0.2)]
+        [DataRow(0.1, -0.2, 0.3, 0.1)]
+        [DataRow(-0.1, -0.2, 0.3, -0.1)]
+        public void DoubleSpeedtestMeanTest(
+            double first,
+            double second,
+            double weight,
+            double expect)
+        {
+            var result = SpeedtestMean(first, second, weight);
+            Assert.IsTrue(AreEqual(expect, result));
+        }
+
         [DataTestMethod]
         [DataRow(@"o,o.14,o.11,o.1,o.3,o.4", @"o,o.1,o.3,o.4,o.11,o.14")]
         [DataRow(@"b3.2,b3.1.3,a1", @"a1,b3.1.3,b3.2")]

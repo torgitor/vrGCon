@@ -21,8 +21,12 @@
 
         public double index;
 
+        public long lastModifiedUtcTicks;
+
         public CoreInfo()
         {
+            lastModifiedUtcTicks = System.DateTime.UtcNow.Ticks;
+
             // new server will displays at the bottom
             index = double.MaxValue;
 
@@ -42,9 +46,9 @@
             uid = string.Empty;
 
 
-            customInbType = 1;
-            inbIp = VgcApis.Models.Consts.Webs.LoopBackIP;
-            inbPort = 1080;
+            customInbType = (int)Enum.ProxyTypes.HTTP;
+            inbIp = Consts.Webs.LoopBackIP;
+            inbPort = Consts.Webs.DefaultProxyPort;
         }
     }
 }

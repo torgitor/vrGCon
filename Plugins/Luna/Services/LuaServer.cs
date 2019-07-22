@@ -28,10 +28,36 @@ namespace Luna.Services
         }
 
         #region public methods
+
+        public List<string[]> GetAllScripts()
+        {
+            var scripts = new List<string[]>();
+            foreach (var luaCore in luaCoreCtrls)
+            {
+                scripts.Add(new string[] {
+                    luaCore.name,
+                    luaCore.GetScript(),
+                });
+            }
+            return scripts;
+        }
+
         public List<Controllers.LuaCoreCtrl> GetAllLuaCoreCtrls()
         {
             var list = luaCoreCtrls ?? new List<Controllers.LuaCoreCtrl>();
             return list.OrderBy(c => c.name).ToList();
+        }
+
+        public void RemoveAllScripts()
+        {
+            foreach (var coreCtrl in luaCoreCtrls)
+            {
+                coreCtrl.Kill();
+            }
+            luaCoreCtrls.Clear();
+            settings.GetLuaCoreSettings().Clear();
+            Save();
+            InvokeOnLuaCoreCtrlListChangeIgnoreError();
         }
 
         public bool RemoveScriptByName(string name)
@@ -56,6 +82,31 @@ namespace Luna.Services
             return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scripts">List(string[]{name, script})</param>
+        public void ImportScripts(IEnumerable<string[]> scripts)
+        {
+            if (scripts == null || scripts.Count() <= 0)
+            {
+                return;
+            }
+
+            var isRequireRefresh = false;
+            foreach (var script in scripts)
+            {
+                var result = AddOrReplaceScriptQuiet(script[0], script[1]);
+                isRequireRefresh = isRequireRefresh || result;
+            }
+
+            if (isRequireRefresh)
+            {
+                Save();
+                InvokeOnLuaCoreCtrlListChangeIgnoreError();
+            }
+        }
+
         public bool AddOrReplaceScript(string name, string script)
         {
             if (string.IsNullOrEmpty(name))
@@ -63,28 +114,11 @@ namespace Luna.Services
                 return false;
             }
 
-            var coreCtrl = luaCoreCtrls
-                .FirstOrDefault(c => c.name == name);
-
-            if (coreCtrl != null)
+            if (AddOrReplaceScriptQuiet(name, script))
             {
-                coreCtrl.ReplaceScript(script);
-                return true;
+                Save();
+                InvokeOnLuaCoreCtrlListChangeIgnoreError();
             }
-
-            var coreState = new Models.Data.LuaCoreSetting
-            {
-                name = name,
-                script = script,
-            };
-
-            settings.GetLuaCoreSettings().Add(coreState);
-
-            coreCtrl = new Controllers.LuaCoreCtrl();
-            luaCoreCtrls.Add(coreCtrl);
-            coreCtrl.Run(settings, coreState, luaApis);
-            Save();
-            InvokeOnLuaCoreCtrlListChangeIgnoreError();
             return true;
         }
 
@@ -100,12 +134,40 @@ namespace Luna.Services
 
             foreach (var ctrl in luaCoreCtrls)
             {
-                ctrl.Kill();
+                ctrl.Cleanup();
             }
         }
         #endregion
 
         #region private methods
+        /// <summary>
+        /// true: require refresh false: not need refresh
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="script"></param>
+        /// <returns></returns>
+        bool AddOrReplaceScriptQuiet(string name, string script)
+        {
+            var coreCtrl = luaCoreCtrls.FirstOrDefault(c => c.name == name);
+            if (coreCtrl != null)
+            {
+                coreCtrl.ReplaceScript(script);
+                return false;
+            }
+
+            var coreState = new Models.Data.LuaCoreSetting
+            {
+                name = name,
+                script = script,
+            };
+
+            settings.GetLuaCoreSettings().Add(coreState);
+            coreCtrl = new Controllers.LuaCoreCtrl();
+            luaCoreCtrls.Add(coreCtrl);
+            coreCtrl.Run(settings, coreState, luaApis);
+            return true;
+        }
+
         void InvokeOnLuaCoreCtrlListChangeIgnoreError()
         {
             try
@@ -115,7 +177,7 @@ namespace Luna.Services
             catch { }
         }
 
-        void Save() => settings.SaveSettings();
+        void Save() => settings.SaveUserSettingsNow();
 
         void WakeUpAutoRunScripts()
         {

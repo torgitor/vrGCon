@@ -2,6 +2,13 @@
 {
     public class Enum
     {
+        public enum ShutdownReasons
+        {
+            CloseByUser,  // close by user
+            Poweroff, // system shut down
+            Abort, // attack by aliens :>
+        }
+
         /// <summary>
         /// 数值需要连续,否则无法和ComboBox的selectedIndex对应
         /// </summary>

@@ -21,6 +21,26 @@ namespace V2RayGCon.Model.Data
             tls = string.Empty;     // streamSettings->security
         }
 
+        public bool Equals(Vmess t)
+        {
+            if (t == null
+                || !t.v.Equals(this.v)
+                || !t.ps.Equals(this.ps)
+                || !t.add.Equals(this.add)
+                || !t.port.Equals(this.port)
+                || !t.id.Equals(this.id)
+                || !t.aid.Equals(this.aid)
+                || !t.net.Equals(this.net)
+                || !t.type.Equals(this.type)
+                || !t.host.Equals(this.host)
+                || !t.path.Equals(this.path)
+                || !t.tls.Equals(this.tls))
+            {
+                return false;
+            }
+            return true;
+        }
+
         public string ToVmessLink()
         {
             var vmess = this;

@@ -85,6 +85,8 @@ namespace Luna.Controllers
         #endregion
 
         #region public methods
+        public string GetScript() => coreSetting.script;
+
         public void SetScriptName(string name)
         {
             coreSetting.name = name;
@@ -198,7 +200,7 @@ namespace Luna.Controllers
             return lua;
         }
 
-        void Save() => settings.SaveSettings();
+        void Save() => settings.SaveUserSettingsNow();
 
         #endregion
     }

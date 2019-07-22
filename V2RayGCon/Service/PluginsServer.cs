@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Forms;
 using V2RayGCon.Resource.Resx;
@@ -9,6 +11,8 @@ namespace V2RayGCon.Service
     {
         Setting setting;
         Notifier notifier;
+
+        public event EventHandler OnRequireMenuUpdate;
 
         Lib.Lua.Apis vgcApis = new Lib.Lua.Apis();
 
@@ -36,6 +40,21 @@ namespace V2RayGCon.Service
         #endregion
 
         #region public methods
+        public ReadOnlyCollection<VgcApis.Models.Interfaces.IPlugin> GetAllEnabledPlugins()
+        {
+            var result = new List<VgcApis.Models.Interfaces.IPlugin>();
+            var enabledList = GetCurEnabledPluginFileNames();
+            foreach (var filename in enabledList)
+            {
+                if (!plugins.ContainsKey(filename))
+                {
+                    continue;
+                }
+                result.Add(plugins[filename]);
+            }
+            return result.AsReadOnly();
+        }
+
         public void RestartAllPlugins()
         {
             var enabledList = GetCurEnabledPluginFileNames();
@@ -53,6 +72,7 @@ namespace V2RayGCon.Service
             }
 
             UpdateNotifierMenu(enabledList);
+            InvokeEventOnRequireMenuUpdateIgnoreError();
         }
 
         public void StopAllPlugins()
@@ -72,6 +92,19 @@ namespace V2RayGCon.Service
         #endregion
 
         #region private methods
+
+        void InvokeEventOnRequireMenuUpdateIgnoreError()
+        {
+            try
+            {
+                OnRequireMenuUpdate?.Invoke(this, EventArgs.Empty);
+            }
+            catch
+            {
+                // do not hurt me.
+            }
+        }
+
         /// <summary>
         /// Update plugin menu item.
         /// </summary>
@@ -95,6 +128,7 @@ namespace V2RayGCon.Service
                 var plugin = plugins[fileName];
                 var mi = new ToolStripMenuItem(fileName, plugin.Icon, (s, a) => plugin.Show());
                 mi.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+                mi.ToolTipText = plugin.Description;
                 children.Add(mi);
             }
 
@@ -111,21 +145,15 @@ namespace V2RayGCon.Service
             // Original design of plugins would load dll files from file system.
             // That is why loading logic looks so complex.
             var pluginList = new Dictionary<string, VgcApis.Models.Interfaces.IPlugin>();
-            var plugins = new VgcApis.Models.Interfaces.IPlugin[] {
+            var plugins = new List<VgcApis.Models.Interfaces.IPlugin>();
 
-#if !V2RAYGCON_LITE
-                new Luna.Luna(),
-#endif 
+            plugins.Add(new Luna.Luna());
+            plugins.Add(new Pacman.Pacman());
 
-                new Pacman.Pacman(),
+            // Many thanks to windows defender
+            plugins.Add(new ProxySetter.ProxySetter());
 
-#if !V2RAYGCON_LITE
-                // Many thanks to windows defender
-                new ProxySetter.ProxySetter(),
-#endif
-
-                new Statistics.Statistics(),
-            };
+            plugins.Add(new Statistics.Statistics());
 
             foreach (var plugin in plugins)
             {

@@ -175,7 +175,7 @@ namespace V2RayGCon.Controller.ConfigerComponet
         {
             var ssMethods = Model.Data.Table.ssMethods;
             var tpl = cache.tpl.LoadTemplate(isServerMode ? "ssServer" : "ssClient");
-            Lib.Utils.TryParseIPAddr(this.address, out string ip, out int port);
+            VgcApis.Libs.Utils.TryParseIPAddr(this.address, out string ip, out int port);
             var index = this.methodTypeIndex;
             var methodName = index < 0 ? ssMethods[0] : ssMethods[index];
 

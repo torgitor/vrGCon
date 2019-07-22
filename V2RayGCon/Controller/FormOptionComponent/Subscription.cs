@@ -137,8 +137,7 @@ namespace V2RayGCon.Controller.OptionComponent
                 VgcApis.Libs.Utils.RunInBackground(() =>
                 {
                     var links = Lib.Utils.FetchLinksFromSubcriptions(
-                    subs,
-                    GetAvailableHttpProxyPort());
+                        subs, GetAvailableHttpProxyPort());
 
                     LogDownloadFails(links
                         .Where(l => string.IsNullOrEmpty(l[0]))

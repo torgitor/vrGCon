@@ -22,7 +22,7 @@ namespace Statistics.Services
         #endregion
 
         #region public method
-        public bool IsShutdown() => vgcSetting.IsShutdown();
+        public bool IsShutdown() => vgcSetting.IsClosing();
 
         public void RequireHistoryStatsDataUpdate()
         {
@@ -59,7 +59,7 @@ namespace Statistics.Services
 
             userSettins = LoadUserSetting();
             bookKeeper = new VgcApis.Libs.Tasks.LazyGuy(
-                SaveUserSetting, 1000 * 60 * 5);
+                SaveUserSetting, VgcApis.Models.Consts.Intervals.LazySaveStatisticsDatadelay);
             StartBgStatsDataUpdateTimer();
             vgcServers.OnCoreClosing += OnCoreClosingHandler;
         }
@@ -75,9 +75,9 @@ namespace Statistics.Services
             {
                 VgcApis.Libs.Sys.FileLogger.Info("Statistics: save data");
                 UpdateHistoryStatsDataWorker();
+                bookKeeper.DoItNow();
             }
 
-            bookKeeper.DoItNow();
             bookKeeper.Quit();
             VgcApis.Libs.Sys.FileLogger.Info("Statistics: done!");
         }

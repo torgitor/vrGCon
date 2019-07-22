@@ -140,6 +140,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources\Icons\TabSetting\" />
     <Folder Include="Resources\Icons\TabStatus\" />
   </ItemGroup>
   <ItemGroup>

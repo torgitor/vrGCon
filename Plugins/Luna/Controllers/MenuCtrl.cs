@@ -21,16 +21,16 @@ namespace Luna.Controllers
             this.formMgrService = formMgrService;
 
             BindControls(formMain, editorCtrl);
-            BindEvents(miNewWindow,miLoad, miSaveAs, miExit);
+            BindEvents(miNewWindow, miLoad, miSaveAs, miExit);
         }
 
         private void BindEvents(
             ToolStripMenuItem miNewWindow,
-            ToolStripMenuItem miLoad, 
-            ToolStripMenuItem miSaveAs, 
+            ToolStripMenuItem miLoad,
+            ToolStripMenuItem miSaveAs,
             ToolStripMenuItem miExit)
         {
-            miNewWindow.Click += (s, a) => 
+            miNewWindow.Click += (s, a) =>
                 formMgrService.CreateNewForm();
 
             // event handling

@@ -36,6 +36,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnExportToFile = new System.Windows.Forms.Button();
+            this.btnImportFromFile = new System.Windows.Forms.Button();
+            this.btnDeleteAllScripts = new System.Windows.Forms.Button();
             this.btnStopAllScript = new System.Windows.Forms.Button();
             this.btnKillAllScript = new System.Windows.Forms.Button();
             this.flyScriptUIContainer = new System.Windows.Forms.FlowLayoutPanel();
@@ -136,9 +139,33 @@
             // panel2
             // 
             resources.ApplyResources(this.panel2, "panel2");
+            this.panel2.Controls.Add(this.btnExportToFile);
+            this.panel2.Controls.Add(this.btnImportFromFile);
+            this.panel2.Controls.Add(this.btnDeleteAllScripts);
             this.panel2.Controls.Add(this.btnStopAllScript);
             this.panel2.Controls.Add(this.btnKillAllScript);
             this.panel2.Name = "panel2";
+            // 
+            // btnExportToFile
+            // 
+            resources.ApplyResources(this.btnExportToFile, "btnExportToFile");
+            this.btnExportToFile.Name = "btnExportToFile";
+            this.toolTip1.SetToolTip(this.btnExportToFile, resources.GetString("btnExportToFile.ToolTip"));
+            this.btnExportToFile.UseVisualStyleBackColor = true;
+            // 
+            // btnImportFromFile
+            // 
+            resources.ApplyResources(this.btnImportFromFile, "btnImportFromFile");
+            this.btnImportFromFile.Name = "btnImportFromFile";
+            this.toolTip1.SetToolTip(this.btnImportFromFile, resources.GetString("btnImportFromFile.ToolTip"));
+            this.btnImportFromFile.UseVisualStyleBackColor = true;
+            // 
+            // btnDeleteAllScripts
+            // 
+            resources.ApplyResources(this.btnDeleteAllScripts, "btnDeleteAllScripts");
+            this.btnDeleteAllScripts.Name = "btnDeleteAllScripts";
+            this.toolTip1.SetToolTip(this.btnDeleteAllScripts, resources.GetString("btnDeleteAllScripts.ToolTip"));
+            this.btnDeleteAllScripts.UseVisualStyleBackColor = true;
             // 
             // btnStopAllScript
             // 
@@ -291,6 +318,7 @@
             // menuStrip1
             // 
             resources.ApplyResources(this.menuStrip1, "menuStrip1");
+            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem});
@@ -413,5 +441,8 @@
         private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button btnExportToFile;
+        private System.Windows.Forms.Button btnImportFromFile;
+        private System.Windows.Forms.Button btnDeleteAllScripts;
     }
 }

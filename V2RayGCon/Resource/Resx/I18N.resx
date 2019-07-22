@@ -433,10 +433,6 @@ Please check server configuration and log.</value>
   <data name="SaveChangeFirst" xml:space="preserve">
     <value>Please save the modified option first!</value>
   </data>
-  <data name="ConfirmAllOptionWillBeReplaced" xml:space="preserve">
-    <value>All options will be replaced!
-Are you sure want to continue?</value>
-  </data>
   <data name="ConfirmImportServers" xml:space="preserve">
     <value>Import server/client configs from backup file?</value>
   </data>
@@ -559,16 +555,16 @@ Otherwise operations involving the network may fail.</value>
     <value>Total</value>
   </data>
   <data name="StatusBarTplSelectedItem" xml:space="preserve">
-    <value>Selecte {0}/{1} item(s)</value>
+    <value>Selected {0}/{1}</value>
   </data>
   <data name="StatusBarPagerMenuTpl" xml:space="preserve">
-    <value>Show page {0}.</value>
+    <value>Page {0}</value>
   </data>
   <data name="StatusBarPagerInfoTpl" xml:space="preserve">
-    <value>Page {0} of {1}</value>
+    <value>Page {0}/{1}</value>
   </data>
   <data name="StatusBarServerCountTpl" xml:space="preserve">
-    <value>Total {0} of {1} server(s).</value>
+    <value>Total {0}/{1}</value>
   </data>
   <data name="SysProxyRequireHttpOrSocksMode" xml:space="preserve">
     <value>Set mode to HTTP or SOCKS first, please!</value>
@@ -591,7 +587,7 @@ Please take a look at log.</value>
   </data>
   <data name="SaveUserSettingsToFileFail" xml:space="preserve">
     <value>Save settings to file fail!
-Try move this app to writeable folder or disable portable mode.</value>
+Please move this app to a writeable folder.</value>
   </data>
   <data name="UnsetPortableModeFail" xml:space="preserve">
     <value>Unset partable mode fail!
@@ -644,12 +640,42 @@ Switch to direct download.</value>
     <value>Are you sure to clear logs?</value>
   </data>
   <data name="UpdatingPleaseWait" xml:space="preserve">
-    <value>Checking for update, please wait...</value>
+    <value>Checking for update, please wait.
+If last update fail, please restart this software and try again.</value>
   </data>
   <data name="ChangesColon" xml:space="preserve">
     <value>Changes:</value>
   </data>
   <data name="WarningColon" xml:space="preserve">
     <value>Warning:</value>
+  </data>
+  <data name="ConfirmLoadDefaultUserSettings" xml:space="preserve">
+    <value>Load user settings fail! Use default settings?
+Yes, use default settings.
+No, abort.</value>
+  </data>
+  <data name="ConfirmRestorePluginsSetting" xml:space="preserve">
+    <value>Restore plugins setting and restart all plugins?</value>
+  </data>
+  <data name="ConfirmOriginalSettingWillBeReset" xml:space="preserve">
+    <value>The original settings will be reset. Do you really want to continue?</value>
+  </data>
+  <data name="ConfirmRestoreGlobalImportSettings" xml:space="preserve">
+    <value>Restore global import settings?</value>
+  </data>
+  <data name="ConfirmRestoreSubscriptionSettings" xml:space="preserve">
+    <value>Restore subscription settings?</value>
+  </data>
+  <data name="AndThenSaveThisFileAs" xml:space="preserve">
+    <value>And then save this text file as {0}.</value>
+  </data>
+  <data name="OrDisablePortableMode" xml:space="preserve">
+    <value>or disable portable mode.</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>Last modified </value>
+  </data>
+  <data name="MMdd" xml:space="preserve">
+    <value>MM-dd</value>
   </data>
 </root>

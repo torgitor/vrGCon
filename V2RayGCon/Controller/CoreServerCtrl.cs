@@ -36,7 +36,7 @@ namespace V2RayGCon.Controller
              Service.Servers servers)
         {
             //external dependency injection
-            coreCtrl = new CoreServerComponent.CoreCtrl(setting, servers, configMgr);
+            coreCtrl = new CoreServerComponent.CoreCtrl(setting, configMgr);
             states = new CoreServerComponent.CoreStates(servers, coreInfo);
             logger = new CoreServerComponent.Logger(setting);
             configer = new CoreServerComponent.Configer(

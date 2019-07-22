@@ -13,7 +13,11 @@ namespace VgcApis.Models.IServices
         void RequireFormMainReload();
         void ResetIndexQuiet();
         bool RunSpeedTestOnSelectedServers();
+
+        void SortSelectedByLastModifiedDate();
+
         void SortSelectedBySpeedTest();
+
         void SortSelectedBySummary();
         void UpdateAllServersSummarySync();
 

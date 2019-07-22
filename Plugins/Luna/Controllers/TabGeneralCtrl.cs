@@ -1,25 +1,35 @@
-﻿using System;
+﻿using Luna.Resources.Langs;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Luna.Controllers
 {
     public class TabGeneralCtrl
     {
-        Button btnStopAll, btnKillAll;
+        Button btnStopAll, btnKillAll, btnDelAll, btnImport, btnExport;
         FlowLayoutPanel flyLuaUiPanel;
 
         public TabGeneralCtrl(
             FlowLayoutPanel flyLuaUiPanel,
             Button btnStopAll,
-            Button btnKillAll)
+            Button btnKillAll,
+            Button btnDelAll,
+            Button btnImport,
+            Button btnExport)
         {
-            BindControls(flyLuaUiPanel, btnStopAll, btnKillAll);
+            BindControls(flyLuaUiPanel, btnStopAll, btnKillAll, btnDelAll, btnImport, btnExport);
         }
 
         #region public methods
         Services.LuaServer luaServer;
-        public void Run(Services.LuaServer luaServer)
+        Services.Settings settings;
+        public void Run(
+            Services.Settings settings,
+            Services.LuaServer luaServer)
         {
+            this.settings = settings;
             this.luaServer = luaServer;
             BindEvents(luaServer);
             RefreshFlyPanel();
@@ -28,6 +38,54 @@ namespace Luna.Controllers
 
         private void BindEvents(Services.LuaServer luaServer)
         {
+            btnDelAll.Click += (s, a) =>
+            {
+                if (!VgcApis.Libs.UI.Confirm(I18N.ConfirmDeleteAllScripts))
+                {
+                    return;
+                }
+                luaServer.RemoveAllScripts();
+            };
+
+            btnImport.Click += (s, a) =>
+            {
+                try
+                {
+                    var serializedScripts = VgcApis.Libs.UI.ReadFileContentFromDialog(
+                        VgcApis.Models.Consts.Files.TxtExt);
+
+                    // cancelle by user
+                    if (serializedScripts == null)
+                    {
+                        return;
+                    }
+
+                    var scripts = JsonConvert.DeserializeObject<List<string[]>>(serializedScripts);
+                    if (scripts != null && scripts.Count > 0)
+                    {
+                        luaServer.ImportScripts(scripts);
+                        MessageBox.Show(I18N.ImportScriptsSuccess);
+                        return;
+                    }
+                }
+                catch { }
+                MessageBox.Show(I18N.ImportScriptsFail);
+            };
+
+            btnExport.Click += (s, a) =>
+            {
+                try
+                {
+                    var scripts = luaServer.GetAllScripts();
+                    var serializedScripts = JsonConvert.SerializeObject(scripts);
+                    VgcApis.Libs.UI.SaveToFile(VgcApis.Models.Consts.Files.TxtExt, serializedScripts);
+                }
+                catch
+                {
+                    MessageBox.Show(I18N.ExportScriptsFail);
+                }
+            };
+
             btnStopAll.Click += (s, a) =>
             {
                 var ctrls = luaServer.GetAllLuaCoreCtrls();
@@ -101,11 +159,21 @@ namespace Luna.Controllers
             flyLuaUiPanel.Controls.Clear();
         }
 
-        private void BindControls(FlowLayoutPanel flyLuaUiPanel, Button btnStopAll, Button btnKillAll)
+        private void BindControls(
+            FlowLayoutPanel flyLuaUiPanel,
+            Button btnStopAll,
+            Button btnKillAll,
+            Button btnDelAll,
+            Button btnImport,
+            Button btnExport)
         {
             this.btnStopAll = btnStopAll;
             this.btnKillAll = btnKillAll;
             this.flyLuaUiPanel = flyLuaUiPanel;
+            this.btnDelAll = btnDelAll;
+            this.btnImport = btnImport;
+            this.btnExport = btnExport;
+
         }
 
         #endregion

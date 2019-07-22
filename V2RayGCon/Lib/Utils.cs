@@ -163,6 +163,32 @@ namespace V2RayGCon.Lib
             return result;
         }
 
+        public static string GetStreamSettingInfo(JObject config, string root)
+        {
+            var streamType = GetValue<string>(config, root + ".streamSettings.network")?.ToLower();
+            // "tcp" | "kcp" | "ws" | "http" | "domainsocket" | "quic"
+            string result;
+            switch (streamType)
+            {
+                case null:
+                    result = "";
+                    break;
+                case "domainsocket":
+                    result = "ds";
+                    break;
+                default:
+                    result = streamType;
+                    break;
+            }
+
+            var sec = GetValue<string>(config, root + ".streamSettings.security")?.ToLower();
+            if (sec != null && sec.Equals(@"tls"))
+            {
+                result += $".{sec}";
+            }
+            return result;
+        }
+
         public static string GetSummaryFromConfig(JObject config, string root)
         {
             var protocol = GetValue<string>(config, root + ".protocol")?.ToLower();
@@ -187,7 +213,11 @@ namespace V2RayGCon.Lib
             }
 
             string ip = GetValue<string>(config, ipKey);
-            return protocol + (string.IsNullOrEmpty(ip) ? "" : @"@" + ip);
+            string streamType = GetStreamSettingInfo(config, root);
+
+            return protocol
+                + (string.IsNullOrEmpty(streamType) ? "" : $".{streamType}")
+                + (string.IsNullOrEmpty(ip) ? "" : @"@" + ip);
         }
 
         static bool Contains(JProperty main, JProperty sub)
@@ -615,7 +645,7 @@ namespace V2RayGCon.Lib
 
             var def = default(T) == null && typeof(T) == typeof(string) ?
                 (T)(object)string.Empty :
-                default(T);
+                default;
 
             if (key == null)
             {
@@ -821,15 +851,13 @@ namespace V2RayGCon.Lib
             List<Model.Data.SubscriptionItem> subscriptions,
             int proxyPort)
         {
-            Func<Model.Data.SubscriptionItem, string[]> worker = (subItem) =>
+            string[] worker(Model.Data.SubscriptionItem subItem)
             {
                 var url = subItem.url;
                 var mark = subItem.isSetMark ? subItem.alias : null;
 
-                var subsString = Lib.Utils.Fetch(
-                    url,
-                    proxyPort,
-                    VgcApis.Models.Consts.Import.ParseImportTimeout);
+                var subsString = Fetch(
+                    url, proxyPort, VgcApis.Models.Consts.Import.ParseImportTimeout);
 
                 if (string.IsNullOrEmpty(subsString))
                 {
@@ -851,7 +879,7 @@ namespace V2RayGCon.Lib
                 }
 
                 return new string[] { string.Join("\n", links), mark };
-            };
+            }
 
             return Lib.Utils.ExecuteInParallel(subscriptions, worker);
         }
@@ -925,6 +953,7 @@ namespace V2RayGCon.Lib
         public static long VisitWebPageSpeedTest(
             string url,
             int port,
+            int expectedSizeInKiB,
             int timeout)
         {
             if (string.IsNullOrEmpty(url))
@@ -933,14 +962,13 @@ namespace V2RayGCon.Lib
             }
 
             var maxTimeout = timeout > 0 ? timeout : VgcApis.Models.Consts.Intervals.SpeedTestTimeout;
-
             long elasped = long.MaxValue;
             Stopwatch sw = new Stopwatch();
             sw.Reset();
             sw.Start();
             var html = Fetch(url, port, maxTimeout);
             sw.Stop();
-            if (!string.IsNullOrEmpty(html))
+            if (!string.IsNullOrEmpty(html) && html.Length >= Math.Max(0, expectedSizeInKiB * 1024))
             {
                 elasped = sw.ElapsedMilliseconds;
             }
@@ -1066,13 +1094,6 @@ namespace V2RayGCon.Lib
         #endregion
 
         #region files
-        public static string GetUserSettingsFullFileName()
-        {
-            var appDir = VgcApis.Libs.Utils.GetAppDir();
-            var fileName = Properties.Resources.PortableUserSettingsFilename;
-            var fullFileName = Path.Combine(appDir, fileName);
-            return fullFileName;
-        }
 
         public static string GetSha256SumFromFile(string file)
         {
@@ -1167,7 +1188,7 @@ namespace V2RayGCon.Lib
             return hash.ToString();
         }
 
-        static object genRandomNumberLocker = new object();
+        static readonly object genRandomNumberLocker = new object();
         public static string RandomHex(int length)
         {
             //  https://stackoverflow.com/questions/1344221/how-can-i-generate-random-alphanumeric-strings-in-c
@@ -1238,31 +1259,6 @@ namespace V2RayGCon.Lib
             return 0;
         }
 
-        public static bool TryParseIPAddr(string address, out string ip, out int port)
-        {
-            ip = VgcApis.Models.Consts.Webs.LoopBackIP;
-            port = 1080;
-
-            int index = address.LastIndexOf(':');
-            if (index < 0)
-            {
-                return false;
-            }
-
-            var ipStr = address.Substring(0, index);
-            var portStr = address.Substring(index + 1);
-            var portInt = Clamp(Str2Int(portStr), 0, 65536);
-
-            if (string.IsNullOrEmpty(ipStr) || portInt == 0)
-            {
-                return false;
-            }
-
-            ip = ipStr;
-            port = portInt;
-            return true;
-        }
-
         static string GenLinkPrefix(
             VgcApis.Models.Datas.Enum.LinkTypes linkType) =>
             $"{linkType.ToString()}";
@@ -1270,16 +1266,18 @@ namespace V2RayGCon.Lib
         public static string GenPattern(
             VgcApis.Models.Datas.Enum.LinkTypes linkType)
         {
-            string pattern = "";
-
+            string pattern;
             switch (linkType)
             {
                 case VgcApis.Models.Datas.Enum.LinkTypes.ss:
+                    pattern = GenLinkPrefix(linkType) + "://" +
+                        VgcApis.Models.Consts.Patterns.SsShareLinkContent;
+                    break;
                 case VgcApis.Models.Datas.Enum.LinkTypes.vmess:
                 case VgcApis.Models.Datas.Enum.LinkTypes.v2cfg:
                 case VgcApis.Models.Datas.Enum.LinkTypes.v:
                     pattern = GenLinkPrefix(linkType) + "://" +
-                        VgcApis.Models.Consts.Patterns.Base64Standard;
+                        VgcApis.Models.Consts.Patterns.Base64NonStandard;
                     break;
                 case VgcApis.Models.Datas.Enum.LinkTypes.http:
                 case VgcApis.Models.Datas.Enum.LinkTypes.https:

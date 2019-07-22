@@ -9,10 +9,17 @@ namespace V2RayGCon.Controller
     class FormOptionCtrl : Model.BaseClass.FormController
     {
         Service.Setting setting;
+        Service.PluginsServer pluginServ;
+
+        static readonly string BAK_IMPORT = @"import";
+        static readonly string BAK_SUBSCRIPTION = @"subscription";
+        static readonly string BAK_SERVERS = @"servers";
+        static readonly string BAK_PLUGINS = @"plugins";
 
         public FormOptionCtrl()
         {
             this.setting = Service.Setting.Instance;
+            pluginServ = Service.PluginsServer.Instance;
         }
 
         public bool IsOptionsSaved()
@@ -62,10 +69,11 @@ namespace V2RayGCon.Controller
             }
 
             var data = new Dictionary<string, string> {
-                    { "import", JsonConvert.SerializeObject(setting.GetGlobalImportItems())},
-                    { "subscription",JsonConvert.SerializeObject(setting.GetSubscriptionItems()) },
-                    { "servers" ,serverString},
-                };
+                { BAK_IMPORT, JsonConvert.SerializeObject(setting.GetGlobalImportItems())},
+                { BAK_SUBSCRIPTION, JsonConvert.SerializeObject(setting.GetSubscriptionItems()) },
+                { BAK_SERVERS, serverString},
+                { BAK_PLUGINS, setting.AllPluginsSetting},
+            };
 
             VgcApis.Libs.UI.SaveToFile(
                 VgcApis.Models.Consts.Files.TxtExt,
@@ -82,7 +90,7 @@ namespace V2RayGCon.Controller
                 return;
             }
 
-            if (!Lib.UI.Confirm(I18N.ConfirmAllOptionWillBeReplaced))
+            if (!Lib.UI.Confirm(I18N.ConfirmOriginalSettingWillBeReset))
             {
                 return;
             }
@@ -98,29 +106,37 @@ namespace V2RayGCon.Controller
                 return;
             }
 
-            if (options.ContainsKey("import"))
+            if (options.ContainsKey(BAK_IMPORT)
+                && Lib.UI.Confirm(I18N.ConfirmRestoreGlobalImportSettings))
             {
-                GetComponent<Controller.OptionComponent.Import>()
-                    .Reload(options["import"]);
+                GetComponent<OptionComponent.Import>().Reload(options[BAK_IMPORT]);
             }
 
-            if (options.ContainsKey("subscription"))
+            if (options.ContainsKey(BAK_SUBSCRIPTION)
+                && Lib.UI.Confirm(I18N.ConfirmRestoreSubscriptionSettings))
             {
-                GetComponent<Controller.OptionComponent.Subscription>()
-                    .Reload(options["subscription"]);
+                GetComponent<OptionComponent.Subscription>().Reload(options[BAK_SUBSCRIPTION]);
             }
 
-            if (options.ContainsKey("servers")
+            if (options.ContainsKey(BAK_PLUGINS)
+                && Lib.UI.Confirm(I18N.ConfirmRestorePluginsSetting))
+            {
+                pluginServ.StopAllPlugins();
+                setting.AllPluginsSetting = options[BAK_PLUGINS];
+                pluginServ.RestartAllPlugins();
+            }
+
+            if (options.ContainsKey(BAK_SERVERS)
                 && Lib.UI.Confirm(I18N.ConfirmImportServers))
             {
                 Service.ShareLinkMgr.Instance
-                    .ImportLinkWithV2cfgLinks(options["servers"]);
+                    .ImportLinkWithV2cfgLinks(options[BAK_SERVERS]);
             }
             else
             {
+                // import link will popup a import-results window
                 MessageBox.Show(I18N.Done);
             }
-
         }
 
     }

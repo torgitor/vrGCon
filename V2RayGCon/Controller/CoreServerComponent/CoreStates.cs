@@ -63,13 +63,15 @@ namespace V2RayGCon.Controller.CoreServerComponent
         {
             var ci = coreInfo;
             return filter(new string[] {
-                // index 0
-                ci.name+ci.summary,
 
+                // index 0
+                // use title instead of name + summary
+                GetTitle(),
+                // ci.name+ci.summary,
+                
                 // index 1
                 GetInProtocolNameByNumber(ci.customInbType)
-                +ci.inbIp
-                +ci.inbPort.ToString(),
+                + ci.inbIp + @":" + ci.inbPort.ToString(),
 
                 // index 2
                 ci.customMark??"",
@@ -125,8 +127,13 @@ namespace V2RayGCon.Controller.CoreServerComponent
         public double GetIndex() => coreInfo.index;
 
         public string GetMark() => coreInfo.customMark;
-        public string GetSummary() => coreInfo.summary;
 
+        public string GetSummary() => coreInfo.summary ?? @"";
+
+        public long GetLastModifiedUtcTicks() => coreInfo.lastModifiedUtcTicks;
+
+        public void SetLastModifiedUtcTicks(long utcTicks) =>
+            SetPropertyOnDemand(ref coreInfo.lastModifiedUtcTicks, utcTicks);
 
         public int GetFoldingState() => coreInfo.foldingLevel;
         public void SetFoldingState(int level) =>

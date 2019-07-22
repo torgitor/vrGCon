@@ -34,18 +34,17 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             this.servTracker = servTracker;
 
             basicSettings = setting.GetBasicSetting();
-            oldSetting = VgcApis.Libs.Utils.SerializeObject(basicSettings);
+            oldSetting = SerializeObject(basicSettings);
 
-            BindControls(
-                cboxBasicPacProtocol,
-                cboxBasicSysProxyMode,
-                tboxBasicProxyPort,
-                tboxBaiscPacPort,
-                cboxBasicPacMode,
-                tboxBasicCustomPacPath,
-                chkBasicAutoUpdateSysProxy,
-                chkBasicPacAlwaysOn,
-                chkBasicUseCustomPac);
+            this.cboxBasicPacProtocol = cboxBasicPacProtocol;
+            this.cboxBasicSysProxyMode = cboxBasicSysProxyMode;
+            this.tboxBasicProxyPort = tboxBasicProxyPort;
+            this.tboxBaiscPacPort = tboxBaiscPacPort;
+            this.cboxBasicPacMode = cboxBasicPacMode;
+            this.tboxBasicCustomPacPath = tboxBasicCustomPacPath;
+            this.chkBasicAutoUpdateSysProxy = chkBasicAutoUpdateSysProxy;
+            this.chkBasicPacAlwaysOn = chkBasicPacAlwaysOn;
+            this.chkBasicUseCustomPac = chkBasicUseCustomPac;
 
             InitControls();
 
@@ -122,28 +121,6 @@ namespace ProxySetter.Controllers.VGCPluginComponents
                 isAlwaysStartPacServ = chkBasicPacAlwaysOn.Checked,
                 isUseCustomPac = chkBasicUseCustomPac.Checked,
             };
-        }
-
-        private void BindControls(
-            ComboBox cboxBasicPacProtocol,
-            ComboBox cboxBasicSysProxyMode,
-            TextBox tboxBasicProxyPort,
-            TextBox tboxBaiscPacPort,
-            ComboBox cboxBasicPacMode,
-            TextBox tboxBasicCustomPacPath,
-            CheckBox chkBasicAutoUpdateSysProxy,
-            CheckBox chkBasicPacAlwaysOn,
-            CheckBox chkBasicUseCustomPac)
-        {
-            this.cboxBasicPacProtocol = cboxBasicPacProtocol;
-            this.cboxBasicSysProxyMode = cboxBasicSysProxyMode;
-            this.tboxBasicProxyPort = tboxBasicProxyPort;
-            this.tboxBaiscPacPort = tboxBaiscPacPort;
-            this.cboxBasicPacMode = cboxBasicPacMode;
-            this.tboxBasicCustomPacPath = tboxBasicCustomPacPath;
-            this.chkBasicAutoUpdateSysProxy = chkBasicAutoUpdateSysProxy;
-            this.chkBasicPacAlwaysOn = chkBasicPacAlwaysOn;
-            this.chkBasicUseCustomPac = chkBasicUseCustomPac;
         }
 
         private void InitControls()

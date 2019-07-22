@@ -12,19 +12,17 @@ namespace V2RayGCon.Views.UserControls
         Model.BaseClass.IFormMainFlyPanelComponent,
         VgcApis.Models.Interfaces.IDropableControl
     {
-        Service.Setting setting;
         Service.Servers servers;
         Service.ShareLinkMgr slinkMgr;
         VgcApis.Models.Interfaces.ICoreServCtrl coreServCtrl;
 
         int[] formHeight;
         Bitmap[] foldingButtonIcons;
-        string[] keywords = null;
+        string keyword = null;
 
         public ServerUI(
             VgcApis.Models.Interfaces.ICoreServCtrl serverItem)
         {
-            setting = Service.Setting.Instance;
             servers = Service.Servers.Instance;
             slinkMgr = Service.ShareLinkMgr.Instance;
 
@@ -61,34 +59,25 @@ namespace V2RayGCon.Views.UserControls
         #region private method
         private void HighLightTitleWithKeywords()
         {
-            if (keywords == null)
-            {
-                return;
-            }
-
             VgcApis.Libs.UI.RunInUiThread(rtboxServerTitle, () =>
             {
                 var box = rtboxServerTitle;
                 var title = box.Text.ToLower();
-                var keyword = keywords.FirstOrDefault(
-                    s => !string.IsNullOrEmpty(s)
-                    && VgcApis.Libs.Utils.PartialMatchCi(title, s))?.ToLower();
 
-                if (keyword == null)
+                if (string.IsNullOrEmpty(keyword)
+                    || !VgcApis.Libs.Utils.PartialMatchCi(title, keyword))
                 {
                     return;
                 }
 
-                var highlight = Color.DeepPink;
-
                 int idxTitle = 0, idxKeyword = 0;
                 while (idxTitle < title.Length && idxKeyword < keyword.Length)
                 {
-                    if (title[idxTitle] == keyword[idxKeyword])
+                    if (title[idxTitle].CompareTo(keyword[idxKeyword]) == 0)
                     {
                         box.SelectionStart = idxTitle;
                         box.SelectionLength = 1;
-                        box.SelectionColor = highlight;
+                        box.SelectionBackColor = Color.Yellow;
                         idxKeyword++;
                     }
                     idxTitle++;
@@ -127,7 +116,21 @@ namespace V2RayGCon.Views.UserControls
                 UpdateFilterMarkBox();
                 UpdateBorderFoldingStat();
                 UpdateToolsTip();
+                UpdateLastModifiedLable();
             });
+        }
+
+        void UpdateLastModifiedLable()
+        {
+            var utcTicks = coreServCtrl.GetCoreStates().GetLastModifiedUtcTicks();
+            var date = new DateTime(utcTicks, DateTimeKind.Utc).ToLocalTime();
+
+            Lib.UI.UpdateControlOnDemand(lbLastModify, date.ToString(I18N.MMdd));
+            var tooltip = I18N.LastModified + date.ToLongDateString() + date.ToLongTimeString();
+            if (toolTip1.GetToolTip(lbLastModify) != tooltip)
+            {
+                toolTip1.SetToolTip(lbLastModify, tooltip);
+            }
         }
 
         private void UpdateServerOptionTickStat()
@@ -151,7 +154,7 @@ namespace V2RayGCon.Views.UserControls
 
         void UpdateInboundAddrOndemand()
         {
-            if (!Lib.Utils.TryParseIPAddr(
+            if (!VgcApis.Libs.Utils.TryParseIPAddr(
                 tboxInboundAddr.Text, out string ip, out int port))
             {
                 return;
@@ -166,12 +169,6 @@ namespace V2RayGCon.Views.UserControls
 
         private void UpdateToolsTip()
         {
-            var status = coreServCtrl.GetCoreStates().GetStatus();
-            if (toolTip1.GetToolTip(lbStatus) != status)
-            {
-                toolTip1.SetToolTip(lbStatus, status);
-            }
-
             var title = rtboxServerTitle.Text;
             if (toolTip1.GetToolTip(rtboxServerTitle) != title)
             {
@@ -270,9 +267,11 @@ namespace V2RayGCon.Views.UserControls
         #region public method
         public void SetKeywords(string keywords)
         {
-            this.keywords = (keywords ?? "").Split(
-               new char[] { ' ', ',' },
-               StringSplitOptions.RemoveEmptyEntries);
+            this.keyword = keywords?.Replace(@" ", "")?.ToLower();
+            if (string.IsNullOrEmpty(keyword))
+            {
+                return;
+            }
 
             VgcApis.Libs.Utils.RunInBackground(() =>
             {
@@ -358,21 +357,10 @@ namespace V2RayGCon.Views.UserControls
 
         private void tboxInboundAddr_TextChanged(object sender, EventArgs e)
         {
-            if (Lib.Utils.TryParseIPAddr(tboxInboundAddr.Text, out string ip, out int port))
+            if (VgcApis.Libs.UI.TryParseAddressFromTextBox(
+                tboxInboundAddr, out string ip, out int port))
             {
-                if (tboxInboundAddr.ForeColor != Color.Black)
-                {
-                    tboxInboundAddr.ForeColor = Color.Black;
-                }
                 coreServCtrl.GetCoreStates().SetInboundAddr(ip, port);
-            }
-            else
-            {
-                // UI operation is expansive
-                if (tboxInboundAddr.ForeColor != Color.Red)
-                {
-                    tboxInboundAddr.ForeColor = Color.Red;
-                }
             }
         }
 
@@ -439,6 +427,16 @@ namespace V2RayGCon.Views.UserControls
                 cboxMark.Items.Add(item);
             }
             Lib.UI.ResetComboBoxDropdownMenuWidth(cboxMark);
+        }
+
+        private void Label1_MouseDown(object sender, MouseEventArgs e)
+        {
+            ServerListItem_MouseDown(this, e);
+        }
+
+        private void LbAddTimestamp_MouseDown(object sender, MouseEventArgs e)
+        {
+            ServerListItem_MouseDown(this, e);
         }
 
         private void lbStatus_MouseDown(object sender, MouseEventArgs e)
@@ -542,6 +540,10 @@ namespace V2RayGCon.Views.UserControls
                 VgcApis.Models.Datas.Enum.LinkTypes.v);
             Lib.Utils.CopyToClipboardAndPrompt(vee);
         }
+
+
         #endregion
+
+
     }
 }

@@ -11,12 +11,8 @@ namespace V2RayGCon.Controller.FormMainComponent
         Service.Cache cache;
         Service.Servers servers;
         Service.ShareLinkMgr slinkMgr;
-        readonly Service.Setting setting;
-        readonly MenuStrip menuContainer;
 
         public MenuItemsServer(
-            // for invoke ui refresh
-            MenuStrip menuContainer,
 
             // misc
             ToolStripMenuItem refreshSummary,
@@ -43,16 +39,14 @@ namespace V2RayGCon.Controller.FormMainComponent
             ToolStripMenuItem foldPanel,
             ToolStripMenuItem expansePanel,
             ToolStripMenuItem sortBySpeed,
+            ToolStripMenuItem sortByDate,
             ToolStripMenuItem sortBySummary)
         {
             cache = Service.Cache.Instance;
             servers = Service.Servers.Instance;
-            setting = Service.Setting.Instance;
             slinkMgr = Service.ShareLinkMgr.Instance;
 
-            this.menuContainer = menuContainer; // for invoke ui update
-
-            InitCtrlSorting(sortBySpeed, sortBySummary);
+            InitCtrlSorting(sortBySpeed, sortByDate, sortBySummary);
             InitCtrlView(moveToTop, moveToBottom, foldPanel, expansePanel);
 
             InitCtrlCopyToClipboard(
@@ -239,8 +233,14 @@ namespace V2RayGCon.Controller.FormMainComponent
             });
         }
 
-        private void InitCtrlSorting(ToolStripMenuItem sortBySpeed, ToolStripMenuItem sortBySummary)
+        private void InitCtrlSorting(
+            ToolStripMenuItem sortBySpeed,
+            ToolStripMenuItem sortByDate,
+            ToolStripMenuItem sortBySummary)
         {
+            sortByDate.Click += ApplyActionOnSelectedServers(
+                () => servers.SortSelectedByLastModifiedDate());
+
             sortBySummary.Click += ApplyActionOnSelectedServers(
                 () => servers.SortSelectedBySummary());
 

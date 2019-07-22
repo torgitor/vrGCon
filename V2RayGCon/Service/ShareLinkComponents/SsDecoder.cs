@@ -22,12 +22,25 @@ namespace V2RayGCon.Service.ShareLinkComponents
         #region public methods
         public Tuple<JObject, JToken> Decode(string shareLink)
         {
-            var outbound = SsLink2Outbound(shareLink);
+            // ss://(base64)#tag or ss://(base64)
+            var parts = shareLink.Split('#');
+            if (parts.Length > 2 || parts.Length < 1)
+            {
+                return null;
+            }
+
+            var outbound = SsLink2Outbound(parts[0]);
             if (outbound == null)
             {
                 return null;
             }
+
             var tpl = cache.tpl.LoadTemplate("tplImportSS") as JObject;
+            if (parts.Length > 1 && !string.IsNullOrEmpty(parts[1]))
+            {
+                var name = Uri.UnescapeDataString(parts[1]);
+                tpl["v2raygcon"]["alias"] = name;
+            }
 
             return new Tuple<JObject, JToken>(tpl, outbound);
         }
@@ -53,7 +66,7 @@ namespace V2RayGCon.Service.ShareLinkComponents
                 return null;
             }
 
-            Lib.Utils.TryParseIPAddr(ss.addr, out string ip, out int port);
+            VgcApis.Libs.Utils.TryParseIPAddr(ss.addr, out string ip, out int port);
             var outbSs = cache.tpl.LoadTemplate("outbSs");
             var node = outbSs["settings"]["servers"][0];
             node["address"] = ip;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -8,6 +9,27 @@ namespace VgcApis.Libs
 {
     public static class UI
     {
+        #region Controls
+        public static bool TryParseAddressFromTextBox(TextBox tbox, out string ip, out int port)
+        {
+            if (Libs.Utils.TryParseIPAddr(tbox.Text, out ip, out port))
+            {
+                if (tbox.ForeColor != Color.Black)
+                {
+                    tbox.ForeColor = Color.Black;
+                }
+                return true;
+            }
+
+            // UI operation is expansive
+            if (tbox.ForeColor != Color.Red)
+            {
+                tbox.ForeColor = Color.Red;
+            }
+            return false;
+        }
+        #endregion
+
         #region update ui
         /// <summary>
         /// If control==null return;

@@ -14,6 +14,7 @@ namespace VgcApis.Models.Interfaces.CoreCtrlComponents
         int GetInboundPort();
         int GetInboundType();
         double GetIndex();
+        long GetLastModifiedUtcTicks();
         string GetMark();
         string GetName();
         string GetRawUid();
@@ -35,6 +36,7 @@ namespace VgcApis.Models.Interfaces.CoreCtrlComponents
         void SetIsSelected(bool selected);
         void SetInboundAddr(string ip, int port);
         void SetInboundType(int type);
+        void SetLastModifiedUtcTicks(long utcTicks);
         void SetMark(string mark);
 
         void ToggleIsAutoRun();
