@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using V2RayGCon.Resource.Resx;
 
@@ -54,6 +53,9 @@ namespace V2RayGCon.Views.UserControls
 
         public string GetUid() =>
             coreServCtrl.GetCoreStates().GetUid();
+
+        public string GetStatus() =>
+            coreServCtrl.GetCoreStates().GetStatus();
         #endregion
 
         #region private method

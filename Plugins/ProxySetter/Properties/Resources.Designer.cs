@@ -80,7 +80,7 @@ namespace ProxySetter.Properties {
         }
         
         /// <summary>
-        ///   查找类似 0.0.9 的本地化字符串。
+        ///   查找类似 0.1.0 的本地化字符串。
         /// </summary>
         internal static string Version {
             get {
