@@ -15,6 +15,7 @@
 
 ### 用法 Usage
 下载解压到任意目录，然后，，，没有然后了。  
+(如果不知道下哪个就下V2RayGCon-box.zip)  
 Download and extract to any directory you like. That's all.  
 
 ### 演示 Demo
