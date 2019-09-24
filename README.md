@@ -11,7 +11,7 @@
 
 仅自用。Self-use only!  
 
-[下载 download](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest) [手册 wiki](https://github.com/UudrSgMEZ/V2RayGCon/wiki) [唯一联系方式 issue](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
+[\[下载 download\]](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)&nbsp;&nbsp;[\[手册 wiki\]](https://github.com/UudrSgMEZ/V2RayGCon/wiki)&nbsp;&nbsp;[\[唯一联系方式 issue\]](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
 
 ### 用法 Usage
 下载解压到任意目录，然后，，，没有然后了。  
