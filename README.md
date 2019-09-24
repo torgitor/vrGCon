@@ -11,15 +11,20 @@
 
 仅自用。Self-use only!  
 
-[下载 download](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)  
+[\[下载 download\]](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)&nbsp;&nbsp;[\[手册 wiki\]](https://github.com/UudrSgMEZ/V2RayGCon/wiki)&nbsp;&nbsp;[\[唯一联系方式 issue\]](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
+
+### 用法 Usage
+下载解压到任意目录，然后，，，没有然后了。  
+(如果不知道下哪个就下V2RayGCon-box.zip)  
+Download and extract to any directory you like. That's all.  
 
 ### 演示 Demo
 ![Demo v1.1.10 GIF](https://github.com/UudrSgMEZ/V2RayGCon/raw/master/screenshot/demo1.1.10.gif)  
 
 ### 佛系更新说明
-经过无数个日夜的奋战，我开发出了 ~谁用谁发财手机壳~ 一个科学上网软件。  
-但是特征明显、效率低下还传承了我的软件一贯的炒鸡难用风格，所以并不打算公布出来。  
-在这里说主要是告诉大家，这个项目将进入佛系更新阶段。  
+经过无数个日夜的奋战，我开发出了 ~谁用谁发财手机壳~ 一个船新的科学上网软件。  
+但是特征明显、效率低下、炒鸡男用，所以不能公布出来。  
+这里主要告诉大家，这个项目将进入佛系更新阶段。  
 具体来说issue会回复得慢些，更新会少些。  
 2019-09
   
