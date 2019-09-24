@@ -11,8 +11,11 @@
 
 仅自用。Self-use only!  
 
-[下载 download](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)  
-[手册 wiki](https://github.com/UudrSgMEZ/V2RayGCon/wiki)  
+[下载 download](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest) [手册 wiki](https://github.com/UudrSgMEZ/V2RayGCon/wiki) [唯一联系方式 issue](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
+
+### 用法 Usage
+下载解压到任意目录，然后，，，没有然后了。  
+Download and extract to any directory you like. That's all.  
 
 ### 演示 Demo
 ![Demo v1.1.10 GIF](https://github.com/UudrSgMEZ/V2RayGCon/raw/master/screenshot/demo1.1.10.gif)  
