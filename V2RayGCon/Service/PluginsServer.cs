@@ -31,7 +31,7 @@ namespace V2RayGCon.Service
             this.setting = setting;
             this.notifier = notifier;
 
-            vgcApis.Run(setting, servers, configMgr, slinkMgr);
+            vgcApis.Run(setting, servers, configMgr, slinkMgr, notifier);
             plugins = LoadAllPlugins();
             RestartAllPlugins();
         }

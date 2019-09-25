@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -7,19 +10,22 @@ using V2RayGCon.Resource.Resx;
 
 namespace V2RayGCon.Service
 {
-    class Notifier : Model.BaseClass.SingletonService<Notifier>
+    class Notifier :
+        Model.BaseClass.SingletonService<Notifier>,
+        VgcApis.Models.IServices.INotifierService
     {
         NotifyIcon ni;
         Setting setting;
         Servers servers;
         ShareLinkMgr slinkMgr;
+        Bitmap orgIcon = null;
 
         VgcApis.Libs.Tasks.LazyGuy notifierUpdater;
 
         Notifier()
         {
             notifierUpdater = new VgcApis.Libs.Tasks.LazyGuy(
-                () => GenNotifierTextThen(text => SetNotifyText(text)),
+                RefreshNotifyIconNow,
                 VgcApis.Models.Consts.Intervals.NotifierTextUpdateIntreval);
         }
 
@@ -56,6 +62,9 @@ namespace V2RayGCon.Service
         }
 
         #region public method
+        public void RefreshNotifyIcon() =>
+            notifierUpdater.DoItLater();
+
         public void ScanQrcode()
         {
             void Success(string link)
@@ -113,7 +122,106 @@ namespace V2RayGCon.Service
         #endregion
 
         #region private method
+        void RefreshNotifyIconNow()
+        {
+            var list = servers.GetAllServersOrderByIndex()
+                .Where(s => s.GetCoreCtrl().IsCoreRunning())
+                .ToList();
 
+            RefreshNotifyIconText(list);
+
+            var isRunning = list.Any();
+            var pm = ProxySetter.Lib.Sys.WinInet.GetProxySettings().proxyMode;
+            string mark = null;
+
+            if (pm == (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.PAC)
+            {
+                mark = @"P";
+            }
+            else if (pm == (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy)
+            {
+                mark = @"G";
+            }
+
+            RefreshNotifyIconImage(isRunning, mark);
+        }
+
+        private void RefreshNotifyIconImage(bool isRunning, string mark)
+        {
+            var icon = orgIcon.Clone() as Bitmap;
+            var size = icon.Size;
+
+            using (Graphics g = Graphics.FromImage(icon))
+            {
+                g.InterpolationMode = InterpolationMode.High;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+
+                StringFormat f = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                };
+
+                if (isRunning)
+                {
+                    DrawIsRunningCornerMark(g, f, size);
+                }
+
+                if (!string.IsNullOrEmpty(mark))
+                {
+                    DrawSysProxyCornerMark(g, f, size, mark);
+                }
+            }
+
+            ni.Icon?.Dispose();
+            ni.Icon = Icon.FromHandle(icon.GetHicon());
+        }
+
+        private void DrawSysProxyCornerMark(
+            Graphics graphics, StringFormat format, Size size, string mark)
+        {
+            var w = size.Width / 2;
+            var h = size.Height / 2;
+
+            var box = new Rectangle(0, 0, w, h);
+
+            // https://stackoverflow.com/questions/4200843/outline-text-with-system-drawing
+            using (var path = new GraphicsPath())
+            {
+                path.AddString(
+                    mark,
+                    FontFamily.GenericMonospace,
+                    (int)FontStyle.Bold,
+                    w * 1.4f,
+                    box,
+                    format);
+                graphics.DrawPath(Pens.White, path);
+                graphics.FillPath(Brushes.White, path);
+            }
+        }
+
+        private void DrawIsRunningCornerMark(
+            Graphics graphics, StringFormat format, Size size)
+        {
+            var w = size.Width / 2;
+            var h = size.Height / 2;
+
+            var box = new Rectangle(w, (int)(h * 1.3f), w, h);
+
+            // https://stackoverflow.com/questions/4200843/outline-text-with-system-drawing
+            using (var path = new GraphicsPath())
+            {
+                path.AddString(
+                    @"▶",
+                    FontFamily.GenericMonospace,
+                    (int)FontStyle.Bold,
+                    w * 1.7f,
+                    box,
+                    format);
+                graphics.DrawPath(Pens.LightGreen, path);
+                graphics.FillPath(Brushes.LightGreen, path);
+            }
+        }
 
         private void RemoveOldPluginMenu()
         {
@@ -129,12 +237,9 @@ namespace V2RayGCon.Service
         void OnRequireNotifyTextUpdateHandler(object sender, EventArgs args) =>
             notifierUpdater.DoItLater();
 
-        void GenNotifierTextThen(Action<string> action)
+        void RefreshNotifyIconText(
+            List<VgcApis.Models.Interfaces.ICoreServCtrl> list)
         {
-            var list = servers.GetAllServersOrderByIndex()
-                .Where(s => s.GetCoreCtrl().IsCoreRunning())
-                .ToList();
-
             var count = list.Count;
 
             if (count <= 0 || count > 2)
@@ -142,7 +247,7 @@ namespace V2RayGCon.Service
                 var text = count <= 0 ?
                     I18N.Description :
                     count.ToString() + I18N.ServersAreRunning;
-                action?.Invoke(text);
+                SetNotifyText(text);
                 return;
             }
 
@@ -150,7 +255,7 @@ namespace V2RayGCon.Service
 
             void done()
             {
-                action?.Invoke(string.Join(Environment.NewLine, texts));
+                SetNotifyText(string.Join(Environment.NewLine, texts));
                 return;
             }
 
@@ -165,7 +270,6 @@ namespace V2RayGCon.Service
 
             Lib.Utils.ChainActionHelperAsync(count, worker, done);
         }
-
 
         private void SetNotifyText(string rawText)
         {
@@ -197,6 +301,8 @@ namespace V2RayGCon.Service
                 ContextMenuStrip = CreateMenu(),
                 Visible = true
             };
+
+            orgIcon = ni.Icon.ToBitmap();
         }
 
         ContextMenuStrip CreateMenu()
@@ -294,6 +400,7 @@ namespace V2RayGCon.Service
 
             notifierUpdater.Quit();
         }
+
         #endregion
     }
 }

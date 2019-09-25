@@ -21,6 +21,7 @@
 
             var vgcSetting = api.GetSettingService();
             var vgcServer = api.GetServersService();
+            var vgcNotifier = api.GetNotifierService();
 
             pacServer = new PacServer();
             setting = new PsSettings();
@@ -29,7 +30,7 @@
             // dependency injection
             setting.Run(vgcSetting);
             pacServer.Run(setting);
-            serverTracker.Run(setting, pacServer, vgcServer);
+            serverTracker.Run(setting, pacServer, vgcServer, vgcNotifier);
 
             setting.DebugLog("call Luncher.run");
         }

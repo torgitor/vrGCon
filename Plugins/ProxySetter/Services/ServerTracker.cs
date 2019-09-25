@@ -11,6 +11,7 @@ namespace ProxySetter.Services
         PacServer pacServer;
 
         VgcApis.Models.IServices.IServersService servers;
+        VgcApis.Models.IServices.INotifierService notifier;
 
         public event EventHandler OnSysProxyChanged;
         bool isTracking { get; set; }
@@ -24,11 +25,13 @@ namespace ProxySetter.Services
         public void Run(
             PsSettings setting,
             PacServer pacServer,
-            VgcApis.Models.IServices.IServersService servers)
+            VgcApis.Models.IServices.IServersService servers,
+            VgcApis.Models.IServices.INotifierService notifier)
         {
             this.setting = setting;
             this.pacServer = pacServer;
             this.servers = servers;
+            this.notifier = notifier;
 
             Restart();
         }
@@ -74,6 +77,8 @@ namespace ProxySetter.Services
             {
                 StopTracking();
             }
+
+            InvokeOnSysProxyChange();
         }
 
         public void Cleanup()
@@ -89,6 +94,7 @@ namespace ProxySetter.Services
             try
             {
                 OnSysProxyChanged?.Invoke(null, EventArgs.Empty);
+                notifier?.RefreshNotifyIcon();
             }
             catch { }
         }

@@ -110,6 +110,7 @@
     <Compile Include="Models\Interfaces\ICoreServCtrl.cs" />
     <Compile Include="Models\Interfaces\IDropableControl.cs" />
     <Compile Include="Models\Interfaces\Lua\ILuaSignal.cs" />
+    <Compile Include="Models\IServices\INotifierService.cs" />
     <Compile Include="Models\IServices\IShareLinkMgr.cs" />
     <Compile Include="Models\IServices\IConfigMgr.cs" />
     <Compile Include="Models\IServices\IServersService.cs" />
