@@ -172,25 +172,37 @@ namespace V2RayGCon.Service
                     break;
             }
 
-            var x = size.Width * 0.4f;
-            var y = size.Height * 0.4f;
-            var s = size.Width * 0.6f;
-            graphics.FillEllipse(br, x, y, s, s);
+            var w = size.Width;
+            var x = w * 0.4f;
+            var s = w * 0.6f;
+            graphics.FillEllipse(br, x, x, s, s);
         }
 
         private void DrawIsRunningCornerMark(
             Graphics graphics, Size size, bool isRunning)
         {
-            var x = isRunning ? size.Width * 0.37f : size.Width * 0.34f;
-            var y = isRunning ? size.Height * 0.38f : size.Height * 0.26f;
+            var w = size.Width;
+            var cx = w * 0.72f;
 
-            var s = size.Width * 0.6f;
-            var mark = isRunning ? @"▸" : @"-";
-
-            using (var font = new Font(
-                FontFamily.GenericMonospace, s, FontStyle.Bold))
+            if (isRunning)
             {
-                graphics.DrawString(mark, font, Brushes.White, x, y);
+                var cr = w * 0.22f;
+                var dh = Math.Sqrt(3) * cr / 2f;
+
+                var tri = new Point[] {
+                    new Point((int)(cx - cr / 2f),(int)(cx - dh)),
+                    new Point((int)(cx + cr),(int)cx),
+                    new Point((int)(cx - cr / 2f),(int)(cx + dh)),
+                };
+
+                graphics.FillPolygon(Brushes.White, tri);
+            }
+            else
+            {
+                var rw = w * 0.44f;
+                var rh = w * 0.14f;
+                var rect = new Rectangle((int)(cx - rw / 2f), (int)(cx - rh / 2f), (int)rw, (int)rh);
+                graphics.FillRectangle(Brushes.White, rect);
             }
         }
 
