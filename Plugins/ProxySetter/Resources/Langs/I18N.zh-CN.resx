@@ -153,6 +153,12 @@
   <data name="PacServerIsOn" xml:space="preserve">
     <value>PAC服务器运行中。</value>
   </data>
+  <data name="ParseKeyCodeFail" xml:space="preserve">
+    <value>尝试解释热键名失败！请检查ProxySetter的热键设置。</value>
+  </data>
+  <data name="RegistHotkeyFail" xml:space="preserve">
+    <value>尝试注册全局热键失败，请检查热键是否已被其他软件占用。</value>
+  </data>
   <data name="SetAsSysProxy" xml:space="preserve">
     <value>设为系统代理</value>
   </data>

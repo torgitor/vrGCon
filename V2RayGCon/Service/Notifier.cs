@@ -131,22 +131,12 @@ namespace V2RayGCon.Service
             RefreshNotifyIconText(list);
 
             var isRunning = list.Any();
-            var pm = ProxySetter.Lib.Sys.WinInet.GetProxySettings().proxyMode;
-            string mark = null;
 
-            if (pm == (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.PAC)
-            {
-                mark = @"P";
-            }
-            else if (pm == (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy)
-            {
-                mark = @"G";
-            }
 
-            RefreshNotifyIconImage(isRunning, mark);
+            RefreshNotifyIconImage(isRunning);
         }
 
-        private void RefreshNotifyIconImage(bool isRunning, string mark)
+        private void RefreshNotifyIconImage(bool isRunning)
         {
             var icon = orgIcon.Clone() as Bitmap;
             var size = icon.Size;
@@ -156,70 +146,51 @@ namespace V2RayGCon.Service
                 g.InterpolationMode = InterpolationMode.High;
                 g.CompositingQuality = CompositingQuality.HighQuality;
 
-                StringFormat f = new StringFormat
-                {
-                    Alignment = StringAlignment.Center,
-                    LineAlignment = StringAlignment.Center
-                };
-
-                if (isRunning)
-                {
-                    DrawIsRunningCornerMark(g, f, size);
-                }
-
-                if (!string.IsNullOrEmpty(mark))
-                {
-                    DrawSysProxyCornerMark(g, f, size, mark);
-                }
+                DrawProxyModeCornerCircle(g, size);
+                DrawIsRunningCornerMark(g, size, isRunning);
             }
 
             ni.Icon?.Dispose();
             ni.Icon = Icon.FromHandle(icon.GetHicon());
         }
 
-        private void DrawSysProxyCornerMark(
-            Graphics graphics, StringFormat format, Size size, string mark)
+        void DrawProxyModeCornerCircle(
+            Graphics graphics, Size size)
         {
-            var w = size.Width / 2;
-            var h = size.Height / 2;
+            Brush br;
 
-            var box = new Rectangle(0, 0, w, h);
-
-            // https://stackoverflow.com/questions/4200843/outline-text-with-system-drawing
-            using (var path = new GraphicsPath())
+            switch (ProxySetter.Lib.Sys.WinInet.GetProxySettings().proxyMode)
             {
-                path.AddString(
-                    mark,
-                    FontFamily.GenericMonospace,
-                    (int)FontStyle.Bold,
-                    w * 1.4f,
-                    box,
-                    format);
-                graphics.DrawPath(Pens.White, path);
-                graphics.FillPath(Brushes.White, path);
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.PAC:
+                    br = Brushes.DeepPink;
+                    break;
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy:
+                    br = Brushes.Red;
+                    break;
+                default:
+                    br = Brushes.ForestGreen;
+                    break;
             }
+
+            var x = size.Width * 0.4f;
+            var y = size.Height * 0.4f;
+            var s = size.Width * 0.6f;
+            graphics.FillEllipse(br, x, y, s, s);
         }
 
         private void DrawIsRunningCornerMark(
-            Graphics graphics, StringFormat format, Size size)
+            Graphics graphics, Size size, bool isRunning)
         {
-            var w = size.Width / 2;
-            var h = size.Height / 2;
+            var x = isRunning ? size.Width * 0.37f : size.Width * 0.34f;
+            var y = isRunning ? size.Height * 0.38f : size.Height * 0.26f;
 
-            var box = new Rectangle(w, (int)(h * 1.3f), w, h);
+            var s = size.Width * 0.6f;
+            var mark = isRunning ? @"▸" : @"-";
 
-            // https://stackoverflow.com/questions/4200843/outline-text-with-system-drawing
-            using (var path = new GraphicsPath())
+            using (var font = new Font(
+                FontFamily.GenericMonospace, s, FontStyle.Bold))
             {
-                path.AddString(
-                    @"▶",
-                    FontFamily.GenericMonospace,
-                    (int)FontStyle.Bold,
-                    w * 1.7f,
-                    box,
-                    format);
-                graphics.DrawPath(Pens.LightGreen, path);
-                graphics.FillPath(Brushes.LightGreen, path);
+                graphics.DrawString(mark, font, Brushes.White, x, y);
             }
         }
 
@@ -237,25 +208,45 @@ namespace V2RayGCon.Service
         void OnRequireNotifyTextUpdateHandler(object sender, EventArgs args) =>
             notifierUpdater.DoItLater();
 
+        string GetterSysProxyInfo()
+        {
+            var proxySetting = ProxySetter.Lib.Sys.ProxySetter.GetProxySetting();
+
+            switch (proxySetting.proxyMode)
+            {
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.PAC:
+                    return proxySetting.pacUrl;
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy:
+                    return proxySetting.proxyAddr;
+            }
+            return null;
+        }
+
         void RefreshNotifyIconText(
             List<VgcApis.Models.Interfaces.ICoreServCtrl> list)
         {
             var count = list.Count;
 
-            if (count <= 0 || count > 2)
-            {
-                var text = count <= 0 ?
-                    I18N.Description :
-                    count.ToString() + I18N.ServersAreRunning;
-                SetNotifyText(text);
-                return;
-            }
-
             var texts = new List<string>();
 
             void done()
             {
+                var sysProxyInfo = GetterSysProxyInfo();
+                if (!string.IsNullOrEmpty(sysProxyInfo))
+                {
+                    texts.Add(I18N.CurSysProxy + Lib.Utils.CutStr(sysProxyInfo, 50));
+                }
                 SetNotifyText(string.Join(Environment.NewLine, texts));
+                return;
+            }
+
+            if (count <= 0 || count > 2)
+            {
+                texts.Add(count <= 0 ?
+                    I18N.Description :
+                    count.ToString() + I18N.ServersAreRunning);
+
+                done();
                 return;
             }
 

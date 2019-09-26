@@ -1,4 +1,6 @@
-﻿namespace ProxySetter.Services
+﻿using VgcApis.Libs.Sys;
+
+namespace ProxySetter.Services
 {
     class PsLuncher
     {
@@ -11,6 +13,8 @@
         Views.WinForms.FormMain formMain;
 
         public PsLuncher() { }
+
+        #region public methods
 
         public void Run(VgcApis.Models.IServices.IApiService api)
         {
@@ -31,8 +35,6 @@
             setting.Run(vgcSetting);
             pacServer.Run(setting);
             serverTracker.Run(setting, pacServer, vgcServer, vgcNotifier);
-
-            setting.DebugLog("call Luncher.run");
         }
 
         public void Show()
@@ -59,9 +61,18 @@
             pacServer.Cleanup();
             setting.Cleanup();
             Lib.Sys.ProxySetter.UpdateProxySettingOnDemand(orgSysProxySetting);
-            VgcApis.Libs.Sys.FileLogger.Info("ProxySetter: restore sys proxy settings");
+            FileLogger.Info("ProxySetter: restore sys proxy settings");
+
         }
-        #region properties
+
+
+        #endregion
+
+
+
+        #region private methods
+
+
         #endregion
     }
 

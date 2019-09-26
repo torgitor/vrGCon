@@ -514,6 +514,15 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 CurSysProxy:  的本地化字符串。
+        /// </summary>
+        internal static string CurSysProxy {
+            get {
+                return ResourceManager.GetString("CurSysProxy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Data too big. Please trim down the config file. 的本地化字符串。
         /// </summary>
         internal static string DataTooBig {

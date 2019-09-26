@@ -153,6 +153,14 @@
   <data name="PacServerIsOn" xml:space="preserve">
     <value>PAC server is running.</value>
   </data>
+  <data name="ParseKeyCodeFail" xml:space="preserve">
+    <value>Try to parse hotkey fail!
+Please check hotkey settings in ProxySetter plug-in.</value>
+  </data>
+  <data name="RegistHotkeyFail" xml:space="preserve">
+    <value>Try to regist global hotkey fail!
+Please make sure hotkey is not taken by other application.</value>
+  </data>
   <data name="SetAsSysProxy" xml:space="preserve">
     <value>Set as system proxy.</value>
   </data>

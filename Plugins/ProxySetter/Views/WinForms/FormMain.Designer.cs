@@ -35,6 +35,12 @@
             this.tabBasic = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkBasicUseHotkey = new System.Windows.Forms.CheckBox();
+            this.chkBasicUseShift = new System.Windows.Forms.CheckBox();
+            this.chkBasicUseAlt = new System.Windows.Forms.CheckBox();
+            this.tboxBasicHotkey = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.cboxBasicPacProtocol = new System.Windows.Forms.ComboBox();
             this.chkBasicUseCustomPac = new System.Windows.Forms.CheckBox();
             this.cboxBasicPacMode = new System.Windows.Forms.ComboBox();
@@ -126,6 +132,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chkBasicUseHotkey);
+            this.groupBox1.Controls.Add(this.chkBasicUseShift);
+            this.groupBox1.Controls.Add(this.chkBasicUseAlt);
+            this.groupBox1.Controls.Add(this.tboxBasicHotkey);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.cboxBasicPacProtocol);
             this.groupBox1.Controls.Add(this.chkBasicUseCustomPac);
             this.groupBox1.Controls.Add(this.cboxBasicPacMode);
@@ -144,6 +156,41 @@
             resources.ApplyResources(this.groupBox1, "groupBox1");
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.TabStop = false;
+            // 
+            // chkBasicUseHotkey
+            // 
+            resources.ApplyResources(this.chkBasicUseHotkey, "chkBasicUseHotkey");
+            this.chkBasicUseHotkey.Name = "chkBasicUseHotkey";
+            this.toolTip1.SetToolTip(this.chkBasicUseHotkey, resources.GetString("chkBasicUseHotkey.ToolTip"));
+            this.chkBasicUseHotkey.UseVisualStyleBackColor = true;
+            // 
+            // chkBasicUseShift
+            // 
+            resources.ApplyResources(this.chkBasicUseShift, "chkBasicUseShift");
+            this.chkBasicUseShift.Name = "chkBasicUseShift";
+            this.chkBasicUseShift.UseVisualStyleBackColor = true;
+            // 
+            // chkBasicUseAlt
+            // 
+            resources.ApplyResources(this.chkBasicUseAlt, "chkBasicUseAlt");
+            this.chkBasicUseAlt.Name = "chkBasicUseAlt";
+            this.chkBasicUseAlt.UseVisualStyleBackColor = true;
+            // 
+            // tboxBasicHotkey
+            // 
+            resources.ApplyResources(this.tboxBasicHotkey, "tboxBasicHotkey");
+            this.tboxBasicHotkey.Name = "tboxBasicHotkey";
+            // 
+            // label9
+            // 
+            resources.ApplyResources(this.label9, "label9");
+            this.label9.Name = "label9";
+            // 
+            // label8
+            // 
+            resources.ApplyResources(this.label8, "label8");
+            this.label8.Name = "label8";
+            this.toolTip1.SetToolTip(this.label8, resources.GetString("label8.ToolTip"));
             // 
             // cboxBasicPacProtocol
             // 
@@ -514,5 +561,11 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button btnSetSortWhitelist;
         private System.Windows.Forms.Button btnSetSortBlacklist;
+        private System.Windows.Forms.CheckBox chkBasicUseHotkey;
+        private System.Windows.Forms.CheckBox chkBasicUseShift;
+        private System.Windows.Forms.CheckBox chkBasicUseAlt;
+        private System.Windows.Forms.TextBox tboxBasicHotkey;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
     }
 }
