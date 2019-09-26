@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
+using VgcApis.Libs.Sys;
 
 namespace ProxySetter.Services
 {
@@ -11,9 +13,11 @@ namespace ProxySetter.Services
         PacServer pacServer;
 
         VgcApis.Models.IServices.IServersService servers;
+        VgcApis.Models.IServices.INotifierService notifier;
 
         public event EventHandler OnSysProxyChanged;
         bool isTracking { get; set; }
+        KeyboardHook kbHook = null;
 
         public ServerTracker()
         {
@@ -24,11 +28,13 @@ namespace ProxySetter.Services
         public void Run(
             PsSettings setting,
             PacServer pacServer,
-            VgcApis.Models.IServices.IServersService servers)
+            VgcApis.Models.IServices.IServersService servers,
+            VgcApis.Models.IServices.INotifierService notifier)
         {
             this.setting = setting;
             this.pacServer = pacServer;
             this.servers = servers;
+            this.notifier = notifier;
 
             Restart();
         }
@@ -74,12 +80,74 @@ namespace ProxySetter.Services
             {
                 StopTracking();
             }
+
+            RegistHotKey();
+            InvokeOnSysProxyChange();
         }
 
         public void Cleanup()
         {
+            ClearHotKey();
             lazyProxyUpdateTimer?.Release();
             StopTracking();
+        }
+        #endregion
+
+        #region hotkey
+
+        // https://stackoverflow.com/questions/2450373/set-global-hotkeys-using-c-sharp
+        void ClearHotKey()
+        {
+            kbHook?.Dispose();
+            kbHook = null;
+        }
+
+        void RegistHotKey()
+        {
+            ClearHotKey();
+
+            var bs = setting.GetBasicSetting();
+            if (!bs.isUseHotkey)
+            {
+                return;
+            }
+
+            if (!Enum.TryParse(bs.hotkeyStr, out Keys hotkey))
+            {
+                setting.SendLog(I18N.ParseKeyCodeFail);
+                VgcApis.Libs.UI.MsgBoxAsync(I18N.ParseKeyCodeFail);
+                return;
+            }
+
+            kbHook = new KeyboardHook();
+            kbHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(HotkeyHandler);
+            ModifierKeys modifier = ModifierKeys.Control;
+            if (bs.isUseAlt)
+            {
+                modifier |= ModifierKeys.Alt;
+            }
+            if (bs.isUseShift)
+            {
+                modifier |= ModifierKeys.Shift;
+            }
+
+            try
+            {
+                kbHook.RegisterHotKey((uint)modifier, (uint)hotkey);
+                return;
+            }
+            catch { }
+
+            setting.SendLog(I18N.RegistHotkeyFail);
+            VgcApis.Libs.UI.MsgBoxAsync(I18N.RegistHotkeyFail);
+        }
+
+        void HotkeyHandler(object sender, KeyPressedEventArgs e)
+        {
+            var bs = setting.GetBasicSetting();
+            bs.sysProxyMode = (bs.sysProxyMode % 3) + 1;
+            setting.SaveBasicSetting(bs);
+            Restart();
         }
         #endregion
 
@@ -89,6 +157,7 @@ namespace ProxySetter.Services
             try
             {
                 OnSysProxyChanged?.Invoke(null, EventArgs.Empty);
+                notifier?.RefreshNotifyIcon();
             }
             catch { }
         }

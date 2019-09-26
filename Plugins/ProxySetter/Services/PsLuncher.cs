@@ -1,4 +1,6 @@
-﻿namespace ProxySetter.Services
+﻿using VgcApis.Libs.Sys;
+
+namespace ProxySetter.Services
 {
     class PsLuncher
     {
@@ -12,6 +14,8 @@
 
         public PsLuncher() { }
 
+        #region public methods
+
         public void Run(VgcApis.Models.IServices.IApiService api)
         {
             orgSysProxySetting = Lib.Sys.ProxySetter.GetProxySetting();
@@ -21,6 +25,7 @@
 
             var vgcSetting = api.GetSettingService();
             var vgcServer = api.GetServersService();
+            var vgcNotifier = api.GetNotifierService();
 
             pacServer = new PacServer();
             setting = new PsSettings();
@@ -29,9 +34,7 @@
             // dependency injection
             setting.Run(vgcSetting);
             pacServer.Run(setting);
-            serverTracker.Run(setting, pacServer, vgcServer);
-
-            setting.DebugLog("call Luncher.run");
+            serverTracker.Run(setting, pacServer, vgcServer, vgcNotifier);
         }
 
         public void Show()
@@ -58,9 +61,18 @@
             pacServer.Cleanup();
             setting.Cleanup();
             Lib.Sys.ProxySetter.UpdateProxySettingOnDemand(orgSysProxySetting);
-            VgcApis.Libs.Sys.FileLogger.Info("ProxySetter: restore sys proxy settings");
+            FileLogger.Info("ProxySetter: restore sys proxy settings");
+
         }
-        #region properties
+
+
+        #endregion
+
+
+
+        #region private methods
+
+
         #endregion
     }
 

@@ -10,6 +10,8 @@ namespace V2RayGCon.Lib.Lua
         ISettingsService settingService;
         IConfigMgrService configMgrService;
         IShareLinkMgrService slinkMgrService;
+        INotifierService notifierService;
+
         ApiComponents.UtilsApi utilsService;
         ApiComponents.WebApi webService;
 
@@ -17,18 +19,23 @@ namespace V2RayGCon.Lib.Lua
             ISettingsService setting,
             IServersService servers,
             IConfigMgrService configMgr,
-            IShareLinkMgrService slinkMgr)
+            IShareLinkMgrService slinkMgr,
+            INotifierService notifier)
         {
             this.configMgrService = configMgr;
             this.settingService = setting;
             this.serversService = servers;
             this.slinkMgrService = slinkMgr;
+            this.notifierService = notifier;
 
             this.utilsService = new ApiComponents.UtilsApi();
             this.webService = new ApiComponents.WebApi();
         }
 
         #region IApi interfaces
+        public INotifierService GetNotifierService()
+            => this.notifierService;
+
         public IShareLinkMgrService GetShareLinkMgrService()
             => this.slinkMgrService;
 
@@ -52,6 +59,7 @@ namespace V2RayGCon.Lib.Lua
             utilsService?.Dispose();
             webService?.Dispose();
         }
+
 
         #endregion
     }

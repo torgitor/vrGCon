@@ -1,4 +1,6 @@
-﻿namespace ProxySetter.Model.Data
+﻿using System.Windows.Forms;
+
+namespace ProxySetter.Model.Data
 {
     public class BasicSettings
     {
@@ -12,10 +14,19 @@
         public bool isUseCustomPac { get; set; }
         public int pacProtocol { get; set; }
 
+        public bool isUseAlt { get; set; }
+
+        public bool isUseHotkey { get; set; }
+
+        public bool isUseShift { get; set; }
+
+        public string hotkeyStr { get; set; }
+
+
         public BasicSettings()
         {
             sysProxyMode = (int)Enum.SystemProxyModes.None;
-            isAutoUpdateSysProxy = false;
+            isAutoUpdateSysProxy = true;
             proxyPort = 1080;
             pacServPort = 3000;
             isAlwaysStartPacServ = false;
@@ -23,6 +34,11 @@
             customPacFileName = string.Empty;
             isUseCustomPac = false;
             pacProtocol = (int)Enum.PacProtocols.HTTP;
+
+            isUseHotkey = false;
+            isUseAlt = false;
+            isUseShift = false;
+            hotkeyStr = Keys.F12.ToString();
         }
     }
 }

@@ -3,6 +3,7 @@
 {
     public interface IApiService
     {
+        INotifierService GetNotifierService();
 
         ISettingsService GetSettingService();
         IServersService GetServersService();

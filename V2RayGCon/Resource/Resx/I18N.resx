@@ -678,4 +678,7 @@ No, abort.</value>
   <data name="MMdd" xml:space="preserve">
     <value>MM-dd</value>
   </data>
+  <data name="CurSysProxy" xml:space="preserve">
+    <value>CurSysProxy: </value>
+  </data>
 </root>

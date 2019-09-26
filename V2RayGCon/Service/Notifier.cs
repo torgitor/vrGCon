@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -7,19 +10,22 @@ using V2RayGCon.Resource.Resx;
 
 namespace V2RayGCon.Service
 {
-    class Notifier : Model.BaseClass.SingletonService<Notifier>
+    class Notifier :
+        Model.BaseClass.SingletonService<Notifier>,
+        VgcApis.Models.IServices.INotifierService
     {
         NotifyIcon ni;
         Setting setting;
         Servers servers;
         ShareLinkMgr slinkMgr;
+        Bitmap orgIcon = null;
 
         VgcApis.Libs.Tasks.LazyGuy notifierUpdater;
 
         Notifier()
         {
             notifierUpdater = new VgcApis.Libs.Tasks.LazyGuy(
-                () => GenNotifierTextThen(text => SetNotifyText(text)),
+                RefreshNotifyIconNow,
                 VgcApis.Models.Consts.Intervals.NotifierTextUpdateIntreval);
         }
 
@@ -56,6 +62,9 @@ namespace V2RayGCon.Service
         }
 
         #region public method
+        public void RefreshNotifyIcon() =>
+            notifierUpdater.DoItLater();
+
         public void ScanQrcode()
         {
             void Success(string link)
@@ -113,7 +122,89 @@ namespace V2RayGCon.Service
         #endregion
 
         #region private method
+        void RefreshNotifyIconNow()
+        {
+            var list = servers.GetAllServersOrderByIndex()
+                .Where(s => s.GetCoreCtrl().IsCoreRunning())
+                .ToList();
 
+            RefreshNotifyIconText(list);
+
+            var isRunning = list.Any();
+
+
+            RefreshNotifyIconImage(isRunning);
+        }
+
+        private void RefreshNotifyIconImage(bool isRunning)
+        {
+            var icon = orgIcon.Clone() as Bitmap;
+            var size = icon.Size;
+
+            using (Graphics g = Graphics.FromImage(icon))
+            {
+                g.InterpolationMode = InterpolationMode.High;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+
+                DrawProxyModeCornerCircle(g, size);
+                DrawIsRunningCornerMark(g, size, isRunning);
+            }
+
+            ni.Icon?.Dispose();
+            ni.Icon = Icon.FromHandle(icon.GetHicon());
+        }
+
+        void DrawProxyModeCornerCircle(
+            Graphics graphics, Size size)
+        {
+            Brush br;
+
+            switch (ProxySetter.Lib.Sys.WinInet.GetProxySettings().proxyMode)
+            {
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.PAC:
+                    br = Brushes.DeepPink;
+                    break;
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy:
+                    br = Brushes.Red;
+                    break;
+                default:
+                    br = Brushes.ForestGreen;
+                    break;
+            }
+
+            var w = size.Width;
+            var x = w * 0.4f;
+            var s = w * 0.6f;
+            graphics.FillEllipse(br, x, x, s, s);
+        }
+
+        private void DrawIsRunningCornerMark(
+            Graphics graphics, Size size, bool isRunning)
+        {
+            var w = size.Width;
+            var cx = w * 0.72f;
+
+            if (isRunning)
+            {
+                var cr = w * 0.22f;
+                var dh = Math.Sqrt(3) * cr / 2f;
+
+                var tri = new Point[] {
+                    new Point((int)(cx - cr / 2f),(int)(cx - dh)),
+                    new Point((int)(cx + cr),(int)cx),
+                    new Point((int)(cx - cr / 2f),(int)(cx + dh)),
+                };
+
+                graphics.FillPolygon(Brushes.White, tri);
+            }
+            else
+            {
+                var rw = w * 0.44f;
+                var rh = w * 0.14f;
+                var rect = new Rectangle((int)(cx - rw / 2f), (int)(cx - rh / 2f), (int)rw, (int)rh);
+                graphics.FillRectangle(Brushes.White, rect);
+            }
+        }
 
         private void RemoveOldPluginMenu()
         {
@@ -129,28 +220,45 @@ namespace V2RayGCon.Service
         void OnRequireNotifyTextUpdateHandler(object sender, EventArgs args) =>
             notifierUpdater.DoItLater();
 
-        void GenNotifierTextThen(Action<string> action)
+        string GetterSysProxyInfo()
         {
-            var list = servers.GetAllServersOrderByIndex()
-                .Where(s => s.GetCoreCtrl().IsCoreRunning())
-                .ToList();
+            var proxySetting = ProxySetter.Lib.Sys.ProxySetter.GetProxySetting();
 
-            var count = list.Count;
-
-            if (count <= 0 || count > 2)
+            switch (proxySetting.proxyMode)
             {
-                var text = count <= 0 ?
-                    I18N.Description :
-                    count.ToString() + I18N.ServersAreRunning;
-                action?.Invoke(text);
-                return;
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.PAC:
+                    return proxySetting.pacUrl;
+                case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy:
+                    return proxySetting.proxyAddr;
             }
+            return null;
+        }
+
+        void RefreshNotifyIconText(
+            List<VgcApis.Models.Interfaces.ICoreServCtrl> list)
+        {
+            var count = list.Count;
 
             var texts = new List<string>();
 
             void done()
             {
-                action?.Invoke(string.Join(Environment.NewLine, texts));
+                var sysProxyInfo = GetterSysProxyInfo();
+                if (!string.IsNullOrEmpty(sysProxyInfo))
+                {
+                    texts.Add(I18N.CurSysProxy + Lib.Utils.CutStr(sysProxyInfo, 50));
+                }
+                SetNotifyText(string.Join(Environment.NewLine, texts));
+                return;
+            }
+
+            if (count <= 0 || count > 2)
+            {
+                texts.Add(count <= 0 ?
+                    I18N.Description :
+                    count.ToString() + I18N.ServersAreRunning);
+
+                done();
                 return;
             }
 
@@ -165,7 +273,6 @@ namespace V2RayGCon.Service
 
             Lib.Utils.ChainActionHelperAsync(count, worker, done);
         }
-
 
         private void SetNotifyText(string rawText)
         {
@@ -197,6 +304,8 @@ namespace V2RayGCon.Service
                 ContextMenuStrip = CreateMenu(),
                 Visible = true
             };
+
+            orgIcon = ni.Icon.ToBitmap();
         }
 
         ContextMenuStrip CreateMenu()
@@ -294,6 +403,7 @@ namespace V2RayGCon.Service
 
             notifierUpdater.Quit();
         }
+
         #endregion
     }
 }

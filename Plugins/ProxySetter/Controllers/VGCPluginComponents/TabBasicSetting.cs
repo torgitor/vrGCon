@@ -15,6 +15,12 @@ namespace ProxySetter.Controllers.VGCPluginComponents
         TextBox tboxBasicProxyPort, tboxBaiscPacPort, tboxBasicCustomPacPath;
         CheckBox chkBasicAutoUpdateSysProxy, chkBasicPacAlwaysOn, chkBasicUseCustomPac;
 
+
+        #region hotkey winform controls
+        private readonly CheckBox chkBaiscUseHotkey, chkBaiscUseAlt, chkBaiscUseShift;
+        private readonly TextBox tboxBasicHotkeyStr;
+        #endregion
+
         public TabBasicSetting(
             Services.PsSettings setting,
             Services.ServerTracker servTracker,
@@ -28,7 +34,12 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             CheckBox chkBasicAutoUpdateSysProxy,
             CheckBox chkBasicPacAlwaysOn,
             CheckBox chkBasicUseCustomPac,
-            Button btnBasicBrowseCustomPac)
+            Button btnBasicBrowseCustomPac,
+
+            CheckBox chkBaiscUseHotkey,
+            CheckBox chkBaiscUseAlt,
+            CheckBox chkBaiscUseShift,
+            TextBox tboxBasicHotkeyStr)
         {
             this.setting = setting;
             this.servTracker = servTracker;
@@ -45,6 +56,10 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             this.chkBasicAutoUpdateSysProxy = chkBasicAutoUpdateSysProxy;
             this.chkBasicPacAlwaysOn = chkBasicPacAlwaysOn;
             this.chkBasicUseCustomPac = chkBasicUseCustomPac;
+            this.chkBaiscUseHotkey = chkBaiscUseHotkey;
+            this.chkBaiscUseAlt = chkBaiscUseAlt;
+            this.chkBaiscUseShift = chkBaiscUseShift;
+            this.tboxBasicHotkeyStr = tboxBasicHotkeyStr;
 
             InitControls();
 
@@ -57,7 +72,7 @@ namespace ProxySetter.Controllers.VGCPluginComponents
         void OnSysProxyChangeHandler(object sender, EventArgs args)
         {
             basicSettings = setting.GetBasicSetting();
-            oldSetting = VgcApis.Libs.Utils.SerializeObject(basicSettings);
+            oldSetting = SerializeObject(basicSettings);
 
             VgcApis.Libs.UI.RunInUiThread(
                 chkBasicAutoUpdateSysProxy,
@@ -69,7 +84,7 @@ namespace ProxySetter.Controllers.VGCPluginComponents
 
         public override bool IsOptionsChanged()
         {
-            return VgcApis.Libs.Utils.SerializeObject(GetterSettings()) != oldSetting;
+            return SerializeObject(GetterSettings()) != oldSetting;
         }
 
         public override bool SaveOptions()
@@ -80,7 +95,7 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             }
 
             var bs = GetterSettings();
-            oldSetting = VgcApis.Libs.Utils.SerializeObject(bs);
+            oldSetting = SerializeObject(bs);
             setting.SaveBasicSetting(bs);
             return true;
         }
@@ -105,6 +120,12 @@ namespace ProxySetter.Controllers.VGCPluginComponents
                     this.tboxBasicCustomPacPath.Text = filename;
                 }
             };
+
+            tboxBasicHotkeyStr.KeyDown += (s, a) =>
+            {
+                a.SuppressKeyPress = true;
+                tboxBasicHotkeyStr.Text = a.KeyCode.ToString();
+            };
         }
 
         Model.Data.BasicSettings GetterSettings()
@@ -120,6 +141,11 @@ namespace ProxySetter.Controllers.VGCPluginComponents
                 isAutoUpdateSysProxy = chkBasicAutoUpdateSysProxy.Checked,
                 isAlwaysStartPacServ = chkBasicPacAlwaysOn.Checked,
                 isUseCustomPac = chkBasicUseCustomPac.Checked,
+
+                isUseHotkey = chkBaiscUseHotkey.Checked,
+                isUseAlt = chkBaiscUseAlt.Checked,
+                isUseShift = chkBaiscUseShift.Checked,
+                hotkeyStr = tboxBasicHotkeyStr.Text,
             };
         }
 
@@ -136,7 +162,19 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             chkBasicAutoUpdateSysProxy.Checked = s.isAutoUpdateSysProxy;
             chkBasicPacAlwaysOn.Checked = s.isAlwaysStartPacServ;
             chkBasicUseCustomPac.Checked = s.isUseCustomPac;
+
+            chkBaiscUseHotkey.Checked = s.isUseHotkey;
+            chkBaiscUseAlt.Checked = s.isUseAlt;
+            chkBaiscUseShift.Checked = s.isUseShift;
+
+            tboxBasicHotkeyStr.Text = Keys.F12.ToString();
+            if (Enum.TryParse(s.hotkeyStr, out Keys hotkey))
+            {
+                tboxBasicHotkeyStr.Text = hotkey.ToString();
+            }
+
         }
+
         #endregion
     }
 }

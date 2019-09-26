@@ -69,6 +69,7 @@
     <Compile Include="Libs\Streams\RawBitStream\Numbers.cs" />
     <Compile Include="Libs\Streams\RawBitStream\Utils.cs" />
     <Compile Include="Libs\Streams\RawBitStream\Uuids.cs" />
+    <Compile Include="Libs\Sys\KeyboardHook.cs" />
     <Compile Include="Libs\Sys\NotepadHelper.cs" />
     <Compile Include="Libs\Tasks\Bar.cs" />
     <Compile Include="Libs\Tasks\Routine.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Models\Interfaces\ICoreServCtrl.cs" />
     <Compile Include="Models\Interfaces\IDropableControl.cs" />
     <Compile Include="Models\Interfaces\Lua\ILuaSignal.cs" />
+    <Compile Include="Models\IServices\INotifierService.cs" />
     <Compile Include="Models\IServices\IShareLinkMgr.cs" />
     <Compile Include="Models\IServices\IConfigMgr.cs" />
     <Compile Include="Models\IServices\IServersService.cs" />

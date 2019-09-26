@@ -669,4 +669,7 @@ https://github.com/v2ray/v2ray-core</value>
   <data name="MMdd" xml:space="preserve">
     <value>MM月dd日</value>
   </data>
+  <data name="CurSysProxy" xml:space="preserve">
+    <value>当前系统代理：</value>
+  </data>
 </root>
