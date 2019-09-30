@@ -165,7 +165,7 @@ namespace V2RayGCon.Service
                     br = Brushes.DeepPink;
                     break;
                 case (int)ProxySetter.Lib.Sys.WinInet.ProxyModes.Proxy:
-                    br = Brushes.DarkOrange;
+                    br = Brushes.Blue;
                     break;
                 default:
                     br = Brushes.ForestGreen;
