@@ -25,7 +25,7 @@ namespace V2RayGCon.Service
         Notifier()
         {
             notifierUpdater = new VgcApis.Libs.Tasks.LazyGuy(
-                RefreshNotifyIconNow,
+                UpdateNotifyIconNow,
                 VgcApis.Models.Consts.Intervals.NotifierTextUpdateIntreval);
         }
 
@@ -122,21 +122,16 @@ namespace V2RayGCon.Service
         #endregion
 
         #region private method
-        void RefreshNotifyIconNow()
+        void UpdateNotifyIconNow()
         {
             var list = servers.GetAllServersOrderByIndex()
                 .Where(s => s.GetCoreCtrl().IsCoreRunning())
                 .ToList();
-
-            RefreshNotifyIconText(list);
-
-            var isRunning = list.Any();
-
-
-            RefreshNotifyIconImage(isRunning);
+            UpdateNotifyIconText(list);
+            UpdateNotifyIconImage(list.Count());
         }
 
-        private void RefreshNotifyIconImage(bool isRunning)
+        private void UpdateNotifyIconImage(int activeServNum)
         {
             var icon = orgIcon.Clone() as Bitmap;
             var size = icon.Size;
@@ -147,7 +142,7 @@ namespace V2RayGCon.Service
                 g.CompositingQuality = CompositingQuality.HighQuality;
 
                 DrawProxyModeCornerCircle(g, size);
-                DrawIsRunningCornerMark(g, size, isRunning);
+                DrawIsRunningCornerMark(g, size, activeServNum);
             }
 
             ni.Icon?.Dispose();
@@ -179,31 +174,54 @@ namespace V2RayGCon.Service
         }
 
         private void DrawIsRunningCornerMark(
-            Graphics graphics, Size size, bool isRunning)
+            Graphics graphics, Size size, int activeServNum)
         {
             var w = size.Width;
-            var cx = w * 0.72f;
+            var cx = w * 0.7f;
 
-            if (isRunning)
+            switch (activeServNum)
             {
-                var cr = w * 0.22f;
-                var dh = Math.Sqrt(3) * cr / 2f;
+                case 0:
+                    DrawOneLine(graphics, w, cx, false);
+                    break;
+                case 1:
+                    DrawTriangle(graphics, w, cx);
+                    break;
+                default:
+                    DrawOneLine(graphics, w, cx, false);
+                    DrawOneLine(graphics, w, cx, true);
+                    break;
+            }
+        }
 
-                var tri = new Point[] {
+        private static void DrawTriangle(Graphics graphics, int w, float cx)
+        {
+            var cr = w * 0.22f;
+            var dh = Math.Sqrt(3) * cr / 2f;
+            var tri = new Point[] {
                     new Point((int)(cx - cr / 2f),(int)(cx - dh)),
                     new Point((int)(cx + cr),(int)cx),
                     new Point((int)(cx - cr / 2f),(int)(cx + dh)),
                 };
+            graphics.FillPolygon(Brushes.White, tri);
+        }
 
-                graphics.FillPolygon(Brushes.White, tri);
-            }
-            else
+        private static void DrawOneLine(
+            Graphics graphics, int w, float cx, bool isVertical)
+        {
+
+            var rw = w * 0.44f;
+            var rh = w * 0.14f;
+
+            if (isVertical)
             {
-                var rw = w * 0.44f;
-                var rh = w * 0.14f;
-                var rect = new Rectangle((int)(cx - rw / 2f), (int)(cx - rh / 2f), (int)rw, (int)rh);
-                graphics.FillRectangle(Brushes.White, rect);
+                var swp = rw;
+                rw = rh;
+                rh = swp;
             }
+
+            var rect = new Rectangle((int)(cx - rw / 2f), (int)(cx - rh / 2f), (int)rw, (int)rh);
+            graphics.FillRectangle(Brushes.White, rect);
         }
 
         private void RemoveOldPluginMenu()
@@ -234,7 +252,7 @@ namespace V2RayGCon.Service
             return null;
         }
 
-        void RefreshNotifyIconText(
+        void UpdateNotifyIconText(
             List<VgcApis.Models.Interfaces.ICoreServCtrl> list)
         {
             var count = list.Count;
