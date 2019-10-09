@@ -1147,7 +1147,7 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 There is no update available please try again later. 的本地化字符串。
+        ///   查找类似 You are using the latest version now. 的本地化字符串。
         /// </summary>
         internal static string NoUpdateTryLater {
             get {

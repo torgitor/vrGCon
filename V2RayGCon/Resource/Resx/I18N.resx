@@ -625,7 +625,7 @@ Switch to direct download.</value>
     <value>Fetch update information fail!</value>
   </data>
   <data name="NoUpdateTryLater" xml:space="preserve">
-    <value>There is no update available please try again later.</value>
+    <value>You are using the latest version now.</value>
   </data>
   <data name="FileCheckSumFail" xml:space="preserve">
     <value>File check sum fail!</value>
