@@ -616,7 +616,7 @@ https://github.com/v2ray/v2ray-core</value>
     <value>获取更新信息失败</value>
   </data>
   <data name="NoUpdateTryLater" xml:space="preserve">
-    <value>作者太懒还没发布新版本，过几天再来看下。</value>
+    <value>作者太懒还没发布新版本，过几天再试下。</value>
   </data>
   <data name="FileCheckSumFail" xml:space="preserve">
     <value>文件校验失败！</value>
@@ -683,5 +683,8 @@ https://github.com/v2ray/v2ray-core</value>
   </data>
   <data name="Servers" xml:space="preserve">
     <value>服务器</value>
+  </data>
+  <data name="CheckForUpdate" xml:space="preserve">
+    <value>检查更新</value>
   </data>
 </root>

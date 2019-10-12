@@ -97,15 +97,6 @@ namespace ProxySetter.Resources.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Direct 的本地化字符串。
-        /// </summary>
-        internal static string Direct {
-            get {
-                return ResourceManager.GetString("Direct", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Done. 的本地化字符串。
         /// </summary>
         internal static string Done {
@@ -120,15 +111,6 @@ namespace ProxySetter.Resources.Langs {
         internal static string Failed {
             get {
                 return ResourceManager.GetString("Failed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Global 的本地化字符串。
-        /// </summary>
-        internal static string Global {
-            get {
-                return ResourceManager.GetString("Global", resourceCulture);
             }
         }
         
@@ -151,6 +133,42 @@ namespace ProxySetter.Resources.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Direct 的本地化字符串。
+        /// </summary>
+        internal static string MiDirect {
+            get {
+                return ResourceManager.GetString("MiDirect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Global 的本地化字符串。
+        /// </summary>
+        internal static string MiGlobal {
+            get {
+                return ResourceManager.GetString("MiGlobal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Untouched 的本地化字符串。
+        /// </summary>
+        internal static string MiNone {
+            get {
+                return ResourceManager.GetString("MiNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 PAC 的本地化字符串。
+        /// </summary>
+        internal static string MiPAC {
+            get {
+                return ResourceManager.GetString("MiPAC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 No server capable to be system proxy. 的本地化字符串。
         /// </summary>
         internal static string NoServerCapableOfSysProxy {
@@ -160,11 +178,11 @@ namespace ProxySetter.Resources.Langs {
         }
         
         /// <summary>
-        ///   查找类似 PAC 的本地化字符串。
+        ///   查找类似 Options 的本地化字符串。
         /// </summary>
-        internal static string PAC {
+        internal static string Options {
             get {
-                return ResourceManager.GetString("PAC", resourceCulture);
+                return ResourceManager.GetString("Options", resourceCulture);
             }
         }
         
@@ -221,15 +239,6 @@ namespace ProxySetter.Resources.Langs {
         internal static string SetAsSysProxy {
             get {
                 return ResourceManager.GetString("SetAsSysProxy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Settings 的本地化字符串。
-        /// </summary>
-        internal static string Settings {
-            get {
-                return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
         

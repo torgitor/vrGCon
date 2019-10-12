@@ -20,6 +20,7 @@ namespace V2RayGCon.Service
         Servers servers;
         ShareLinkMgr slinkMgr;
         Bitmap orgIcon = null;
+        Updater updater;
 
         ToolStripMenuItem pluginMenuItem = null;
         ToolStripMenuItem serversMenuItem = null;
@@ -40,11 +41,13 @@ namespace V2RayGCon.Service
         public void Run(
             Setting setting,
             Servers servers,
-            ShareLinkMgr shareLinkMgr)
+            ShareLinkMgr shareLinkMgr,
+            Updater updater)
         {
             this.setting = setting;
             this.servers = servers;
             this.slinkMgr = shareLinkMgr;
+            this.updater = updater;
 
             CreateNotifyIcon();
 
@@ -447,10 +450,10 @@ namespace V2RayGCon.Service
                             I18N.Log,
                             Properties.Resources.FSInteractiveWindow_16x,
                             (s,a)=> Views.WinForms.FormLog.ShowForm() ),
-                        new ToolStripMenuItem(
-                            I18N.Options,
-                            Properties.Resources.Settings_16x,
-                            (s,a)=> Views.WinForms.FormOption.ShowForm() ),
+                         new ToolStripMenuItem(
+                            I18N.DownloadV2rayCore,
+                            Properties.Resources.ASX_TransferDownload_blue_16x,
+                            (s,a)=> Views.WinForms.FormDownloadCore.GetForm()),
                     }),
 
                 serversMenuItem,
@@ -471,9 +474,9 @@ namespace V2RayGCon.Service
                     }),
 
                 new ToolStripMenuItem(
-                    I18N.DownloadV2rayCore,
-                    Properties.Resources.ASX_TransferDownload_blue_16x,
-                    (s,a)=> Views.WinForms.FormDownloadCore.GetForm()),
+                        I18N.Options,
+                        Properties.Resources.Settings_16x,
+                        (s,a)=> Views.WinForms.FormOption.ShowForm()),
             });
 
             menu.Items.Add(new ToolStripSeparator());
@@ -497,7 +500,7 @@ namespace V2RayGCon.Service
             return menu;
         }
 
-        private static ToolStripMenuItem CreateAboutMenu()
+        ToolStripMenuItem CreateAboutMenu()
         {
             var aboutMenu = new ToolStripMenuItem(
                 I18N.About,
@@ -510,6 +513,11 @@ namespace V2RayGCon.Service
                 null,
                 (s, a) => Lib.UI.VisitUrl(
                     I18N.VistProjectPage, Properties.Resources.ProjectLink));
+
+            children.Add(
+               I18N.CheckForUpdate,
+               null,
+                (s, a) => updater.CheckForUpdate(true));
 
             children.Add(
                 I18N.Feedback,

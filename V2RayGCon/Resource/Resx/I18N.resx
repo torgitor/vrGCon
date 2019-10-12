@@ -693,4 +693,7 @@ No, abort.</value>
   <data name="Servers" xml:space="preserve">
     <value>Servers</value>
   </data>
+  <data name="CheckForUpdate" xml:space="preserve">
+    <value>Check for update</value>
+  </data>
 </root>

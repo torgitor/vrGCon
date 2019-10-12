@@ -14,10 +14,6 @@ namespace ProxySetter.Services
         VgcApis.Models.IServices.IApiService vgcApi;
         Model.Data.ProxySettings orgSysProxySetting;
         Views.WinForms.FormMain formMain;
-
-        ToolStripMenuItem[] subMenuItemCache = null;
-
-
         public PsLuncher() { }
 
         #region public methods
@@ -82,22 +78,22 @@ namespace ProxySetter.Services
         ToolStripMenuItem miProxyModeDirect = null;
         ToolStripMenuItem miProxyModeGlobal = null;
         ToolStripMenuItem miProxyModePac = null;
+        ToolStripMenuItem miProxyModeNone = null;
 
         ToolStripMenuItem[] GenSubMenu()
         {
-            if (subMenuItemCache != null)
-            {
-                return subMenuItemCache;
-            }
+            miProxyModeNone = new ToolStripMenuItem(
+               I18N.MiNone, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.None));
 
             miProxyModePac = new ToolStripMenuItem(
-                I18N.PAC, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.PAC));
+                I18N.MiPAC, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.PAC));
             miProxyModeDirect = new ToolStripMenuItem(
-                I18N.Direct, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.Direct));
+                I18N.MiDirect, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.Direct));
             miProxyModeGlobal = new ToolStripMenuItem(
-                I18N.Global, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.Global));
+                I18N.MiGlobal, null, (s, a) => SetProxyMode(Model.Data.Enum.SystemProxyModes.Global));
 
-            subMenuItemCache = new ToolStripMenuItem[] {
+            var menu = new ToolStripMenuItem[] {
+                miProxyModeNone,
                 miProxyModeDirect,
                 miProxyModeGlobal,
                 miProxyModePac,
@@ -105,14 +101,19 @@ namespace ProxySetter.Services
 
             UpdateMenuItemCheckedStatHandler(this, EventArgs.Empty);
 
-            return subMenuItemCache;
+            return menu;
         }
 
-        void UpdateMenuItemCheckedStatHandler(
-            object sender, EventArgs events)
+        void UpdateMenuItemCheckedStatHandler(object sender, EventArgs events)
         {
             var bs = setting.GetBasicSetting();
             var pm = bs.sysProxyMode;
+
+            if (miProxyModeNone != null)
+            {
+                miProxyModeNone.Checked =
+                    (int)Model.Data.Enum.SystemProxyModes.None == pm;
+            }
 
             if (miProxyModeDirect != null)
             {

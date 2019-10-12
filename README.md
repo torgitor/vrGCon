@@ -13,10 +13,10 @@
 
 [\[下载 download\]](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)&nbsp;&nbsp;[\[手册 wiki\]](https://github.com/UudrSgMEZ/V2RayGCon/wiki)&nbsp;&nbsp;[\[唯一联系方式 issue\]](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
 
-### 用法 Usage
+### 安装 Install
 下载解压到任意目录，然后，，，没有然后了。  
 (如果不知道下哪个就下V2RayGCon-box.zip)  
-Download and extract to any directory you like. That's all.  
+Download and extract to any directory you like. That's it.  
 
 ### 演示 Demo
 ![Demo v1.1.10 GIF](https://github.com/UudrSgMEZ/V2RayGCon/raw/master/screenshot/demo1.1.10.gif)  
@@ -28,7 +28,7 @@ Download and extract to any directory you like. That's all.
 具体来说issue会回复得慢些，更新会少些。  
 2019-09
   
-### 引用按字母排序 References in alphabetical order  
+### 引用按字母排序 Credits (in alphabetical order)  
 [2dust/v2rayN](https://github.com/2dust/v2rayN) vmess分享链接及订阅格式  
 [Ahmad45123/AutoCompleteMenu-ScintillaNET](https://github.com/Ahmad45123/AutoCompleteMenu-ScintillaNET) 自动补全  
 [haf/DotNetZip.Semverd](https://github.com/haf/DotNetZip.Semverd) .net 4.0解压zip文件  

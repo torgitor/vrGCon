@@ -14,22 +14,23 @@ namespace ProxySetter
         #endregion
 
         #region properties
+        ToolStripMenuItem menuItemCache = null;
         public override ToolStripMenuItem GetMenu()
         {
-            var menu = new ToolStripMenuItem(Name, Icon);
+            if (menuItemCache != null)
+            {
+                return menuItemCache;
+            }
 
-            menu.ToolTipText = Description;
-            var children = menu.DropDownItems;
+            menuItemCache = new ToolStripMenuItem(Name, Icon);
+            menuItemCache.ToolTipText = Description;
 
-            children.Add(
-                new ToolStripMenuItem(
-                    I18N.Settings,
-                    null,
-                    (s, a) => Show()));
+            var children = menuItemCache.DropDownItems;
+            children.Add(new ToolStripMenuItem(I18N.Options, null, (s, a) => Show()));
             children.Add(new ToolStripSeparator());
             children.AddRange(luncher?.GetSubMenu());
 
-            return menu;
+            return menuItemCache;
         }
 
         public override string Name => Properties.Resources.Name;

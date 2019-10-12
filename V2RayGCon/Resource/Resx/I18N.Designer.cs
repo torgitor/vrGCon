@@ -214,6 +214,15 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Check for update 的本地化字符串。
+        /// </summary>
+        internal static string CheckForUpdate {
+            get {
+                return ResourceManager.GetString("CheckForUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Config Editor 的本地化字符串。
         /// </summary>
         internal static string ConfigEditor {
