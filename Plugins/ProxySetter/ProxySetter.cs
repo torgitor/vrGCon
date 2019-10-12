@@ -1,5 +1,6 @@
 ﻿using ProxySetter.Resources.Langs;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace ProxySetter
 {
@@ -10,10 +11,27 @@ namespace ProxySetter
 
         #region private methods
 
-
         #endregion
 
         #region properties
+        public override ToolStripMenuItem GetMenu()
+        {
+            var menu = new ToolStripMenuItem(Name, Icon);
+
+            menu.ToolTipText = Description;
+            var children = menu.DropDownItems;
+
+            children.Add(
+                new ToolStripMenuItem(
+                    I18N.Settings,
+                    null,
+                    (s, a) => Show()));
+            children.Add(new ToolStripSeparator());
+            children.AddRange(luncher?.GetSubMenu());
+
+            return menu;
+        }
+
         public override string Name => Properties.Resources.Name;
         public override string Version => Properties.Resources.Version;
         public override string Description => I18N.Description;

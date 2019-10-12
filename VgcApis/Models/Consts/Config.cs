@@ -8,6 +8,7 @@ namespace VgcApis.Models.Consts
         public static double FloatPointNumberTolerance = 0.000001;
 
         public static int SeverNumPerSubmenu = 30;
+        public static int ServerNumPerNotifyIconMenuGroup = 15;
 
         public const string ProtocolNameVmess = @"vmess";
         public const string ProtocolNameSs = @"shadowsocks";

@@ -129,11 +129,17 @@
   <data name="Description" xml:space="preserve">
     <value>自动更新系统代理设置。</value>
   </data>
+  <data name="Direct" xml:space="preserve">
+    <value>直连</value>
+  </data>
   <data name="Done" xml:space="preserve">
     <value>完成</value>
   </data>
   <data name="Failed" xml:space="preserve">
     <value>失败</value>
+  </data>
+  <data name="Global" xml:space="preserve">
+    <value>全局</value>
   </data>
   <data name="GlobalProxyRequireHttpServer" xml:space="preserve">
     <value>HTTP服务器才可以设置为全局代理</value>
@@ -143,6 +149,9 @@
   </data>
   <data name="NoServerCapableOfSysProxy" xml:space="preserve">
     <value>没有可设置为系统代理的服务器</value>
+  </data>
+  <data name="PAC" xml:space="preserve">
+    <value>PAC</value>
   </data>
   <data name="PacProxyRequireSocksOrHttpServer" xml:space="preserve">
     <value>SOCKS或HTTP服务器才可以设置为PAC代理</value>
@@ -161,6 +170,9 @@
   </data>
   <data name="SetAsSysProxy" xml:space="preserve">
     <value>设为系统代理</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>修改设置</value>
   </data>
   <data name="StartPacServFail" xml:space="preserve">
     <value>启动PAC服务器失败，请检查选项中的端口设置</value>

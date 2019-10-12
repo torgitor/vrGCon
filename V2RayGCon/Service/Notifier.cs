@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -20,12 +21,19 @@ namespace V2RayGCon.Service
         ShareLinkMgr slinkMgr;
         Bitmap orgIcon = null;
 
-        VgcApis.Libs.Tasks.LazyGuy notifierUpdater;
+        ToolStripMenuItem pluginMenuItem = null;
+        ToolStripMenuItem serversMenuItem = null;
+
+        VgcApis.Libs.Tasks.LazyGuy notifierUpdater, serversMenuUpdater;
 
         Notifier()
         {
             notifierUpdater = new VgcApis.Libs.Tasks.LazyGuy(
                 UpdateNotifyIconNow,
+                VgcApis.Models.Consts.Intervals.NotifierTextUpdateIntreval);
+
+            serversMenuUpdater = new VgcApis.Libs.Tasks.LazyGuy(
+                UpdateServersMenuNow,
                 VgcApis.Models.Consts.Intervals.NotifierTextUpdateIntreval);
         }
 
@@ -43,6 +51,11 @@ namespace V2RayGCon.Service
             servers.OnRequireNotifyTextUpdate +=
                 OnRequireNotifyTextUpdateHandler;
 
+            servers.OnRequireNotifyTextUpdate +=
+                OnRequireServersMenuUpdateHandler;
+
+            servers.OnRequireMenuUpdate +=
+                OnRequireServersMenuUpdateHandler;
 
             ni.MouseClick += (s, a) =>
             {
@@ -59,6 +72,7 @@ namespace V2RayGCon.Service
             };
 
             notifierUpdater.DoItLater();
+            serversMenuUpdater.DoItLater();
         }
 
         #region public method
@@ -100,28 +114,102 @@ namespace V2RayGCon.Service
         }
 #endif
 
-        ToolStripMenuItem oldPluginMenu = null;
         /// <summary>
         /// null means delete menu
         /// </summary>
         /// <param name="pluginMenu"></param>
-        public void UpdatePluginMenu(ToolStripMenuItem pluginMenu)
+        public void UpdatePluginMenu(IEnumerable<ToolStripMenuItem> children)
         {
-            RemoveOldPluginMenu();
-            if (pluginMenu == null)
+            RunInUiThread(() =>
             {
-                return;
-            }
+                pluginMenuItem.DropDownItems.Clear();
+                if (children == null || children.Count() < 1)
+                {
+                    pluginMenuItem.Visible = false;
+                    return;
+                }
 
-            oldPluginMenu = pluginMenu;
-            RunInUiThread(
-                () => ni.ContextMenuStrip.Items.Insert(
-                    2, oldPluginMenu));
+                pluginMenuItem.DropDownItems.AddRange(children.ToArray());
+                pluginMenuItem.Visible = true;
+            });
         }
 
         #endregion
 
         #region private method
+        List<ToolStripMenuItem> ServerList2MenuItems(
+            ReadOnlyCollection<VgcApis.Models.Interfaces.ICoreServCtrl> serverList)
+        {
+            var menuItems = new List<ToolStripMenuItem>();
+
+            for (int i = 0; i < serverList.Count; i++)
+            {
+                menuItems.Add(CoreServ2MenuItem(serverList[i]));
+            }
+
+            var groupSize = VgcApis.Models.Consts.Config.ServerNumPerNotifyIconMenuGroup;
+            var count = menuItems.Count();
+            if (count <= groupSize)
+            {
+                return menuItems;
+            }
+
+            // grouping
+            var groups = new List<ToolStripMenuItem>();
+            var index = 0;
+            while (index < count)
+            {
+                var take = Math.Min(groupSize, count - index);
+                groups.Add(new ToolStripMenuItem(
+                     string.Format("{0,3} - {1,3}", index + 1, index + groupSize),
+                     null,
+                     menuItems.Skip(index).Take(take).ToArray()));
+                index += groupSize;
+            }
+            return groups;
+        }
+
+        private ToolStripMenuItem CoreServ2MenuItem(VgcApis.Models.Interfaces.ICoreServCtrl coreServ)
+        {
+            var coreState = coreServ.GetCoreStates();
+
+            var dely = coreState.GetSpeedTestResult();
+            var title = coreState.GetTitle();
+            if (dely > 0 && dely < long.MaxValue)
+            {
+                title += $" - {dely}ms";
+            }
+
+            var item = new ToolStripMenuItem(
+                title,
+                null,
+                (s, a) => servers.StopAllServersThen(() => coreServ.GetCoreCtrl().RestartCoreThen()));
+
+            item.Checked = coreServ.GetCoreCtrl().IsCoreRunning();
+            return item;
+        }
+
+        void OnRequireServersMenuUpdateHandler(object sender, EventArgs events) =>
+           serversMenuUpdater.DoItLater();
+
+        void UpdateServersMenuNow()
+        {
+            var serverList = servers.GetAllServersOrderByIndex();
+            var children = ServerList2MenuItems(serverList);
+
+            RunInUiThread(() =>
+            {
+                serversMenuItem.DropDownItems.Clear();
+                if (children == null || children.Count < 1)
+                {
+                    serversMenuItem.Visible = false;
+                    return;
+                }
+                serversMenuItem.DropDownItems.AddRange(children.ToArray());
+                serversMenuItem.Visible = true;
+            });
+        }
+
         void UpdateNotifyIconNow()
         {
             var list = servers.GetAllServersOrderByIndex()
@@ -222,17 +310,6 @@ namespace V2RayGCon.Service
 
             var rect = new Rectangle((int)(cx - rw / 2f), (int)(cx - rh / 2f), (int)rw, (int)rh);
             graphics.FillRectangle(Brushes.White, rect);
-        }
-
-        private void RemoveOldPluginMenu()
-        {
-            if (this.oldPluginMenu == null)
-            {
-                return;
-            }
-            RunInUiThread(
-                () => ni.ContextMenuStrip.Items.Remove(
-                    this.oldPluginMenu));
         }
 
         void OnRequireNotifyTextUpdateHandler(object sender, EventArgs args) =>
@@ -338,6 +415,16 @@ namespace V2RayGCon.Service
                     (int)(menu.ImageScalingSize.Height * factor));
             }
 
+            pluginMenuItem = new ToolStripMenuItem(
+                    I18N.Plugins,
+                    Properties.Resources.Module_16x);
+            pluginMenuItem.Visible = false;
+
+            serversMenuItem = new ToolStripMenuItem(
+                I18N.Servers,
+                Properties.Resources.RemoteServer_16x);
+            serversMenuItem.Visible = false;
+
             menu.Items.AddRange(new ToolStripMenuItem[] {
                 new ToolStripMenuItem(
                     I18N.MainWin,
@@ -366,10 +453,14 @@ namespace V2RayGCon.Service
                             (s,a)=> Views.WinForms.FormOption.ShowForm() ),
                     }),
 
+                serversMenuItem,
+
+                pluginMenuItem,
+
                 new ToolStripMenuItem(
                     I18N.ScanQRCode,
                     Properties.Resources.ExpandScope_16x,
-                    (s,a)=> ScanQrcode()                    ),
+                    (s,a)=> ScanQrcode()),
 
                 new ToolStripMenuItem(
                     I18N.ImportLink,
@@ -387,25 +478,52 @@ namespace V2RayGCon.Service
 
             menu.Items.Add(new ToolStripSeparator());
 
-            menu.Items.AddRange(new ToolStripMenuItem[] {
-                new ToolStripMenuItem(
-                    I18N.About,
-                    Properties.Resources.StatusHelp_16x,
-                    (s,a)=>Lib.UI.VisitUrl(
-                        I18N.VistPorjectPage,
-                        Properties.Resources.ProjectLink)),
+            menu.Items.AddRange(
+                new ToolStripMenuItem[] {
+                    CreateAboutMenu(),
 
-                new ToolStripMenuItem(
-                    I18N.Exit,
-                    Properties.Resources.CloseSolution_16x,
-                    (s,a)=>{
-                        if (Lib.UI.Confirm(I18N.ConfirmExitApp)){
-                            Application.Exit();
-                        }
-                    })
-            });
+                    new ToolStripMenuItem(
+                        I18N.Exit,
+                        Properties.Resources.CloseSolution_16x,
+                        (s, a) =>
+                        {
+                            if (Lib.UI.Confirm(I18N.ConfirmExitApp))
+                            {
+                                Application.Exit();
+                            }
+                        }),
+                });
 
             return menu;
+        }
+
+        private static ToolStripMenuItem CreateAboutMenu()
+        {
+            var aboutMenu = new ToolStripMenuItem(
+                I18N.About,
+                Properties.Resources.StatusHelp_16x);
+
+            var children = aboutMenu.DropDownItems;
+
+            children.Add(
+                I18N.ProjectPage,
+                null,
+                (s, a) => Lib.UI.VisitUrl(
+                    I18N.VistProjectPage, Properties.Resources.ProjectLink));
+
+            children.Add(
+                I18N.Feedback,
+                null,
+                (s, a) => Lib.UI.VisitUrl(
+                    I18N.VisitVGCIssuePage, Properties.Resources.IssueLink));
+
+            children.Add(
+                I18N.ProjectWiki,
+                null,
+                (s, a) => Lib.UI.VisitUrl(
+                    I18N.VistWikiPage, Properties.Resources.WikiLink));
+
+            return aboutMenu;
         }
 
 
@@ -415,6 +533,12 @@ namespace V2RayGCon.Service
         protected override void Cleanup()
         {
             ni.Visible = false;
+
+            servers.OnRequireMenuUpdate -=
+                OnRequireServersMenuUpdateHandler;
+
+            servers.OnRequireNotifyTextUpdate -=
+                OnRequireServersMenuUpdateHandler;
 
             servers.OnRequireNotifyTextUpdate -=
                 OnRequireNotifyTextUpdateHandler;

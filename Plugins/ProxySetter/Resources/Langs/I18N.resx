@@ -129,11 +129,17 @@
   <data name="Description" xml:space="preserve">
     <value>Auto update system proxy setting.</value>
   </data>
+  <data name="Direct" xml:space="preserve">
+    <value>Direct</value>
+  </data>
   <data name="Done" xml:space="preserve">
     <value>Done.</value>
   </data>
   <data name="Failed" xml:space="preserve">
     <value>Failed!</value>
+  </data>
+  <data name="Global" xml:space="preserve">
+    <value>Global</value>
   </data>
   <data name="GlobalProxyRequireHttpServer" xml:space="preserve">
     <value>Global proxy require http server!</value>
@@ -143,6 +149,9 @@
   </data>
   <data name="NoServerCapableOfSysProxy" xml:space="preserve">
     <value>No server capable to be system proxy.</value>
+  </data>
+  <data name="PAC" xml:space="preserve">
+    <value>PAC</value>
   </data>
   <data name="PacProxyRequireSocksOrHttpServer" xml:space="preserve">
     <value>PAC proxy require socks or http server.</value>
@@ -163,6 +172,9 @@ Please make sure hotkey is not taken by other application.</value>
   </data>
   <data name="SetAsSysProxy" xml:space="preserve">
     <value>Set as system proxy.</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
   </data>
   <data name="StartPacServFail" xml:space="preserve">
     <value>Start PAC server fail. 

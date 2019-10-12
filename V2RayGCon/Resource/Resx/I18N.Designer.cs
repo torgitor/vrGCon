@@ -785,6 +785,15 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Feedback 的本地化字符串。
+        /// </summary>
+        internal static string Feedback {
+            get {
+                return ResourceManager.GetString("Feedback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Fetch update information fail! 的本地化字符串。
         /// </summary>
         internal static string FetchUpdateInfoFail {
@@ -1256,6 +1265,24 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 GitHub 的本地化字符串。
+        /// </summary>
+        internal static string ProjectPage {
+            get {
+                return ResourceManager.GetString("ProjectPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Wiki 的本地化字符串。
+        /// </summary>
+        internal static string ProjectWiki {
+            get {
+                return ResourceManager.GetString("ProjectWiki", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Proxy all website 的本地化字符串。
         /// </summary>
         internal static string ProxyModeAll {
@@ -1352,6 +1379,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string ServerListIsEmpty {
             get {
                 return ResourceManager.GetString("ServerListIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Servers 的本地化字符串。
+        /// </summary>
+        internal static string Servers {
+            get {
+                return ResourceManager.GetString("Servers", resourceCulture);
             }
         }
         
@@ -1646,9 +1682,9 @@ namespace V2RayGCon.Resource.Resx {
         /// <summary>
         ///   查找类似 Vist project page? 的本地化字符串。
         /// </summary>
-        internal static string VistPorjectPage {
+        internal static string VistProjectPage {
             get {
-                return ResourceManager.GetString("VistPorjectPage", resourceCulture);
+                return ResourceManager.GetString("VistProjectPage", resourceCulture);
             }
         }
         

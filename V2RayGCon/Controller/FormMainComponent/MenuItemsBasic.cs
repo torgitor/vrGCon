@@ -140,7 +140,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             removeV2rayCore.Click += (s, a) => RemoveV2RayCore();
 
             aboutVGC.Click += (s, a) =>
-                Lib.UI.VisitUrl(I18N.VistPorjectPage, Properties.Resources.ProjectLink);
+                Lib.UI.VisitUrl(I18N.VistProjectPage, Properties.Resources.ProjectLink);
 
             help.Click += (s, a) =>
                 Lib.UI.VisitUrl(I18N.VistWikiPage, Properties.Resources.WikiLink);

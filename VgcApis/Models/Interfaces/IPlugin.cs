@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace VgcApis.Models.Interfaces
 {
@@ -13,6 +15,8 @@ namespace VgcApis.Models.Interfaces
         void Run(IServices.IApiService api);
         void Show();
         void Cleanup();
+
+        ToolStripMenuItem GetMenu();
     }
 
 }

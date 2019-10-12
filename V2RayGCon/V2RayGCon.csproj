@@ -476,6 +476,7 @@
   <ItemGroup>
     <Content Include="icon_dark.ico" />
     <Content Include="Resource\Files\CSharp\ConfigJsonKeywords.txt" />
+    <None Include="Resource\Icon\TaskTray\RemoteServer_16x.png" />
     <None Include="Resource\Icon\FormMainToolStrip\ExpandScope_16x.png" />
     <None Include="Resource\Icon\TaskTray\Module_16x.png" />
     <None Include="Resource\Icon\ServerUI\StepOverArrow_16x.png" />

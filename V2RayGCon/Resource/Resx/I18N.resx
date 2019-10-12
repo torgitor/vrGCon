@@ -311,7 +311,7 @@ Load new config?</value>
   <data name="NoNewVGC" xml:space="preserve">
     <value>The current V2RayGCon is the latest version.</value>
   </data>
-  <data name="VistPorjectPage" xml:space="preserve">
+  <data name="VistProjectPage" xml:space="preserve">
     <value>Vist project page?</value>
   </data>
   <data name="ConfirmDeleteAllServers" xml:space="preserve">
@@ -680,5 +680,17 @@ No, abort.</value>
   </data>
   <data name="CurSysProxy" xml:space="preserve">
     <value>CurSysProxy: </value>
+  </data>
+  <data name="Feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="ProjectPage" xml:space="preserve">
+    <value>GitHub</value>
+  </data>
+  <data name="ProjectWiki" xml:space="preserve">
+    <value>Wiki</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>Servers</value>
   </data>
 </root>
