@@ -696,4 +696,7 @@ No, abort.</value>
   <data name="CheckForUpdate" xml:space="preserve">
     <value>Check for update</value>
   </data>
+  <data name="StopAllServers" xml:space="preserve">
+    <value>Stop all servers</value>
+  </data>
 </root>

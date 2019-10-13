@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace Statistics.Services
@@ -61,12 +60,12 @@ namespace Statistics.Services
             bookKeeper = new VgcApis.Libs.Tasks.LazyGuy(
                 SaveUserSetting, VgcApis.Models.Consts.Intervals.LazySaveStatisticsDatadelay);
             StartBgStatsDataUpdateTimer();
-            vgcServers.OnCoreClosing += OnCoreClosingHandler;
+            vgcServers.OnCoreClosing += SaveStatDataBeforeCoreClosed;
         }
 
         public void Cleanup()
         {
-            vgcServers.OnCoreClosing -= OnCoreClosingHandler;
+            vgcServers.OnCoreClosing -= SaveStatDataBeforeCoreClosed;
             ReleaseBgStatsDataUpdateTimer();
 
             // Calling v2ctl.exe at shutdown can cause problems.
@@ -84,7 +83,7 @@ namespace Statistics.Services
         #endregion
 
         #region private method
-        void OnCoreClosingHandler(object sender, EventArgs args)
+        void SaveStatDataBeforeCoreClosed(object sender, EventArgs args)
         {
             var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
             if (coreCtrl == null)

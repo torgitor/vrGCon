@@ -71,7 +71,7 @@ namespace V2RayGCon.Views.WinForms
                 .GetEditor();
 
             editor.Click += OnMouseLeaveToolsPanel;
-            servers.OnRequireMenuUpdate += MenuUpdateHandler;
+            BindServerEvents();
 
             this.FormClosing += (s, a) =>
             {
@@ -86,7 +86,7 @@ namespace V2RayGCon.Views.WinForms
                 formSearch?.Close();
                 editor.Click -= OnMouseLeaveToolsPanel;
                 toolsPanelController.Dispose();
-                servers.OnRequireMenuUpdate -= MenuUpdateHandler;
+                ReleaseServerEvents();
                 configer.Cleanup();
                 editor?.Dispose();
                 setting.SaveFormRect(this);
@@ -95,6 +95,8 @@ namespace V2RayGCon.Views.WinForms
 
             configer.UpdateServerMenusLater();
         }
+
+
 
         #region UI event handler
         private void ShowLeftPanelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -367,6 +369,17 @@ namespace V2RayGCon.Views.WinForms
         #endregion
 
         #region private method
+        private void ReleaseServerEvents()
+        {
+            servers.OnServerCountChange -= MenuUpdateHandler;
+            servers.OnServerPropertyChange -= MenuUpdateHandler;
+        }
+
+        private void BindServerEvents()
+        {
+            servers.OnServerCountChange += MenuUpdateHandler;
+            servers.OnServerPropertyChange += MenuUpdateHandler;
+        }
 
         public void SetTitle(string name)
         {

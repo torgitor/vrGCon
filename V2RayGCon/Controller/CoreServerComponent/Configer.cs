@@ -130,10 +130,9 @@ namespace V2RayGCon.Controller.CoreServerComponent
             }
 
             coreInfo.config = trimed;
-            container.InvokeEventOnPropertyChange();
             UpdateSummaryThen(() =>
             {
-                container.InvokeEventOnRequireMenuUpdate();
+                container.InvokeEventOnPropertyChange();
             });
 
             if (coreCtrl.IsCoreRunning())

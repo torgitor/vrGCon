@@ -50,7 +50,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             RefreshUI();
             servers.OnRequireFlyPanelUpdate += OnRequireFlyPanelUpdateHandler;
             servers.OnRequireFlyPanelReload += OnRequireFlyPanelReloadHandler;
-            servers.OnRequireStatusBarUpdate += OnRequireStatusBarUpdateHandler;
+            servers.OnServerPropertyChange += OnServerPropertyChangeHandler;
         }
 
 
@@ -91,7 +91,7 @@ namespace V2RayGCon.Controller.FormMainComponent
         {
             servers.OnRequireFlyPanelReload -= OnRequireFlyPanelReloadHandler;
             servers.OnRequireFlyPanelUpdate -= OnRequireFlyPanelUpdateHandler;
-            servers.OnRequireStatusBarUpdate -= OnRequireStatusBarUpdateHandler;
+            servers.OnServerPropertyChange -= OnServerPropertyChangeHandler;
             lazyStatusBarUpdateTimer?.Release();
             lazyShowSearchResultTimer?.Release();
             RemoveAllServersConrol(true);
@@ -185,7 +185,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             return serverList.GetRange(begin, num);
         }
 
-        void OnRequireStatusBarUpdateHandler(object sender, EventArgs args)
+        void OnServerPropertyChangeHandler(object sender, EventArgs args)
         {
             LazyStatusBarUpdater();
         }

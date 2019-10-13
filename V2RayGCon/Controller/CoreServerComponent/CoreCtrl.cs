@@ -147,8 +147,7 @@ namespace V2RayGCon.Controller.CoreServerComponent
             coreServ.StopCoreThen(
                 () =>
                 {
-                    container.InvokeEventOnRequireNotifierUpdate();
-                    container.InvokeEventOnTrackCoreStop();
+                    container.InvokeEventOnCoreStop();
                     next?.Invoke();
                 });
         }
@@ -167,8 +166,7 @@ namespace V2RayGCon.Controller.CoreServerComponent
                 finalConfig.ToString(),
                 () =>
                 {
-                    container.InvokeEventOnRequireNotifierUpdate();
-                    container.InvokeEventOnTrackCoreStart();
+                    container.InvokeEventOnCoreStart();
                     next?.Invoke();
                 },
                 Lib.Utils.GetEnvVarsFromConfig(finalConfig));

@@ -25,10 +25,12 @@ namespace V2RayGCon.Service
         public event EventHandler
             OnCoreStart, // ICoreServCtrl sender
             OnCoreClosing, // ICoreServCtrl sender
+            OnCoreStop,
 
-            OnRequireNotifyTextUpdate,
-            OnRequireMenuUpdate,
-            OnRequireStatusBarUpdate,
+            OnServerPropertyChange,
+            OnServerCountChange,
+
+            // special events 
             OnRequireFlyPanelUpdate,
             OnRequireFlyPanelReload;
 
@@ -123,8 +125,8 @@ namespace V2RayGCon.Service
 
         #region event relay
 
-        void NotifierTextUpdateHandler(object sender, EventArgs args) =>
-            InvokeEventOnRequireNotifyTextUpdateIgnoreError();
+        void InvokeEventOnServerCountChange(object sender, EventArgs args) =>
+            InvokeEventHandlerIgnoreError(OnServerCountChange, sender, EventArgs.Empty);
 
         void InvokeEventHandlerIgnoreError(EventHandler handler, object sender, EventArgs args)
         {
@@ -135,23 +137,23 @@ namespace V2RayGCon.Service
             catch { }
         }
 
-        void InvokeEventOnRequireNotifyTextUpdateIgnoreError() =>
-            InvokeEventHandlerIgnoreError(OnRequireNotifyTextUpdate, this, EventArgs.Empty);
-
+        // must transfer sender!
         void InvokeEventOnCoreStartIgnoreError(object sender, EventArgs args) =>
             InvokeEventHandlerIgnoreError(OnCoreStart, sender, EventArgs.Empty);
 
+        // must transfer sender!
         void InvokeEventOnCoreClosingIgnoreError(object sender, EventArgs args) =>
             InvokeEventHandlerIgnoreError(OnCoreClosing, sender, EventArgs.Empty);
 
-        void InvokeEventOnRequireStatusBarUpdate(object sender, EventArgs args) =>
-            InvokeEventHandlerIgnoreError(OnRequireStatusBarUpdate, null, EventArgs.Empty);
+        // must transfer sender!
+        void InvokeEventOnCoreStopIgnoreError(object sender, EventArgs args) =>
+            InvokeEventHandlerIgnoreError(OnCoreStop, sender, EventArgs.Empty);
 
-        void InvokeEventOnRequireMenuUpdate(object sender, EventArgs args) =>
-            InvokeEventHandlerIgnoreError(OnRequireMenuUpdate, null, EventArgs.Empty);
-
-        void ServerItemPropertyChangedHandler(object sender, EventArgs arg) =>
+        void InvokeEventOnServerPropertyChange(object sender, EventArgs arg)
+        {
             serverSaver.DoItLater();
+            InvokeEventHandlerIgnoreError(OnServerPropertyChange, null, EventArgs.Empty);
+        }
 
         void OnTrackCoreStartHandler(object sender, EventArgs args) =>
             TrackCoreRunningStateHandler(sender, true);
@@ -162,27 +164,19 @@ namespace V2RayGCon.Service
         void BindEventsTo(Controller.CoreServerCtrl server)
         {
             server.OnCoreClosing += InvokeEventOnCoreClosingIgnoreError;
+            server.OnCoreStart += OnTrackCoreStartHandler;
+            server.OnCoreStop += OnTrackCoreStopHandler;
 
-            server.OnTrackCoreStart += OnTrackCoreStartHandler;
-            server.OnTrackCoreStop += OnTrackCoreStopHandler;
-
-            server.OnPropertyChanged += ServerItemPropertyChangedHandler;
-            server.OnRequireMenuUpdate += InvokeEventOnRequireMenuUpdate;
-            server.OnRequireStatusBarUpdate += InvokeEventOnRequireStatusBarUpdate;
-            server.OnRequireNotifierUpdate += NotifierTextUpdateHandler;
+            server.OnPropertyChanged += InvokeEventOnServerPropertyChange;
         }
 
         void ReleaseEventsFrom(Controller.CoreServerCtrl server)
         {
             server.OnCoreClosing -= InvokeEventOnCoreClosingIgnoreError;
+            server.OnCoreStart -= OnTrackCoreStartHandler;
+            server.OnCoreStop -= OnTrackCoreStopHandler;
 
-            server.OnTrackCoreStart -= OnTrackCoreStartHandler;
-            server.OnTrackCoreStop -= OnTrackCoreStopHandler;
-
-            server.OnPropertyChanged -= ServerItemPropertyChangedHandler;
-            server.OnRequireMenuUpdate -= InvokeEventOnRequireMenuUpdate;
-            server.OnRequireStatusBarUpdate -= InvokeEventOnRequireStatusBarUpdate;
-            server.OnRequireNotifierUpdate -= NotifierTextUpdateHandler;
+            server.OnPropertyChanged -= InvokeEventOnServerPropertyChange;
         }
         #endregion
 
@@ -222,7 +216,7 @@ namespace V2RayGCon.Service
             }
             else
             {
-                InvokeEventOnCoreClosingIgnoreError(sender, EventArgs.Empty);
+                InvokeEventOnCoreStopIgnoreError(sender, EventArgs.Empty);
             }
 
             if (!setting.isServerTrackerOn)
@@ -520,12 +514,10 @@ namespace V2RayGCon.Service
 
             void finish()
             {
-                NotifierTextUpdateHandler(this, EventArgs.Empty);
                 serverSaver.DoItLater();
                 UpdateMarkList();
                 RequireFormMainUpdate();
-                InvokeEventOnRequireMenuUpdate(this, EventArgs.Empty);
-
+                InvokeEventOnServerCountChange(this, EventArgs.Empty);
                 speedTestingBar.Remove();
 
                 done?.Invoke();
@@ -547,8 +539,7 @@ namespace V2RayGCon.Service
                 serverSaver.DoItLater();
                 UpdateMarkList();
                 RequireFormMainUpdate();
-                InvokeEventOnRequireMenuUpdate(this, EventArgs.Empty);
-
+                InvokeEventOnServerCountChange(this, EventArgs.Empty);
                 speedTestingBar.Remove();
                 done?.Invoke();
             }
@@ -595,7 +586,7 @@ namespace V2RayGCon.Service
                 setting.LazyGC();
                 serverSaver.DoItLater();
                 RequireFormMainUpdate();
-                InvokeEventOnRequireMenuUpdate(this, EventArgs.Empty);
+                InvokeEventOnServerPropertyChange(this, EventArgs.Empty);
                 isFinished.Set();
             }
 
@@ -627,10 +618,9 @@ namespace V2RayGCon.Service
             VgcApis.Libs.Utils.RunInBackground(
                 () => RemoveServerItemFromListThen(index, () =>
                 {
-                    NotifierTextUpdateHandler(this, EventArgs.Empty);
+                    InvokeEventOnServerCountChange(this, EventArgs.Empty);
                     serverSaver.DoItLater();
                     UpdateMarkList();
-                    InvokeEventOnRequireMenuUpdate(coreServList, EventArgs.Empty);
                     RequireFormMainUpdate();
                     speedTestingBar.Remove();
                 }));
@@ -690,7 +680,8 @@ namespace V2RayGCon.Service
             {
                 newServer.GetConfiger().UpdateSummaryThen(() =>
                 {
-                    InvokeEventOnRequireMenuUpdate(this, EventArgs.Empty);
+                    // UpdateSummaryThen will invoke OnServerPropertyChange.
+                    InvokeEventOnServerCountChange(this, EventArgs.Empty);
                     RequireFormMainUpdate();
                 });
             }

@@ -22,8 +22,8 @@ namespace V2RayGCon.Service
         Bitmap orgIcon = null;
         Updater updater;
 
-        ToolStripMenuItem pluginMenuItem = null;
-        ToolStripMenuItem serversMenuItem = null;
+        ToolStripMenuItem pluginRootMenuItem = null;
+        ToolStripMenuItem serversRootMenuItem = null;
 
         VgcApis.Libs.Tasks.LazyGuy notifierUpdater, serversMenuUpdater;
 
@@ -51,14 +51,7 @@ namespace V2RayGCon.Service
 
             CreateNotifyIcon();
 
-            servers.OnRequireNotifyTextUpdate +=
-                OnRequireNotifyTextUpdateHandler;
-
-            servers.OnRequireNotifyTextUpdate +=
-                OnRequireServersMenuUpdateHandler;
-
-            servers.OnRequireMenuUpdate +=
-                OnRequireServersMenuUpdateHandler;
+            BindServerEvents();
 
             ni.MouseClick += (s, a) =>
             {
@@ -77,6 +70,8 @@ namespace V2RayGCon.Service
             notifierUpdater.DoItLater();
             serversMenuUpdater.DoItLater();
         }
+
+
 
         #region public method
         public void RefreshNotifyIcon() =>
@@ -125,21 +120,43 @@ namespace V2RayGCon.Service
         {
             RunInUiThread(() =>
             {
-                pluginMenuItem.DropDownItems.Clear();
+                pluginRootMenuItem.DropDownItems.Clear();
                 if (children == null || children.Count() < 1)
                 {
-                    pluginMenuItem.Visible = false;
+                    pluginRootMenuItem.Visible = false;
                     return;
                 }
 
-                pluginMenuItem.DropDownItems.AddRange(children.ToArray());
-                pluginMenuItem.Visible = true;
+                pluginRootMenuItem.DropDownItems.AddRange(children.ToArray());
+                pluginRootMenuItem.Visible = true;
             });
         }
 
         #endregion
 
         #region private method
+        private void BindServerEvents()
+        {
+            servers.OnCoreStart += UpdateNotifyIconHandler;
+            servers.OnCoreStop += UpdateNotifyIconHandler;
+
+            servers.OnServerCountChange += UpdateServerMenuHandler;
+            servers.OnCoreStart += UpdateServerMenuHandler;
+            servers.OnCoreStop += UpdateServerMenuHandler;
+            servers.OnServerPropertyChange += UpdateServerMenuHandler;
+        }
+
+        private void ReleaseServerEvents()
+        {
+            servers.OnCoreStart -= UpdateNotifyIconHandler;
+            servers.OnCoreStop -= UpdateNotifyIconHandler;
+
+            servers.OnServerCountChange -= UpdateServerMenuHandler;
+            servers.OnCoreStart -= UpdateServerMenuHandler;
+            servers.OnCoreStop -= UpdateServerMenuHandler;
+            servers.OnServerPropertyChange -= UpdateServerMenuHandler;
+        }
+
         List<ToolStripMenuItem> ServerList2MenuItems(
             ReadOnlyCollection<VgcApis.Models.Interfaces.ICoreServCtrl> serverList)
         {
@@ -150,7 +167,7 @@ namespace V2RayGCon.Service
                 menuItems.Add(CoreServ2MenuItem(serverList[i]));
             }
 
-            var groupSize = VgcApis.Models.Consts.Config.ServerNumPerNotifyIconMenuGroup;
+            var groupSize = VgcApis.Models.Consts.Config.NotifyIconServerMenuGroupSize;
             var count = menuItems.Count();
             if (count <= groupSize)
             {
@@ -183,16 +200,14 @@ namespace V2RayGCon.Service
                 title += $" - {dely}ms";
             }
 
-            var item = new ToolStripMenuItem(
-                title,
-                null,
-                (s, a) => servers.StopAllServersThen(() => coreServ.GetCoreCtrl().RestartCoreThen()));
-
+            Action done = () => coreServ.GetCoreCtrl().RestartCoreThen();
+            Action onClick = () => servers.StopAllServersThen(done);
+            var item = new ToolStripMenuItem(title, null, (s, a) => onClick());
             item.Checked = coreServ.GetCoreCtrl().IsCoreRunning();
             return item;
         }
 
-        void OnRequireServersMenuUpdateHandler(object sender, EventArgs events) =>
+        void UpdateServerMenuHandler(object sender, EventArgs events) =>
            serversMenuUpdater.DoItLater();
 
         void UpdateServersMenuNow()
@@ -202,14 +217,19 @@ namespace V2RayGCon.Service
 
             RunInUiThread(() =>
             {
-                serversMenuItem.DropDownItems.Clear();
+                var root = serversRootMenuItem.DropDownItems;
+                root.Clear();
+
                 if (children == null || children.Count < 1)
                 {
-                    serversMenuItem.Visible = false;
+                    serversRootMenuItem.Visible = false;
                     return;
                 }
-                serversMenuItem.DropDownItems.AddRange(children.ToArray());
-                serversMenuItem.Visible = true;
+
+                root.Add(new ToolStripMenuItem(I18N.StopAllServers, null, (s, a) => servers.StopAllServersThen()));
+                root.Add(new ToolStripSeparator());
+                root.AddRange(children.ToArray());
+                serversRootMenuItem.Visible = true;
             });
         }
 
@@ -315,7 +335,7 @@ namespace V2RayGCon.Service
             graphics.FillRectangle(Brushes.White, rect);
         }
 
-        void OnRequireNotifyTextUpdateHandler(object sender, EventArgs args) =>
+        void UpdateNotifyIconHandler(object sender, EventArgs args) =>
             notifierUpdater.DoItLater();
 
         string GetterSysProxyInfo()
@@ -418,15 +438,8 @@ namespace V2RayGCon.Service
                     (int)(menu.ImageScalingSize.Height * factor));
             }
 
-            pluginMenuItem = new ToolStripMenuItem(
-                    I18N.Plugins,
-                    Properties.Resources.Module_16x);
-            pluginMenuItem.Visible = false;
-
-            serversMenuItem = new ToolStripMenuItem(
-                I18N.Servers,
-                Properties.Resources.RemoteServer_16x);
-            serversMenuItem.Visible = false;
+            pluginRootMenuItem = CreatePluginRootMenuItem();
+            serversRootMenuItem = CreateServersRootMenuItem();
 
             menu.Items.AddRange(new ToolStripMenuItem[] {
                 new ToolStripMenuItem(
@@ -456,9 +469,9 @@ namespace V2RayGCon.Service
                             (s,a)=> Views.WinForms.FormDownloadCore.GetForm()),
                     }),
 
-                serversMenuItem,
+                serversRootMenuItem,
 
-                pluginMenuItem,
+                pluginRootMenuItem,
 
                 new ToolStripMenuItem(
                     I18N.ScanQRCode,
@@ -498,6 +511,25 @@ namespace V2RayGCon.Service
                 });
 
             return menu;
+        }
+
+        private ToolStripMenuItem CreateServersRootMenuItem()
+        {
+            var mi = new ToolStripMenuItem(
+                I18N.Servers,
+                Properties.Resources.RemoteServer_16x);
+            mi.Visible = false;
+            return mi;
+        }
+
+        private ToolStripMenuItem CreatePluginRootMenuItem()
+        {
+            var mi = new ToolStripMenuItem(
+                                 I18N.Plugins,
+                                 Properties.Resources.Module_16x);
+            mi.Visible = false;
+
+            return mi;
         }
 
         ToolStripMenuItem CreateAboutMenu()
@@ -542,17 +574,12 @@ namespace V2RayGCon.Service
         {
             ni.Visible = false;
 
-            servers.OnRequireMenuUpdate -=
-                OnRequireServersMenuUpdateHandler;
-
-            servers.OnRequireNotifyTextUpdate -=
-                OnRequireServersMenuUpdateHandler;
-
-            servers.OnRequireNotifyTextUpdate -=
-                OnRequireNotifyTextUpdateHandler;
+            ReleaseServerEvents();
 
             notifierUpdater.Quit();
         }
+
+
 
         #endregion
     }

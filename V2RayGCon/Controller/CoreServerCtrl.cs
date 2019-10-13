@@ -9,12 +9,9 @@ namespace V2RayGCon.Controller
     {
         public event EventHandler
             OnPropertyChanged,
-            OnRequireStatusBarUpdate,
-            OnRequireMenuUpdate,
-            OnRequireNotifierUpdate,
             OnCoreClosing,
-            OnTrackCoreStop,
-            OnTrackCoreStart;
+            OnCoreStop,
+            OnCoreStart;
 
         VgcApis.Models.Datas.CoreInfo coreInfo;
 
@@ -63,23 +60,15 @@ namespace V2RayGCon.Controller
         public void InvokeEventOnCoreClosing() =>
             OnCoreClosing?.Invoke(this, EventArgs.Empty);
 
-        public void InvokeEventOnRequireStatusBarUpdate() =>
-            InvokeEmptyEvent(OnRequireStatusBarUpdate);
-
-        public void InvokeEventOnRequireNotifierUpdate() =>
-           InvokeEmptyEvent(OnRequireNotifierUpdate);
-
         public void InvokeEventOnPropertyChange() =>
             InvokeEmptyEventIgnoreError(OnPropertyChanged);
 
-        public void InvokeEventOnTrackCoreStop() =>
-            OnTrackCoreStop?.Invoke(this, EventArgs.Empty);
+        public void InvokeEventOnCoreStop() =>
+            OnCoreStop?.Invoke(this, EventArgs.Empty);
 
-        public void InvokeEventOnTrackCoreStart() =>
-            OnTrackCoreStart?.Invoke(this, EventArgs.Empty);
+        public void InvokeEventOnCoreStart() =>
+            OnCoreStart?.Invoke(this, EventArgs.Empty);
 
-        public void InvokeEventOnRequireMenuUpdate() =>
-            InvokeEmptyEvent(OnRequireMenuUpdate);
         #endregion
 
         #region public method

@@ -687,4 +687,7 @@ https://github.com/v2ray/v2ray-core</value>
   <data name="CheckForUpdate" xml:space="preserve">
     <value>检查更新</value>
   </data>
+  <data name="StopAllServers" xml:space="preserve">
+    <value>全部停止</value>
+  </data>
 </root>
