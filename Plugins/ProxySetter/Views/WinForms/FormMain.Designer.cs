@@ -58,7 +58,6 @@
             this.tboxBasicGlobalPort = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnBasicViewInNotepad = new System.Windows.Forms.Button();
-            this.btnBasicClearSysProxy = new System.Windows.Forms.Button();
             this.lbBasicProxyLink = new System.Windows.Forms.Label();
             this.lbBasicCurPacServerStatus = new System.Windows.Forms.Label();
             this.btnBaiscCopyProxyLink = new System.Windows.Forms.Button();
@@ -298,7 +297,6 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.btnBasicViewInNotepad);
-            this.groupBox2.Controls.Add(this.btnBasicClearSysProxy);
             this.groupBox2.Controls.Add(this.lbBasicProxyLink);
             this.groupBox2.Controls.Add(this.lbBasicCurPacServerStatus);
             this.groupBox2.Controls.Add(this.btnBaiscCopyProxyLink);
@@ -315,13 +313,6 @@
             this.btnBasicViewInNotepad.Name = "btnBasicViewInNotepad";
             this.toolTip1.SetToolTip(this.btnBasicViewInNotepad, resources.GetString("btnBasicViewInNotepad.ToolTip"));
             this.btnBasicViewInNotepad.UseVisualStyleBackColor = true;
-            // 
-            // btnBasicClearSysProxy
-            // 
-            resources.ApplyResources(this.btnBasicClearSysProxy, "btnBasicClearSysProxy");
-            this.btnBasicClearSysProxy.Name = "btnBasicClearSysProxy";
-            this.toolTip1.SetToolTip(this.btnBasicClearSysProxy, resources.GetString("btnBasicClearSysProxy.ToolTip"));
-            this.btnBasicClearSysProxy.UseVisualStyleBackColor = true;
             // 
             // lbBasicProxyLink
             // 
@@ -550,7 +541,6 @@
         private System.Windows.Forms.CheckBox chkBasicUseCustomPac;
         private System.Windows.Forms.ComboBox cboxBasicPacProtocol;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button btnBasicClearSysProxy;
         private System.Windows.Forms.Button btnBasicViewInNotepad;
         private System.Windows.Forms.TabPage tabUsage;
         private System.Windows.Forms.TextBox tboxUsageReadMe;

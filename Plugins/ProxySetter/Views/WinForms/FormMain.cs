@@ -110,7 +110,6 @@ namespace ProxySetter.Views.WinForms
                 tboxUsageReadMe));
 
             ctrl.Plug(new Controllers.VGCPluginComponents.TabStatus(
-                setting,
                 pacServer,
 
                 lbBasicCurPacServerStatus,
@@ -119,8 +118,7 @@ namespace ProxySetter.Views.WinForms
                 btnBasicStopPacServer,
                 btnBasicViewInNotepad,
                 btnBasicDebugPacServer,
-                btnBaiscCopyProxyLink,
-                btnBasicClearSysProxy));
+                btnBaiscCopyProxyLink));
 
             ctrl.Plug(new Controllers.VGCPluginComponents.TabBasicSetting(
                 setting,
