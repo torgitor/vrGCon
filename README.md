@@ -11,7 +11,7 @@
 [9]: https://github.com/UudrSgMEZ/V2RayGCon/releases/latest 
 
 
-V2RayGCon是windos下[v2ray-core](https://v2ray.com)的第三方图形界面。这个软件除支持订阅、导入vmess链接、扫描二维码等常规功能外，还支持使用lua脚本管理服务器，减少重复劳动。   
+V2RayGCon是windos下[v2ray-core](https://v2ray.com)的第三方图形界面客户端。这个软件除支持订阅、导入vmess链接、扫描二维码等常规功能外，还支持使用lua脚本管理服务器减少重复劳动。   
 
 [\[下载 download\]][9]&nbsp;&nbsp;[\[手册 wiki\]](https://github.com/UudrSgMEZ/V2RayGCon/wiki)&nbsp;&nbsp;[\[唯一联系方式 issue\]](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
 
