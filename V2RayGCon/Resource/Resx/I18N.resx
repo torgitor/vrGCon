@@ -311,7 +311,7 @@ Load new config?</value>
   <data name="NoNewVGC" xml:space="preserve">
     <value>The current V2RayGCon is the latest version.</value>
   </data>
-  <data name="VistPorjectPage" xml:space="preserve">
+  <data name="VistProjectPage" xml:space="preserve">
     <value>Vist project page?</value>
   </data>
   <data name="ConfirmDeleteAllServers" xml:space="preserve">
@@ -625,7 +625,7 @@ Switch to direct download.</value>
     <value>Fetch update information fail!</value>
   </data>
   <data name="NoUpdateTryLater" xml:space="preserve">
-    <value>There is no update available please try again later.</value>
+    <value>You are using the latest version now.</value>
   </data>
   <data name="FileCheckSumFail" xml:space="preserve">
     <value>File check sum fail!</value>
@@ -680,5 +680,23 @@ No, abort.</value>
   </data>
   <data name="CurSysProxy" xml:space="preserve">
     <value>CurSysProxy: </value>
+  </data>
+  <data name="Feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="ProjectPage" xml:space="preserve">
+    <value>GitHub</value>
+  </data>
+  <data name="ProjectWiki" xml:space="preserve">
+    <value>Wiki</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>Servers</value>
+  </data>
+  <data name="CheckForUpdate" xml:space="preserve">
+    <value>Check for update</value>
+  </data>
+  <data name="StopAllServers" xml:space="preserve">
+    <value>Stop all servers</value>
   </data>
 </root>

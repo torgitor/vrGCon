@@ -7,7 +7,8 @@ namespace VgcApis.Models.Consts
         public static double CustomSpeedtestMeanWeight = 0.6;
         public static double FloatPointNumberTolerance = 0.000001;
 
-        public static int SeverNumPerSubmenu = 30;
+        public static int ConfigEditorServerMenuGroupSize = 30;
+        public static int NotifyIconServerMenuGroupSize = 20;
 
         public const string ProtocolNameVmess = @"vmess";
         public const string ProtocolNameSs = @"shadowsocks";

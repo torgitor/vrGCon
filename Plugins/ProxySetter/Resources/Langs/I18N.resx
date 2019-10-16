@@ -141,8 +141,23 @@
   <data name="LaunchNotepadFail" xml:space="preserve">
     <value>Launch notepad fail!</value>
   </data>
+  <data name="MiDirect" xml:space="preserve">
+    <value>Direct</value>
+  </data>
+  <data name="MiGlobal" xml:space="preserve">
+    <value>Global</value>
+  </data>
+  <data name="MiNone" xml:space="preserve">
+    <value>Untouched</value>
+  </data>
+  <data name="MiPAC" xml:space="preserve">
+    <value>PAC</value>
+  </data>
   <data name="NoServerCapableOfSysProxy" xml:space="preserve">
     <value>No server capable to be system proxy.</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
   </data>
   <data name="PacProxyRequireSocksOrHttpServer" xml:space="preserve">
     <value>PAC proxy require socks or http server.</value>

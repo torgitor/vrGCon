@@ -50,7 +50,7 @@ namespace V2RayGCon.Views.WinForms
 
             this.FormClosed += (s, a) =>
             {
-                servers.OnRequireMenuUpdate -= OnSettingChangeHandler;
+                ReleaseServerEvents();
                 servListUpdater?.ForgetIt();
                 servListUpdater?.Quit();
             };
@@ -66,12 +66,24 @@ namespace V2RayGCon.Views.WinForms
                 },
                 VgcApis.Models.Consts.Intervals.FormQrcodeMenuUpdateDelay);
 
-            servers.OnRequireMenuUpdate += OnSettingChangeHandler;
+            BindServerEvents();
 
             servListUpdater.DoItLater();
         }
 
         #region private methods
+        private void ReleaseServerEvents()
+        {
+            servers.OnServerCountChange -= OnSettingChangeHandler;
+            servers.OnServerPropertyChange -= OnSettingChangeHandler;
+        }
+
+        private void BindServerEvents()
+        {
+            servers.OnServerCountChange += OnSettingChangeHandler;
+            servers.OnServerPropertyChange += OnSettingChangeHandler;
+        }
+
         VgcApis.Models.Datas.Enum.LinkTypes ComboBoxSelectedIndexToLinkType(
             int index)
         {

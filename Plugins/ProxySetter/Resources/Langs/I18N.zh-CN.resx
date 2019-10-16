@@ -141,8 +141,23 @@
   <data name="LaunchNotepadFail" xml:space="preserve">
     <value>启动记事本失败！</value>
   </data>
+  <data name="MiDirect" xml:space="preserve">
+    <value>直连</value>
+  </data>
+  <data name="MiGlobal" xml:space="preserve">
+    <value>全局</value>
+  </data>
+  <data name="MiNone" xml:space="preserve">
+    <value>保持现状</value>
+  </data>
+  <data name="MiPAC" xml:space="preserve">
+    <value>PAC</value>
+  </data>
   <data name="NoServerCapableOfSysProxy" xml:space="preserve">
     <value>没有可设置为系统代理的服务器</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选项</value>
   </data>
   <data name="PacProxyRequireSocksOrHttpServer" xml:space="preserve">
     <value>SOCKS或HTTP服务器才可以设置为PAC代理</value>

@@ -107,8 +107,7 @@ namespace V2RayGCon.Controller.FormMainComponent
 
             foreach (var plugin in plugins)
             {
-                var mi = new ToolStripMenuItem(
-                    plugin.Name, plugin.Icon, (s, a) => plugin.Show());
+                var mi = new ToolStripMenuItem(plugin.Name, plugin.Icon, (s, a) => plugin.Show());
                 pluginToolStrip.DropDownItems.Add(mi);
                 mi.ToolTipText = plugin.Description;
             }
@@ -140,7 +139,7 @@ namespace V2RayGCon.Controller.FormMainComponent
             removeV2rayCore.Click += (s, a) => RemoveV2RayCore();
 
             aboutVGC.Click += (s, a) =>
-                Lib.UI.VisitUrl(I18N.VistPorjectPage, Properties.Resources.ProjectLink);
+                Lib.UI.VisitUrl(I18N.VistProjectPage, Properties.Resources.ProjectLink);
 
             help.Click += (s, a) =>
                 Lib.UI.VisitUrl(I18N.VistWikiPage, Properties.Resources.WikiLink);

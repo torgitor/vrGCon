@@ -43,7 +43,7 @@ namespace ProxySetter.Services
         {
             var bs = setting.GetBasicSetting();
             var isStartPacServer = bs.isAlwaysStartPacServ;
-            var isStartTracker = bs.isAutoUpdateSysProxy;
+            var isAutoMode = bs.isAutoUpdateSysProxy;
 
             switch ((Model.Data.Enum.SystemProxyModes)bs.sysProxyMode)
             {
@@ -55,11 +55,11 @@ namespace ProxySetter.Services
                     Lib.Sys.ProxySetter.SetPacProxy(pacServer.GetPacUrl());
                     break;
                 case Model.Data.Enum.SystemProxyModes.Direct:
-                    isStartTracker = false;
+                    isAutoMode = false;
                     Lib.Sys.ProxySetter.ClearSysProxy();
                     break;
                 default:
-                    isStartTracker = false;
+                    isAutoMode = false;
                     break;
             }
 
@@ -72,8 +72,11 @@ namespace ProxySetter.Services
                 pacServer.StopPacServer();
             }
 
-            if (isStartTracker)
+            if (isAutoMode)
             {
+                //in case user not set any proxysetter settings yet
+                OnCoreRunningStatChangeHandler(null, EventArgs.Empty);
+
                 StartTracking();
             }
             else
@@ -149,6 +152,7 @@ namespace ProxySetter.Services
             setting.SaveBasicSetting(bs);
             Restart();
         }
+
         #endregion
 
         #region private method
@@ -267,18 +271,17 @@ namespace ProxySetter.Services
         }
 
         string curServerConfig;
-
-        void OnCoreStartHandler(object sender, EventArgs args)
+        void OnCoreRunningStatChangeHandler(object sender, EventArgs args)
         {
-            var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
-            curServerConfig = coreCtrl.GetConfiger().GetConfig();
-            WakeupLazyProxyUpdater();
-        }
-
-        void OnCoreClosingHandler(object sender, EventArgs args)
-        {
-            var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
-            curServerConfig = coreCtrl.GetConfiger().GetConfig();
+            if (sender != null)
+            {
+                var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
+                curServerConfig = coreCtrl.GetConfiger().GetConfig();
+            }
+            else
+            {
+                curServerConfig = @"";
+            }
             WakeupLazyProxyUpdater();
         }
 
@@ -292,8 +295,8 @@ namespace ProxySetter.Services
                     return;
                 }
 
-                servers.OnCoreClosing += OnCoreClosingHandler;
-                servers.OnCoreStart += OnCoreStartHandler;
+                servers.OnCoreStop += OnCoreRunningStatChangeHandler;
+                servers.OnCoreStart += OnCoreRunningStatChangeHandler;
                 isTracking = true;
             }
             setting.DebugLog("Start tracking.");
@@ -308,8 +311,8 @@ namespace ProxySetter.Services
                     return;
                 }
 
-                servers.OnCoreClosing -= OnCoreClosingHandler;
-                servers.OnCoreStart -= OnCoreStartHandler;
+                servers.OnCoreStop -= OnCoreRunningStatChangeHandler;
+                servers.OnCoreStart -= OnCoreRunningStatChangeHandler;
 
                 isTracking = false;
             }

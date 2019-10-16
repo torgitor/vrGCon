@@ -133,11 +133,56 @@ namespace ProxySetter.Resources.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Direct 的本地化字符串。
+        /// </summary>
+        internal static string MiDirect {
+            get {
+                return ResourceManager.GetString("MiDirect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Global 的本地化字符串。
+        /// </summary>
+        internal static string MiGlobal {
+            get {
+                return ResourceManager.GetString("MiGlobal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Untouched 的本地化字符串。
+        /// </summary>
+        internal static string MiNone {
+            get {
+                return ResourceManager.GetString("MiNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 PAC 的本地化字符串。
+        /// </summary>
+        internal static string MiPAC {
+            get {
+                return ResourceManager.GetString("MiPAC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 No server capable to be system proxy. 的本地化字符串。
         /// </summary>
         internal static string NoServerCapableOfSysProxy {
             get {
                 return ResourceManager.GetString("NoServerCapableOfSysProxy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Options 的本地化字符串。
+        /// </summary>
+        internal static string Options {
+            get {
+                return ResourceManager.GetString("Options", resourceCulture);
             }
         }
         
