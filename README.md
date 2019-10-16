@@ -9,17 +9,15 @@
 [7]: https://img.shields.io/github/license/UudrSgMEZ/V2RayGCon.svg "Licence Badge"
 [8]: https://github.com/UudrSgMEZ/V2RayGCon/blob/master/LICENSE "Licence"
 
-V2RayGCon是windos下[v2ray-core](https://v2ray.com)的第三方图形界面。  
-这个软件除支持订阅、导入vmess链接、扫描二维码等常规功能外，  
-还支持使用lua脚本管理服务器，减少重复劳动。   
+V2RayGCon是windos下[v2ray-core](https://v2ray.com)的第三方图形界面。这个软件除支持订阅、导入vmess链接、扫描二维码等常规功能外，还支持使用lua脚本管理服务器，减少重复劳动。   
 
 [\[下载 download\]](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)&nbsp;&nbsp;[\[手册 wiki\]](https://github.com/UudrSgMEZ/V2RayGCon/wiki)&nbsp;&nbsp;[\[唯一联系方式 issue\]](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
 
 ### 安装 Install
-下载V2RayGCon-box.zip并解压到任意目录，然后，，，没有然后了。  
-系统需要安装.net framework 4.5或以上（通常已经安装了）。  
+系统需要先装.net framework 4.5或以上（通常已经装了）。  
+接着到[下载V2RayGCon-box.zip](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest)并解压到任意目录，然后，，，没有然后了。  
 
-Download and extract to any directory you like. That's it.  
+Download and extract [V2RayGCon-box.zip](https://github.com/UudrSgMEZ/V2RayGCon/releases/latest) to any directory you like. That's it.  
 Require .net framework 4.5 or higher.  
 
 ### 演示 Demo
