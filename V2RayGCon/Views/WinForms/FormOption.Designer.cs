@@ -35,6 +35,8 @@
             this.btnImportAdd = new System.Windows.Forms.Button();
             this.flyImportPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.tabPageSubscribe = new System.Windows.Forms.TabPage();
+            this.btnSubsInvertSelection = new System.Windows.Forms.Button();
+            this.btnSubsUseAll = new System.Windows.Forms.Button();
             this.chkSubsIsUseProxy = new System.Windows.Forms.CheckBox();
             this.btnUpdateViaSubscription = new System.Windows.Forms.Button();
             this.btnAddSubsUrl = new System.Windows.Forms.Button();
@@ -134,6 +136,8 @@
             // 
             // tabPageSubscribe
             // 
+            this.tabPageSubscribe.Controls.Add(this.btnSubsInvertSelection);
+            this.tabPageSubscribe.Controls.Add(this.btnSubsUseAll);
             this.tabPageSubscribe.Controls.Add(this.chkSubsIsUseProxy);
             this.tabPageSubscribe.Controls.Add(this.btnUpdateViaSubscription);
             this.tabPageSubscribe.Controls.Add(this.btnAddSubsUrl);
@@ -141,6 +145,20 @@
             resources.ApplyResources(this.tabPageSubscribe, "tabPageSubscribe");
             this.tabPageSubscribe.Name = "tabPageSubscribe";
             this.tabPageSubscribe.UseVisualStyleBackColor = true;
+            // 
+            // btnSubsInvertSelection
+            // 
+            resources.ApplyResources(this.btnSubsInvertSelection, "btnSubsInvertSelection");
+            this.btnSubsInvertSelection.Name = "btnSubsInvertSelection";
+            this.toolTip1.SetToolTip(this.btnSubsInvertSelection, resources.GetString("btnSubsInvertSelection.ToolTip"));
+            this.btnSubsInvertSelection.UseVisualStyleBackColor = true;
+            // 
+            // btnSubsUseAll
+            // 
+            resources.ApplyResources(this.btnSubsUseAll, "btnSubsUseAll");
+            this.btnSubsUseAll.Name = "btnSubsUseAll";
+            this.toolTip1.SetToolTip(this.btnSubsUseAll, resources.GetString("btnSubsUseAll.ToolTip"));
+            this.btnSubsUseAll.UseVisualStyleBackColor = true;
             // 
             // chkSubsIsUseProxy
             // 
@@ -603,5 +621,7 @@
         private System.Windows.Forms.CheckBox chkDefImportBypassCnSite;
         private System.Windows.Forms.CheckBox chkDefImportIsFold;
         private System.Windows.Forms.Button btnSetOpenStartupFolder;
+        private System.Windows.Forms.Button btnSubsInvertSelection;
+        private System.Windows.Forms.Button btnSubsUseAll;
     }
 }

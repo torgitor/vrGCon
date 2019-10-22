@@ -31,7 +31,7 @@ namespace V2RayGCon.Service
             this.setting = setting;
             this.notifier = notifier;
 
-            vgcApis.Run(setting, servers, configMgr, slinkMgr);
+            vgcApis.Run(setting, servers, configMgr, slinkMgr, notifier);
             plugins = LoadAllPlugins();
             RestartAllPlugins();
         }
@@ -126,18 +126,13 @@ namespace V2RayGCon.Service
                 }
 
                 var plugin = plugins[fileName];
-                var mi = new ToolStripMenuItem(fileName, plugin.Icon, (s, a) => plugin.Show());
+                var mi = plugin.GetMenu();
                 mi.ImageScaling = ToolStripItemImageScaling.SizeToFit;
                 mi.ToolTipText = plugin.Description;
                 children.Add(mi);
             }
 
-            notifier.UpdatePluginMenu(children.Count > 0 ?
-                new ToolStripMenuItem(
-                    I18N.Plugins,
-                    Properties.Resources.Module_16x,
-                    children.ToArray()) :
-                null);
+            notifier.UpdatePluginMenu(children);
         }
 
         public Dictionary<string, VgcApis.Models.Interfaces.IPlugin> LoadAllPlugins()

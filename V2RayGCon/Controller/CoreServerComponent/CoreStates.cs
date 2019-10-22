@@ -93,9 +93,8 @@ namespace V2RayGCon.Controller.CoreServerComponent
         {
             ToggleBoolPropertyOnDemand(ref coreInfo.isInjectImport, true);
             configer.UpdateSummaryThen(
-                () => container.InvokeEventOnRequireMenuUpdate());
+                () => container.InvokeEventOnPropertyChange());
         }
-
 
         public VgcApis.Models.Datas.CoreInfo GetAllRawCoreInfo() => coreInfo;
 
@@ -146,7 +145,6 @@ namespace V2RayGCon.Controller.CoreServerComponent
                 return;
             }
             coreInfo.isSelected = selected;
-            container.InvokeEventOnRequireStatusBarUpdate();
             container.InvokeEventOnPropertyChange();
         }
 

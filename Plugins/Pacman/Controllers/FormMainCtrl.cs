@@ -104,6 +104,7 @@ namespace Pacman.Controllers
                     {
                         title = item.GetTitle(),
                         uid = item.GetUid(),
+                        status = item.GetStatus(),
                     };
 
                     foreach (Views.UserControls.BeanUI control in flyContent.Controls)

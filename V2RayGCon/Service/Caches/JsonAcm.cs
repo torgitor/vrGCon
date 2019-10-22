@@ -12,7 +12,7 @@ namespace V2RayGCon.Service.Caches
         public JsonAcm() { }
 
         #region public methods
-        public void BindToEditor(Scintilla editor)
+        public AutocompleteMenu BindToEditor(Scintilla editor)
         {
             const string SearchPattern =
             VgcApis.Models.Consts.Patterns.JsonSnippetSearchPattern;
@@ -28,6 +28,7 @@ namespace V2RayGCon.Service.Caches
             var snippets = new JsonBestMatchItems(
                     editor, SearchPattern, GetKeywords());
             acm.SetAutocompleteItems(snippets);
+            return acm;
         }
 
         #endregion

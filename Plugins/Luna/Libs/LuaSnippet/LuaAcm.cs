@@ -25,7 +25,7 @@ namespace Luna.Libs.LuaSnippet
         }
 
         #region public methods
-        public void BindToEditor(Scintilla editor)
+        public AutocompleteMenu BindToEditor(Scintilla editor)
         {
             var imageList = new System.Windows.Forms.ImageList();
             imageList.Images.Add(Properties.Resources.KeyDown_16x);
@@ -50,6 +50,8 @@ namespace Luna.Libs.LuaSnippet
                     functionCache,
                     keywordCache,
                     subFunctionCache));
+
+            return acm;
         }
 
         #endregion

@@ -141,8 +141,23 @@
   <data name="LaunchNotepadFail" xml:space="preserve">
     <value>Launch notepad fail!</value>
   </data>
+  <data name="MiDirect" xml:space="preserve">
+    <value>Direct</value>
+  </data>
+  <data name="MiGlobal" xml:space="preserve">
+    <value>Global</value>
+  </data>
+  <data name="MiNone" xml:space="preserve">
+    <value>Untouched</value>
+  </data>
+  <data name="MiPAC" xml:space="preserve">
+    <value>PAC</value>
+  </data>
   <data name="NoServerCapableOfSysProxy" xml:space="preserve">
     <value>No server capable to be system proxy.</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
   </data>
   <data name="PacProxyRequireSocksOrHttpServer" xml:space="preserve">
     <value>PAC proxy require socks or http server.</value>
@@ -152,6 +167,14 @@
   </data>
   <data name="PacServerIsOn" xml:space="preserve">
     <value>PAC server is running.</value>
+  </data>
+  <data name="ParseKeyCodeFail" xml:space="preserve">
+    <value>Try to parse hotkey fail!
+Please check hotkey settings in ProxySetter plug-in.</value>
+  </data>
+  <data name="RegistHotkeyFail" xml:space="preserve">
+    <value>Try to regist global hotkey fail!
+Please make sure hotkey is not taken by other application.</value>
   </data>
   <data name="SetAsSysProxy" xml:space="preserve">
     <value>Set as system proxy.</value>

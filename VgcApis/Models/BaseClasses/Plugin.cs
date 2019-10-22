@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace VgcApis.Models.BaseClasses
 {
@@ -9,6 +10,13 @@ namespace VgcApis.Models.BaseClasses
         public virtual string Version => throw new NotImplementedException();
         public virtual string Description => throw new NotImplementedException();
         public virtual Image Icon => throw new NotImplementedException();
+
+        public virtual ToolStripMenuItem GetMenu()
+        {
+            var menu = new ToolStripMenuItem(Name, Icon, (s, a) => Popup());
+            menu.ToolTipText = Description;
+            return menu;
+        }
 
         protected virtual void Start(Models.IServices.IApiService api) { }
         protected virtual void Stop() { }

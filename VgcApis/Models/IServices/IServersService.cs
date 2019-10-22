@@ -6,7 +6,7 @@ namespace VgcApis.Models.IServices
 {
     public interface IServersService
     {
-        event EventHandler OnCoreStart, OnCoreClosing;
+        event EventHandler OnCoreStart, OnCoreClosing, OnCoreStop;
 
         int GetAvailableHttpProxyPort();
         string ReplaceOrAddNewServer(string orgUid, string newConfig);

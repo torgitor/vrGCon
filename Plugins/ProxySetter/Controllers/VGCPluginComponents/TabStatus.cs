@@ -7,11 +7,9 @@ namespace ProxySetter.Controllers.VGCPluginComponents
     class TabStatus : ComponentCtrl
     {
         Label lbPacUrl, lbPacServerStatus;
-        readonly Services.PsSettings setting;
         Services.PacServer pacServer;
 
         public TabStatus(
-            Services.PsSettings setting,
             Services.PacServer pacServer,
 
             Label lbPacServerStatus,
@@ -20,10 +18,8 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             Button btnStop,
             Button btnViewInNotepad,
             Button btnDebug,
-            Button btnCopy,
-            Button btnClearSysProxy)
+            Button btnCopy)
         {
-            this.setting = setting;
             this.pacServer = pacServer;
 
             BindControls(lbPacServerStatus, lbPacUrl);
@@ -33,8 +29,7 @@ namespace ProxySetter.Controllers.VGCPluginComponents
                 btnStop,
                 btnViewInNotepad,
                 btnDebug,
-                btnCopy,
-                btnClearSysProxy);
+                btnCopy);
 
             OnPacServerStateChangedHandler(null, EventArgs.Empty);
 
@@ -47,8 +42,7 @@ namespace ProxySetter.Controllers.VGCPluginComponents
             Button btnStop,
             Button btnViewInNotepad,
             Button btnDebug,
-            Button btnCopy,
-            Button btnClearSysProxy)
+            Button btnCopy)
         {
             btnViewInNotepad.Click += (s, a) =>
             {
@@ -63,9 +57,6 @@ namespace ProxySetter.Controllers.VGCPluginComponents
                     VgcApis.Libs.UI.MsgBoxAsync(I18N.LaunchNotepadFail);
                 }
             };
-
-            btnClearSysProxy.Click += (s, a) =>
-                Lib.Sys.ProxySetter.ClearSysProxy();
 
             btnRestart.Click += (s, a) => pacServer.StartPacServer();
 

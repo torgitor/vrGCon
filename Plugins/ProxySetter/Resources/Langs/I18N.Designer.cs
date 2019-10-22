@@ -19,7 +19,7 @@ namespace ProxySetter.Resources.Langs {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class I18N {
@@ -133,11 +133,56 @@ namespace ProxySetter.Resources.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Direct 的本地化字符串。
+        /// </summary>
+        internal static string MiDirect {
+            get {
+                return ResourceManager.GetString("MiDirect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Global 的本地化字符串。
+        /// </summary>
+        internal static string MiGlobal {
+            get {
+                return ResourceManager.GetString("MiGlobal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Untouched 的本地化字符串。
+        /// </summary>
+        internal static string MiNone {
+            get {
+                return ResourceManager.GetString("MiNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 PAC 的本地化字符串。
+        /// </summary>
+        internal static string MiPAC {
+            get {
+                return ResourceManager.GetString("MiPAC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 No server capable to be system proxy. 的本地化字符串。
         /// </summary>
         internal static string NoServerCapableOfSysProxy {
             get {
                 return ResourceManager.GetString("NoServerCapableOfSysProxy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Options 的本地化字符串。
+        /// </summary>
+        internal static string Options {
+            get {
+                return ResourceManager.GetString("Options", resourceCulture);
             }
         }
         
@@ -165,6 +210,26 @@ namespace ProxySetter.Resources.Langs {
         internal static string PacServerIsOn {
             get {
                 return ResourceManager.GetString("PacServerIsOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Try to parse hotkey fail!
+        ///Please check hotkey settings in ProxySetter plug-in. 的本地化字符串。
+        /// </summary>
+        internal static string ParseKeyCodeFail {
+            get {
+                return ResourceManager.GetString("ParseKeyCodeFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Try to regist global hotkey fail!
+        ///Please make sure hotkey is not taken by other application. 的本地化字符串。
+        /// </summary>
+        internal static string RegistHotkeyFail {
+            get {
+                return ResourceManager.GetString("RegistHotkeyFail", resourceCulture);
             }
         }
         

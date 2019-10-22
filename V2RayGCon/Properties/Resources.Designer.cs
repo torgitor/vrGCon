@@ -226,6 +226,16 @@ namespace V2RayGCon.Properties {
         /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
+        internal static System.Drawing.Bitmap RemoteServer_16x {
+            get {
+                object obj = ResourceManager.GetObject("RemoteServer_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
         internal static System.Drawing.Bitmap Settings_16x {
             get {
                 object obj = ResourceManager.GetObject("Settings_16x", resourceCulture);

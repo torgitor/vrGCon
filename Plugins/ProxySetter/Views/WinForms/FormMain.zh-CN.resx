@@ -117,15 +117,45 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="tabBasic.Text" xml:space="preserve">
-    <value>常规</value>
-  </data>
-  <data name="groupBox1.Text" xml:space="preserve">
-    <value>设置</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="chkBasicUseHotkey.Size" type="System.Drawing.Size, System.Drawing">
+    <value>70, 22</value>
+  </data>
+  <data name="chkBasicUseHotkey.Text" xml:space="preserve">
+    <value>使用</value>
+  </data>
+  <data name="chkBasicUseHotkey.ToolTip" xml:space="preserve">
+    <value>开启或停用全局热键</value>
+  </data>
+  <data name="chkBasicUseShift.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="chkBasicUseAlt.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tboxBasicHotkey.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="label9.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="label8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 18</value>
+  </data>
+  <data name="label8.Text" xml:space="preserve">
+    <value>热键</value>
+  </data>
+  <data name="label8.ToolTip" xml:space="preserve">
+    <value>切换代理模式全局热键</value>
+  </data>
+  <data name="cboxBasicPacProtocol.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="chkBasicUseCustomPac.Location" type="System.Drawing.Point, System.Drawing">
+    <value>348, 231</value>
+  </data>
   <data name="chkBasicUseCustomPac.Size" type="System.Drawing.Size, System.Drawing">
-    <value>78, 16</value>
+    <value>115, 22</value>
   </data>
   <data name="chkBasicUseCustomPac.Text" xml:space="preserve">
     <value>自定义PAC</value>
@@ -139,6 +169,9 @@
   <data name="cboxBasicPacMode.Items1" xml:space="preserve">
     <value>黑名单</value>
   </data>
+  <data name="cboxBasicPacMode.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="cboxBasicSysProxyMode.Items" xml:space="preserve">
     <value>保持现状</value>
   </data>
@@ -148,8 +181,11 @@
   <data name="cboxBasicSysProxyMode.Items3" xml:space="preserve">
     <value>直连</value>
   </data>
+  <data name="cboxBasicSysProxyMode.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 12</value>
+    <value>80, 18</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
     <value>代理模式</value>
@@ -158,7 +194,7 @@
     <value>系统代理模式</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 12</value>
+    <value>80, 18</value>
   </data>
   <data name="label2.Text" xml:space="preserve">
     <value>代理端口</value>
@@ -176,22 +212,28 @@
     <value>自动</value>
   </data>
   <data name="chkBasicAutoUpdateSysProxy.ToolTip" xml:space="preserve">
-    <value>自动更新系统代理设置，系统代理模式不能设为直连。</value>
+    <value>自动更新系统代理设置，仅在全局和PAC模式下生效。</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 12</value>
+    <value>71, 18</value>
   </data>
   <data name="label4.Text" xml:space="preserve">
     <value>PAC协议</value>
   </data>
+  <data name="label4.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="label6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 12</value>
+    <value>71, 18</value>
   </data>
   <data name="label6.Text" xml:space="preserve">
     <value>PAC模式</value>
   </data>
+  <data name="label6.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 12</value>
+    <value>71, 18</value>
   </data>
   <data name="label3.Text" xml:space="preserve">
     <value>PAC端口</value>
@@ -199,8 +241,11 @@
   <data name="label3.ToolTip" xml:space="preserve">
     <value>PAC服务器端口（不和其他软件冲突就可以）</value>
   </data>
+  <data name="chkBasicPacAlwaysOn.Location" type="System.Drawing.Point, System.Drawing">
+    <value>348, 112</value>
+  </data>
   <data name="chkBasicPacAlwaysOn.Size" type="System.Drawing.Size, System.Drawing">
-    <value>72, 16</value>
+    <value>106, 22</value>
   </data>
   <data name="chkBasicPacAlwaysOn.Text" xml:space="preserve">
     <value>保持开启</value>
@@ -208,8 +253,20 @@
   <data name="chkBasicPacAlwaysOn.ToolTip" xml:space="preserve">
     <value>保持PAC服务器处于开启状态</value>
   </data>
-  <data name="groupBox2.Text" xml:space="preserve">
-    <value>状态</value>
+  <data name="tboxBasicCustomPacPath.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tboxBaiscPacPort.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tboxBasicGlobalPort.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="groupBox1.Text" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="groupBox1.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <data name="btnBasicViewInNotepad.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -239,6 +296,9 @@
   </data>
   <data name="lbBasicProxyLink.ToolTip" xml:space="preserve">
     <value>当前系统代理</value>
+  </data>
+  <data name="lbBasicCurPacServerStatus.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <data name="btnBaiscCopyProxyLink.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -286,11 +346,20 @@
   <data name="btnBasicStopPacServer.ToolTip" xml:space="preserve">
     <value>停止PAC服务器</value>
   </data>
-  <data name="tabPac.Text" xml:space="preserve">
-    <value>设置</value>
+  <data name="groupBox2.Text" xml:space="preserve">
+    <value>状态</value>
   </data>
-  <data name="groupBox3.Text" xml:space="preserve">
-    <value>白名单</value>
+  <data name="groupBox2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tableLayoutPanel2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tabBasic.Text" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="tabBasic.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <data name="btnSetSortWhitelist.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -305,8 +374,20 @@
   <data name="btnSetSortWhitelist.ToolTip" xml:space="preserve">
     <value>排序</value>
   </data>
-  <data name="groupBox4.Text" xml:space="preserve">
-    <value>黑名单</value>
+  <data name="rtboxPacWhiteList.Size" type="System.Drawing.Size, System.Drawing">
+    <value>473, 407</value>
+  </data>
+  <data name="rtboxPacWhiteList.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="groupBox3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 481</value>
+  </data>
+  <data name="groupBox3.Text" xml:space="preserve">
+    <value>白名单</value>
+  </data>
+  <data name="groupBox3.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <data name="btnSetSortBlacklist.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -321,31 +402,112 @@
   <data name="btnSetSortBlacklist.ToolTip" xml:space="preserve">
     <value>排序</value>
   </data>
-  <data name="tabUsage.Text" xml:space="preserve">
-    <value>用法</value>
+  <data name="rtboxPacBlackList.Size" type="System.Drawing.Size, System.Drawing">
+    <value>471, 407</value>
   </data>
-  <data name="groupBox5.Text" xml:space="preserve">
-    <value>说明</value>
+  <data name="rtboxPacBlackList.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="groupBox4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 481</value>
+  </data>
+  <data name="groupBox4.Text" xml:space="preserve">
+    <value>黑名单</value>
+  </data>
+  <data name="groupBox4.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tableLayoutPanel3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>982, 489</value>
+  </data>
+  <data name="tableLayoutPanel3.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tabPac.Size" type="System.Drawing.Size, System.Drawing">
+    <value>990, 497</value>
+  </data>
+  <data name="tabPac.Text" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="tabPac.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>215, 12</value>
+    <value>323, 18</value>
   </data>
   <data name="label5.Text" xml:space="preserve">
     <value>这个插件使用以下项目作为默认PAC源。</value>
   </data>
+  <data name="label5.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tboxUsageReadMe.Size" type="System.Drawing.Size, System.Drawing">
+    <value>944, 351</value>
+  </data>
+  <data name="tboxUsageReadMe.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="linkLabelUsageTxthinkingPac.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>251, 12</value>
+    <value>377, 18</value>
   </data>
   <data name="label7.Text" xml:space="preserve">
     <value>你可以在设置分页中像下面这样调整默认PAC。</value>
   </data>
+  <data name="label7.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="groupBox5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>984, 491</value>
+  </data>
+  <data name="groupBox5.Text" xml:space="preserve">
+    <value>说明</value>
+  </data>
+  <data name="groupBox5.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>990, 497</value>
+  </data>
+  <data name="panel2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tabUsage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>990, 497</value>
+  </data>
+  <data name="tabUsage.Text" xml:space="preserve">
+    <value>用法</value>
+  </data>
+  <data name="tabUsage.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tabControl1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="btnCancel.Text" xml:space="preserve">
     <value>取消</value>
+  </data>
+  <data name="btnCancel.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <data name="btnSave.Text" xml:space="preserve">
     <value>保存</value>
   </data>
+  <data name="btnSave.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="panel1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tableLayoutPanel1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>V2RayGCon plugins</value>
+  </data>
+  <data name="$this.ToolTip" xml:space="preserve">
+    <value />
   </data>
 </root>

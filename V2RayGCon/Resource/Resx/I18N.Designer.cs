@@ -214,6 +214,15 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 Check for update 的本地化字符串。
+        /// </summary>
+        internal static string CheckForUpdate {
+            get {
+                return ResourceManager.GetString("CheckForUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Config Editor 的本地化字符串。
         /// </summary>
         internal static string ConfigEditor {
@@ -514,6 +523,15 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 CurSysProxy:  的本地化字符串。
+        /// </summary>
+        internal static string CurSysProxy {
+            get {
+                return ResourceManager.GetString("CurSysProxy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Data too big. Please trim down the config file. 的本地化字符串。
         /// </summary>
         internal static string DataTooBig {
@@ -772,6 +790,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string ExitOtherVGCFirst {
             get {
                 return ResourceManager.GetString("ExitOtherVGCFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Feedback 的本地化字符串。
+        /// </summary>
+        internal static string Feedback {
+            get {
+                return ResourceManager.GetString("Feedback", resourceCulture);
             }
         }
         
@@ -1138,7 +1165,7 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
-        ///   查找类似 There is no update available please try again later. 的本地化字符串。
+        ///   查找类似 You are using the latest version now. 的本地化字符串。
         /// </summary>
         internal static string NoUpdateTryLater {
             get {
@@ -1247,6 +1274,24 @@ namespace V2RayGCon.Resource.Resx {
         }
         
         /// <summary>
+        ///   查找类似 GitHub 的本地化字符串。
+        /// </summary>
+        internal static string ProjectPage {
+            get {
+                return ResourceManager.GetString("ProjectPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Wiki 的本地化字符串。
+        /// </summary>
+        internal static string ProjectWiki {
+            get {
+                return ResourceManager.GetString("ProjectWiki", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Proxy all website 的本地化字符串。
         /// </summary>
         internal static string ProxyModeAll {
@@ -1343,6 +1388,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string ServerListIsEmpty {
             get {
                 return ResourceManager.GetString("ServerListIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Servers 的本地化字符串。
+        /// </summary>
+        internal static string Servers {
+            get {
+                return ResourceManager.GetString("Servers", resourceCulture);
             }
         }
         
@@ -1461,6 +1515,15 @@ namespace V2RayGCon.Resource.Resx {
         internal static string Stop {
             get {
                 return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Stop all servers 的本地化字符串。
+        /// </summary>
+        internal static string StopAllServers {
+            get {
+                return ResourceManager.GetString("StopAllServers", resourceCulture);
             }
         }
         
@@ -1637,9 +1700,9 @@ namespace V2RayGCon.Resource.Resx {
         /// <summary>
         ///   查找类似 Vist project page? 的本地化字符串。
         /// </summary>
-        internal static string VistPorjectPage {
+        internal static string VistProjectPage {
             get {
-                return ResourceManager.GetString("VistPorjectPage", resourceCulture);
+                return ResourceManager.GetString("VistProjectPage", resourceCulture);
             }
         }
         

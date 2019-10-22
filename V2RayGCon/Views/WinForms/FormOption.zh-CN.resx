@@ -138,6 +138,18 @@
   <data name="btnImportAdd.ToolTip" xml:space="preserve">
     <value>添加import URL</value>
   </data>
+  <data name="btnSubsInvertSelection.Text" xml:space="preserve">
+    <value>反选</value>
+  </data>
+  <data name="btnSubsInvertSelection.ToolTip" xml:space="preserve">
+    <value>反选</value>
+  </data>
+  <data name="btnSubsUseAll.Text" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="btnSubsUseAll.ToolTip" xml:space="preserve">
+    <value>把所有"启用"都打上钩</value>
+  </data>
   <data name="chkSubsIsUseProxy.Text" xml:space="preserve">
     <value>使用代理</value>
   </data>

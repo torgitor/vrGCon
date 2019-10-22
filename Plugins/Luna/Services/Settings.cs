@@ -1,5 +1,4 @@
-﻿using Luna.Resources.Langs;
-using Newtonsoft.Json;
+﻿using AutocompleteMenuNS;
 using ScintillaNET;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace Luna.Services
         public Settings() { }
 
         #region internal methods
-        public void AttachSnippetsTo(Scintilla editor) =>
+        public AutocompleteMenu AttachSnippetsTo(Scintilla editor) =>
             luaAcm?.BindToEditor(editor);
         #endregion
 

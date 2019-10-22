@@ -74,10 +74,6 @@ namespace V2RayGCon.Controller.OptionComponent
             if (IsIndexValide(index) && ((int)setting.culture != index))
             {
                 setting.culture = (Model.Data.Enum.Cultures)index;
-                MessageBox.Show(
-                    "Language change has not taken effect yet."
-                    + System.Environment.NewLine
-                    + "Please restart this application.");
             }
 
             var keepTracking = chkServAutoTrack.Checked;

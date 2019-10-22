@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using AutocompleteMenuNS;
+using Newtonsoft.Json.Linq;
 using ScintillaNET;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ namespace V2RayGCon.Controller.ConfigerComponet
     {
         Service.Cache cache;
 
-        Scintilla editor;
+        Scintilla editor = null;
+        AutocompleteMenu jsonAcm = null;
         ComboBox cboxSection, cboxExample;
         Button btnFormat, btnRestore;
 
@@ -61,9 +63,18 @@ namespace V2RayGCon.Controller.ConfigerComponet
             RefreshSections();
             cboxSection.Text = preSection;
             AttachEditorEvents();
+            jsonAcm = cache.GetJsonAcm()?.BindToEditor(editor);
             ShowSection();
             UpdateCboxExampleItems();
             AttachControlEvents();
+        }
+
+        public void Cleanup()
+        {
+            if (jsonAcm != null)
+            {
+                jsonAcm.TargetControlWrapper = null;
+            }
         }
 
         public void DiscardChanges()
@@ -265,8 +276,6 @@ namespace V2RayGCon.Controller.ConfigerComponet
             editor.InsertCheck += Scintilla_InsertCheck;
             editor.CharAdded += Scintilla_CharAdded;
             editor.TextChanged += Scintilla_TextChanged;
-
-            cache.GetJsonAcm()?.BindToEditor(editor);
         }
 
         bool IsJsonCollection(JToken token)

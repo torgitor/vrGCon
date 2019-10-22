@@ -37,6 +37,8 @@ namespace V2RayGCon.Views.WinForms
         string formTitle;
         bool isShowPanel;
 
+        ScintillaNET.Scintilla editor;
+
         public FormConfiger(string originalConfigString = null)
         {
             setting = Service.Setting.Instance;
@@ -64,19 +66,18 @@ namespace V2RayGCon.Views.WinForms
 
             chkIsV4.Checked = setting.isUseV4;
 
-            var editor = configer
+            editor = configer
                 .GetComponent<Controller.ConfigerComponet.Editor>()
                 .GetEditor();
 
             editor.Click += OnMouseLeaveToolsPanel;
-            servers.OnRequireMenuUpdate += MenuUpdateHandler;
+            BindServerEvents();
 
             this.FormClosing += (s, a) =>
             {
                 if (!configer.IsConfigSaved())
                 {
-                    a.Cancel = !Lib.UI.Confirm(
-                        I18N.ConfirmCloseWinWithoutSave);
+                    a.Cancel = !Lib.UI.Confirm(I18N.ConfirmCloseWinWithoutSave);
                 }
             };
 
@@ -84,15 +85,18 @@ namespace V2RayGCon.Views.WinForms
             {
                 formSearch?.Close();
                 editor.Click -= OnMouseLeaveToolsPanel;
-                servers.OnRequireMenuUpdate -= MenuUpdateHandler;
-                configer.Cleanup();
-                setting.SaveFormRect(this);
                 toolsPanelController.Dispose();
+                ReleaseServerEvents();
+                configer.Cleanup();
+                editor?.Dispose();
+                setting.SaveFormRect(this);
                 setting.LazyGC();
             };
 
             configer.UpdateServerMenusLater();
         }
+
+
 
         #region UI event handler
         private void ShowLeftPanelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -365,6 +369,17 @@ namespace V2RayGCon.Views.WinForms
         #endregion
 
         #region private method
+        private void ReleaseServerEvents()
+        {
+            servers.OnServerCountChange -= MenuUpdateHandler;
+            servers.OnServerPropertyChange -= MenuUpdateHandler;
+        }
+
+        private void BindServerEvents()
+        {
+            servers.OnServerCountChange += MenuUpdateHandler;
+            servers.OnServerPropertyChange += MenuUpdateHandler;
+        }
 
         public void SetTitle(string name)
         {

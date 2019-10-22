@@ -306,7 +306,7 @@ https://github.com/v2ray/v2ray-core</value>
   <data name="NoNewVGC" xml:space="preserve">
     <value>当前V2RayGCon已经是最新版本。</value>
   </data>
-  <data name="VistPorjectPage" xml:space="preserve">
+  <data name="VistProjectPage" xml:space="preserve">
     <value>访问项目主页？</value>
   </data>
   <data name="ConfirmDeleteAllServers" xml:space="preserve">
@@ -616,7 +616,7 @@ https://github.com/v2ray/v2ray-core</value>
     <value>获取更新信息失败</value>
   </data>
   <data name="NoUpdateTryLater" xml:space="preserve">
-    <value>暂无可用更新，请迟些再试。</value>
+    <value>作者太懒还没发布新版本，过几天再试下。</value>
   </data>
   <data name="FileCheckSumFail" xml:space="preserve">
     <value>文件校验失败！</value>
@@ -668,5 +668,26 @@ https://github.com/v2ray/v2ray-core</value>
   </data>
   <data name="MMdd" xml:space="preserve">
     <value>MM月dd日</value>
+  </data>
+  <data name="CurSysProxy" xml:space="preserve">
+    <value>当前系统代理：</value>
+  </data>
+  <data name="Feedback" xml:space="preserve">
+    <value>问题反馈</value>
+  </data>
+  <data name="ProjectPage" xml:space="preserve">
+    <value>项目主页</value>
+  </data>
+  <data name="ProjectWiki" xml:space="preserve">
+    <value>帮助说明</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>服务器</value>
+  </data>
+  <data name="CheckForUpdate" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="StopAllServers" xml:space="preserve">
+    <value>全部停止</value>
   </data>
 </root>

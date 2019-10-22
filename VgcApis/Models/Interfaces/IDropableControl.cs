@@ -4,5 +4,7 @@
     {
         string GetTitle();
         string GetUid();
+
+        string GetStatus();
     }
 }

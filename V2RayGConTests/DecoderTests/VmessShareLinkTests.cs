@@ -19,7 +19,7 @@ namespace V2RayGCon.Test.DecoderTests
                 v = "2",
                 add = "1.2.3.4",
                 port = "1234",
-                id = "0",
+                id = Guid.NewGuid().ToString(),
                 ps = "standard",
             };
 
@@ -30,11 +30,12 @@ namespace V2RayGCon.Test.DecoderTests
                 v = "2",
                 add = "1.2.3.4",
                 port = "1234",
-                id = "0",
-                ps = "standard",
+                id = Guid.NewGuid().ToString(),
+                ps = "non-standard",
             };
 
-            var linkNonStandard = vmessStandard.ToVmessLink().Replace(@"=", @"");
+            var linkNonStandard = vmessNonStandard.ToVmessLink().Replace(@"=", @"");
+
             data.Add(new Tuple<Model.Data.Vmess, string>(vmessStandard, linkStandard));
             data.Add(new Tuple<Model.Data.Vmess, string>(vmessNonStandard, linkNonStandard));
             return data;
@@ -84,6 +85,21 @@ namespace V2RayGCon.Test.DecoderTests
                 var vmess = Lib.Utils.VmessLink2Vmess(data.Item2);
                 Assert.IsTrue(vmess.Equals(data.Item1));
             }
+        }
+
+        [TestMethod]
+        public void DecodeVmessFailTest()
+        {
+            var errorVmess = new V2RayGCon.Model.Data.Vmess
+            {
+                id = "1234",  // invalid GUID
+                port = "1234",
+                add = "1.2.3.4",
+            };
+
+            var vmessLink = errorVmess.ToVmessLink();
+            var vmessDecode = Lib.Utils.VmessLink2Vmess(vmessLink);
+            Assert.IsNull(vmessDecode);
         }
     }
 }

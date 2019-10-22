@@ -99,6 +99,11 @@ namespace V2RayGCon.Controller.ConfigerComponet
         #endregion
 
         #region public method
+        public void Cleanup()
+        {
+            editor?.Dispose();
+        }
+
         public override void Update(JObject config)
         {
             content = I18N.AnalysingImport;

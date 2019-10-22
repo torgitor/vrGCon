@@ -740,9 +740,9 @@ namespace V2RayGCon.Lib
                 var vmess = JsonConvert.DeserializeObject<Model.Data.Vmess>(plainText);
                 if (!string.IsNullOrEmpty(vmess.add)
                     && !string.IsNullOrEmpty(vmess.port)
-                    && !string.IsNullOrEmpty(vmess.id))
+                    && !string.IsNullOrEmpty(vmess.id)
+                    && new Guid(vmess.id) != new Guid())
                 {
-
                     return vmess;
                 }
             }

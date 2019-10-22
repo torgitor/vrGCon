@@ -124,6 +124,6 @@
     <value>将统计数据清零？</value>
   </data>
   <data name="Description" xml:space="preserve">
-    <value>显示统计信息。</value>
+    <value>显示统计信息。（需要开启统计支持）</value>
   </data>
 </root>

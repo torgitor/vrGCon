@@ -1,4 +1,5 @@
-﻿using Luna.Resources.Langs;
+﻿using AutocompleteMenuNS;
+using Luna.Resources.Langs;
 using ScintillaNET;
 using System;
 using System.Linq;
@@ -12,17 +13,15 @@ namespace Luna.Controllers
         Services.Settings settings;
         Services.LuaServer luaServer;
 
-        VgcApis.Models.IServices.IApiService api;
-        VgcApis.Models.IServices.IConfigMgrService configMgr;
-        VgcApis.Models.IServices.IServersService vgcServers;
-
         LuaCoreCtrl luaCoreCtrl;
         VgcApis.WinForms.FormSearch formSearch = null;
         VgcApis.Libs.Views.RepaintCtrl repaintCtrl;
         VgcApis.Libs.Sys.QueueLogger qLogger = new VgcApis.Libs.Sys.QueueLogger();
 
+        Scintilla luaEditor = null;
+        AutocompleteMenu luaAcm = null;
+
         #region controls
-        Scintilla luaEditor;
         ComboBox cboxScriptName;
         Button btnNewScript,
             btnSaveScript,
@@ -75,14 +74,9 @@ namespace Luna.Controllers
           Services.Settings settings,
           Services.LuaServer luaServer)
         {
-            this.api = api;
-            this.configMgr = api.GetConfigMgrService();
-            this.vgcServers = api.GetServersService();
-
             this.settings = settings;
             this.luaServer = luaServer;
-            this.luaCoreCtrl = CreateLuaCoreCtrl(
-                settings, api);
+            this.luaCoreCtrl = CreateLuaCoreCtrl(settings, api);
 
             InitControls();
             BindEvents();
@@ -166,6 +160,12 @@ namespace Luna.Controllers
             formSearch?.Close();
             luaCoreCtrl?.Kill();
             qLogger?.Dispose();
+
+            if (luaAcm != null)
+            {
+                luaAcm.TargetControlWrapper = null;
+            }
+            luaEditor?.Dispose();
         }
 
         public string GetCurrentEditorContent() => luaEditor.Text;
@@ -437,7 +437,7 @@ namespace Luna.Controllers
         {
             // script editor
             luaEditor = Libs.UI.CreateLuaEditor(pnlEditorContainer);
-            settings.AttachSnippetsTo(luaEditor);
+            luaAcm = settings.AttachSnippetsTo(luaEditor);
         }
 
         void ReloadScriptName()

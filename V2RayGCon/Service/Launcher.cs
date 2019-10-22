@@ -117,10 +117,11 @@ namespace V2RayGCon.Service
             cache.Run(setting);
             configMgr.Run(setting, cache, servers);
             servers.Run(setting, cache, configMgr);
-            slinkMgr.Run(setting, servers, cache);
-            notifier.Run(setting, servers, slinkMgr);
-            pluginsServ.Run(setting, servers, configMgr, slinkMgr, notifier);
             updater.Run(setting, servers);
+            slinkMgr.Run(setting, servers, cache);
+            notifier.Run(setting, servers, slinkMgr, updater);
+            pluginsServ.Run(setting, servers, configMgr, slinkMgr, notifier);
+
         }
 
         void BindEvents()

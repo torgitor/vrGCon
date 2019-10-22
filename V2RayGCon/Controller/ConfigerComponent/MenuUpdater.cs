@@ -105,7 +105,7 @@ namespace V2RayGCon.Controller.ConfigerComponet
             miLoadServer.Enabled = true;
             miReplaceServer.Enabled = true;
 
-            var miPerSubmenu = VgcApis.Models.Consts.Config.SeverNumPerSubmenu;
+            var miPerSubmenu = VgcApis.Models.Consts.Config.ConfigEditorServerMenuGroupSize;
             var isUseSubMenu = loadServMiList.Count > miPerSubmenu;
             if (!isUseSubMenu)
             {

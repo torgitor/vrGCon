@@ -134,7 +134,7 @@
     <value>Luna</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>0.1.0</value>
-    <comment>add import / export</comment>
+    <value>0.1.1</value>
+    <comment>fix a bug in modules/reader</comment>
   </data>
 </root>

@@ -71,6 +71,10 @@ namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
             {
                 case "tcp":
                     mainParam = GetStr(subPrefix, "tcpSettings.header.type");
+                    if (mainParam?.ToLower() == "http")
+                    {
+                        ExtractTcpHttpSettings(config, isUseV4, vee);
+                    }
                     break;
                 case "kcp":
                     mainParam = GetStr(subPrefix, "kcpSettings.header.type");
@@ -100,6 +104,26 @@ namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
             }
             vee.streamParam1 = mainParam;
             return vee;
+        }
+
+        void ExtractTcpHttpSettings(JObject json, bool isUseV4, Model.VeeShareLinks.Ver0a vee)
+        {
+            try
+            {
+                var path = isUseV4 ?
+                    json["outbounds"][0]["streamSettings"]["tcpSettings"]["header"]["request"]["path"] :
+                    json["outbound"]["streamSettings"]["tcpSettings"]["header"]["request"]["path"];
+                vee.streamParam2 = Lib.Utils.JArray2Str(path as JArray);
+            }
+            catch { }
+            try
+            {
+                var hosts = isUseV4 ?
+                    json["outbounds"][0]["streamSettings"]["tcpSettings"]["header"]["request"]["headers"]["Host"] :
+                    json["outbound"]["streamSettings"]["tcpSettings"]["header"]["request"]["headers"]["Host"];
+                vee.streamParam3 = Lib.Utils.JArray2Str(hosts as JArray);
+            }
+            catch { }
         }
 
         Tuple<JObject, JToken> VeeToConfig(Model.VeeShareLinks.Ver0a vee)
@@ -139,7 +163,10 @@ namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
             }
 
             string mainParam = vee.streamParam1;
-
+            if (streamType == "tcp" && mainParam == "http")
+            {
+                streamType = "tcp_http";
+            }
             var streamToken = cache.tpl.LoadTemplate(streamType);
             try
             {
@@ -147,6 +174,13 @@ namespace V2RayGCon.Service.ShareLinkComponents.VeeCodecs
                 {
                     case "tcp":
                         streamToken["tcpSettings"]["header"]["type"] = mainParam;
+                        break;
+                    case "tcp_http":
+                        streamToken["tcpSettings"]["header"]["type"] = mainParam;
+                        streamToken["tcpSettings"]["header"]["request"]["path"] =
+                            Lib.Utils.Str2JArray(string.IsNullOrEmpty(vee.streamParam2) ? "/" : vee.streamParam2);
+                        streamToken["tcpSettings"]["header"]["request"]["headers"]["Host"] =
+                            Lib.Utils.Str2JArray(vee.streamParam3);
                         break;
                     case "kcp":
                         streamToken["kcpSettings"]["header"]["type"] = mainParam;

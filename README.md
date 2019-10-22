@@ -5,16 +5,34 @@
 [3]: https://img.shields.io/github/release/UudrSgMEZ/V2RayGCon.svg "Release Badge"
 [4]: https://github.com/UudrSgMEZ/V2RayGCon/releases/latest "Releases"
 [5]: https://img.shields.io/github/downloads/UudrSgMEZ/V2RayGCon/total.svg "Total Downloads Badge"
-[6]: https://github.com/UudrSgMEZ/V2RayGCon/releases/latest "Releases"
+[6]: https://www.somsubhra.com/github-release-stats/?username=UudrSgMEZ&repository=V2RayGCon "Download Details"
 [7]: https://img.shields.io/github/license/UudrSgMEZ/V2RayGCon.svg "Licence Badge"
 [8]: https://github.com/UudrSgMEZ/V2RayGCon/blob/master/LICENSE "Licence"
+[9]: https://github.com/UudrSgMEZ/V2RayGCon/releases/latest 
 
-仅自用。Self-use only!  
+
+V2RayGCon是windos下[v2ray-core](https://v2ray.com)的第三方图形界面客户端。  
+
+[\[下载 download\]][9]&nbsp;&nbsp;[\[手册 wiki\]](https://github.com/UudrSgMEZ/V2RayGCon/wiki)&nbsp;&nbsp;[\[唯一联系方式 issue\]](https://github.com/UudrSgMEZ/V2RayGCon/issues)  
+
+### 安装 Install
+系统需要先装.net framework 4.5或以上（通常已经装了）。  
+接着下载[V2RayGCon-box.zip][9]并解压到任意目录，然后，，，没有然后了。  
+
+Download and extract [V2RayGCon-box.zip][9] to any directory you like. That's it.  
+Require .net framework 4.5 or higher.  
 
 ### 演示 Demo
 ![Demo v1.1.10 GIF](https://github.com/UudrSgMEZ/V2RayGCon/raw/master/screenshot/demo1.1.10.gif)  
+
+### 佛系更新说明
+经过无数个日夜的奋战，我开发出了 ~谁用谁发财手机壳~ 一个船新的科学上网软件。  
+但是特征明显、效率低下、炒鸡男用，所以不能公布出来。  
+这里主要告诉大家，这个项目将进入佛系更新阶段。  
+具体来说issue会回复得慢些，更新会少些。  
+2019-09
   
-### 引用按字母排序 References in alphabetical order  
+### 引用按字母排序 Credits (in alphabetical order)  
 [2dust/v2rayN](https://github.com/2dust/v2rayN) vmess分享链接及订阅格式  
 [Ahmad45123/AutoCompleteMenu-ScintillaNET](https://github.com/Ahmad45123/AutoCompleteMenu-ScintillaNET) 自动补全  
 [haf/DotNetZip.Semverd](https://github.com/haf/DotNetZip.Semverd) .net 4.0解压zip文件  

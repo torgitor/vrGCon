@@ -133,9 +133,6 @@
   <data name="ExecutableV2ray" xml:space="preserve">
     <value>v2ray.exe</value>
   </data>
-  <data name="config_tpl" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\config_tpl.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="DummyServ1" xml:space="preserve">
     <value>vmess://ew0KICAicHMiOiAiZHVtbXkxIiwNCiAgImFkZCI6ICIxLjIuMy40IiwNCiAgInBvcnQiOiAiNDQzIiwNCiAgImlkIjogImI4NzNkNWY0LTMyNjEtNGYxOS04MGE3LWYwZTY3YzkwYzA4MiIsDQogICJhaWQiOiAiMTAwIiwNCiAgIm5ldCI6ICJ3cyIsDQogICJ0eXBlIjogIm5vbmUiLA0KICAiaG9zdCI6ICIvcmF5IiwNCiAgInRscyI6ICJ0bHMiDQp9</value>
   </data>
@@ -189,5 +186,8 @@
   </data>
   <data name="ConfigJsonKeywords" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Files\CSharp\ConfigJsonKeywords.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="config_tpl" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Config\config_tpl.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

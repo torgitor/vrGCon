@@ -42,8 +42,6 @@ namespace ProxySetter.Views.WinForms
             };
 
             InitializeComponent();
-
-
         }
 
         private void FormPluginMain_Shown(object sender, System.EventArgs e)
@@ -112,7 +110,6 @@ namespace ProxySetter.Views.WinForms
                 tboxUsageReadMe));
 
             ctrl.Plug(new Controllers.VGCPluginComponents.TabStatus(
-                setting,
                 pacServer,
 
                 lbBasicCurPacServerStatus,
@@ -121,8 +118,7 @@ namespace ProxySetter.Views.WinForms
                 btnBasicStopPacServer,
                 btnBasicViewInNotepad,
                 btnBasicDebugPacServer,
-                btnBaiscCopyProxyLink,
-                btnBasicClearSysProxy));
+                btnBaiscCopyProxyLink));
 
             ctrl.Plug(new Controllers.VGCPluginComponents.TabBasicSetting(
                 setting,
@@ -137,7 +133,13 @@ namespace ProxySetter.Views.WinForms
                 chkBasicAutoUpdateSysProxy,
                 chkBasicPacAlwaysOn,
                 chkBasicUseCustomPac,
-                btnBasicBrowseCustomPac));
+                btnBasicBrowseCustomPac,
+
+                // hotkey
+                chkBasicUseHotkey,
+                chkBasicUseAlt,
+                chkBasicUseShift,
+                tboxBasicHotkey));
 
             ctrl.Plug(new Controllers.VGCPluginComponents.TabPacCustomList(
                 setting,
@@ -166,6 +168,10 @@ namespace ProxySetter.Views.WinForms
         {
             this.Close();
         }
+
+
         #endregion
+
+
     }
 }

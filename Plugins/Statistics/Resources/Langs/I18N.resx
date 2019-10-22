@@ -124,6 +124,6 @@
     <value>Reset statistics data to zero?</value>
   </data>
   <data name="Description" xml:space="preserve">
-    <value>Show statistic informations.</value>
+    <value>Show statistic info. (require statistic support)</value>
   </data>
 </root>

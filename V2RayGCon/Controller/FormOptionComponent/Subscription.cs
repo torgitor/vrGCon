@@ -10,13 +10,13 @@ namespace V2RayGCon.Controller.OptionComponent
 {
     class Subscription : OptionComponentController
     {
-        FlowLayoutPanel flyPanel;
-        Button btnAdd, btnUpdate;
-        CheckBox chkSubsIsUseProxy;
+        readonly FlowLayoutPanel flyPanel;
+        readonly Button btnAdd, btnUpdate, btnUseAll, btnInvertSelection;
+        readonly CheckBox chkSubsIsUseProxy;
 
-        Service.Setting setting;
-        Service.Servers servers;
-        Service.ShareLinkMgr slinkMgr;
+        readonly Service.Setting setting;
+        readonly Service.Servers servers;
+        readonly Service.ShareLinkMgr slinkMgr;
 
         string oldOptions;
 
@@ -24,7 +24,9 @@ namespace V2RayGCon.Controller.OptionComponent
             FlowLayoutPanel flyPanel,
             Button btnAdd,
             Button btnUpdate,
-            CheckBox chkSubsIsUseProxy)
+            CheckBox chkSubsIsUseProxy,
+            Button btnUseAll,
+            Button btnInvertSelection)
         {
             this.setting = Service.Setting.Instance;
             this.servers = Service.Servers.Instance;
@@ -34,6 +36,8 @@ namespace V2RayGCon.Controller.OptionComponent
             this.btnAdd = btnAdd;
             this.btnUpdate = btnUpdate;
             this.chkSubsIsUseProxy = chkSubsIsUseProxy;
+            this.btnUseAll = btnUseAll;
+            this.btnInvertSelection = btnInvertSelection;
 
             chkSubsIsUseProxy.Checked = setting.isUpdateUseProxy;
             InitPanel();
@@ -117,6 +121,26 @@ namespace V2RayGCon.Controller.OptionComponent
                         new Model.Data.SubscriptionItem(),
                         UpdatePanelItemsIndex));
                 UpdatePanelItemsIndex();
+            };
+        }
+
+        void BindEventBtnSelections()
+        {
+            this.btnUseAll.Click += (s, a) =>
+            {
+                foreach (Views.UserControls.SubscriptionUI subUi in this.flyPanel.Controls)
+                {
+                    subUi.SetIsUse(true);
+                }
+            };
+
+            this.btnInvertSelection.Click += (s, a) =>
+            {
+                foreach (Views.UserControls.SubscriptionUI subUi in this.flyPanel.Controls)
+                {
+                    var selected = subUi.IsUse();
+                    subUi.SetIsUse(!selected);
+                }
             };
         }
 
@@ -208,6 +232,7 @@ namespace V2RayGCon.Controller.OptionComponent
         {
             BindEventBtnAddClick();
             BindEventBtnUpdateClick();
+            BindEventBtnSelections();
             BindEventFlyPanelDragDrop();
 
             this.flyPanel.DragEnter += (s, a) =>

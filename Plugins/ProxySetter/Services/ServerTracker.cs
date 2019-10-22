@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
+using VgcApis.Libs.Sys;
 
 namespace ProxySetter.Services
 {
@@ -11,9 +13,11 @@ namespace ProxySetter.Services
         PacServer pacServer;
 
         VgcApis.Models.IServices.IServersService servers;
+        VgcApis.Models.IServices.INotifierService notifier;
 
         public event EventHandler OnSysProxyChanged;
         bool isTracking { get; set; }
+        KeyboardHook kbHook = null;
 
         public ServerTracker()
         {
@@ -24,11 +28,13 @@ namespace ProxySetter.Services
         public void Run(
             PsSettings setting,
             PacServer pacServer,
-            VgcApis.Models.IServices.IServersService servers)
+            VgcApis.Models.IServices.IServersService servers,
+            VgcApis.Models.IServices.INotifierService notifier)
         {
             this.setting = setting;
             this.pacServer = pacServer;
             this.servers = servers;
+            this.notifier = notifier;
 
             Restart();
         }
@@ -37,7 +43,7 @@ namespace ProxySetter.Services
         {
             var bs = setting.GetBasicSetting();
             var isStartPacServer = bs.isAlwaysStartPacServ;
-            var isStartTracker = bs.isAutoUpdateSysProxy;
+            var isAutoMode = bs.isAutoUpdateSysProxy;
 
             switch ((Model.Data.Enum.SystemProxyModes)bs.sysProxyMode)
             {
@@ -49,11 +55,11 @@ namespace ProxySetter.Services
                     Lib.Sys.ProxySetter.SetPacProxy(pacServer.GetPacUrl());
                     break;
                 case Model.Data.Enum.SystemProxyModes.Direct:
-                    isStartTracker = false;
+                    isAutoMode = false;
                     Lib.Sys.ProxySetter.ClearSysProxy();
                     break;
                 default:
-                    isStartTracker = false;
+                    isAutoMode = false;
                     break;
             }
 
@@ -66,21 +72,87 @@ namespace ProxySetter.Services
                 pacServer.StopPacServer();
             }
 
-            if (isStartTracker)
+            if (isAutoMode)
             {
+                //in case user not set any proxysetter settings yet
+                OnCoreRunningStatChangeHandler(null, EventArgs.Empty);
+
                 StartTracking();
             }
             else
             {
                 StopTracking();
             }
+
+            RegistHotKey();
+            InvokeOnSysProxyChange();
         }
 
         public void Cleanup()
         {
+            ClearHotKey();
             lazyProxyUpdateTimer?.Release();
             StopTracking();
         }
+        #endregion
+
+        #region hotkey
+
+        // https://stackoverflow.com/questions/2450373/set-global-hotkeys-using-c-sharp
+        void ClearHotKey()
+        {
+            kbHook?.Dispose();
+            kbHook = null;
+        }
+
+        void RegistHotKey()
+        {
+            ClearHotKey();
+
+            var bs = setting.GetBasicSetting();
+            if (!bs.isUseHotkey)
+            {
+                return;
+            }
+
+            if (!Enum.TryParse(bs.hotkeyStr, out Keys hotkey))
+            {
+                setting.SendLog(I18N.ParseKeyCodeFail);
+                VgcApis.Libs.UI.MsgBoxAsync(I18N.ParseKeyCodeFail);
+                return;
+            }
+
+            kbHook = new KeyboardHook();
+            kbHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(HotkeyHandler);
+            ModifierKeys modifier = ModifierKeys.Control;
+            if (bs.isUseAlt)
+            {
+                modifier |= ModifierKeys.Alt;
+            }
+            if (bs.isUseShift)
+            {
+                modifier |= ModifierKeys.Shift;
+            }
+
+            try
+            {
+                kbHook.RegisterHotKey((uint)modifier, (uint)hotkey);
+                return;
+            }
+            catch { }
+
+            setting.SendLog(I18N.RegistHotkeyFail);
+            VgcApis.Libs.UI.MsgBoxAsync(I18N.RegistHotkeyFail);
+        }
+
+        void HotkeyHandler(object sender, KeyPressedEventArgs e)
+        {
+            var bs = setting.GetBasicSetting();
+            bs.sysProxyMode = (bs.sysProxyMode % 3) + 1;
+            setting.SaveBasicSetting(bs);
+            Restart();
+        }
+
         #endregion
 
         #region private method
@@ -89,6 +161,7 @@ namespace ProxySetter.Services
             try
             {
                 OnSysProxyChanged?.Invoke(null, EventArgs.Empty);
+                notifier?.RefreshNotifyIcon();
             }
             catch { }
         }
@@ -198,18 +271,17 @@ namespace ProxySetter.Services
         }
 
         string curServerConfig;
-
-        void OnCoreStartHandler(object sender, EventArgs args)
+        void OnCoreRunningStatChangeHandler(object sender, EventArgs args)
         {
-            var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
-            curServerConfig = coreCtrl.GetConfiger().GetConfig();
-            WakeupLazyProxyUpdater();
-        }
-
-        void OnCoreClosingHandler(object sender, EventArgs args)
-        {
-            var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
-            curServerConfig = coreCtrl.GetConfiger().GetConfig();
+            if (sender != null)
+            {
+                var coreCtrl = sender as VgcApis.Models.Interfaces.ICoreServCtrl;
+                curServerConfig = coreCtrl.GetConfiger().GetConfig();
+            }
+            else
+            {
+                curServerConfig = @"";
+            }
             WakeupLazyProxyUpdater();
         }
 
@@ -223,8 +295,8 @@ namespace ProxySetter.Services
                     return;
                 }
 
-                servers.OnCoreClosing += OnCoreClosingHandler;
-                servers.OnCoreStart += OnCoreStartHandler;
+                servers.OnCoreStop += OnCoreRunningStatChangeHandler;
+                servers.OnCoreStart += OnCoreRunningStatChangeHandler;
                 isTracking = true;
             }
             setting.DebugLog("Start tracking.");
@@ -239,8 +311,8 @@ namespace ProxySetter.Services
                     return;
                 }
 
-                servers.OnCoreClosing -= OnCoreClosingHandler;
-                servers.OnCoreStart -= OnCoreStartHandler;
+                servers.OnCoreStop -= OnCoreRunningStatChangeHandler;
+                servers.OnCoreStart -= OnCoreRunningStatChangeHandler;
 
                 isTracking = false;
             }

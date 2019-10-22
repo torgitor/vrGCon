@@ -141,8 +141,23 @@
   <data name="LaunchNotepadFail" xml:space="preserve">
     <value>启动记事本失败！</value>
   </data>
+  <data name="MiDirect" xml:space="preserve">
+    <value>直连</value>
+  </data>
+  <data name="MiGlobal" xml:space="preserve">
+    <value>全局</value>
+  </data>
+  <data name="MiNone" xml:space="preserve">
+    <value>保持现状</value>
+  </data>
+  <data name="MiPAC" xml:space="preserve">
+    <value>PAC</value>
+  </data>
   <data name="NoServerCapableOfSysProxy" xml:space="preserve">
     <value>没有可设置为系统代理的服务器</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选项</value>
   </data>
   <data name="PacProxyRequireSocksOrHttpServer" xml:space="preserve">
     <value>SOCKS或HTTP服务器才可以设置为PAC代理</value>
@@ -152,6 +167,12 @@
   </data>
   <data name="PacServerIsOn" xml:space="preserve">
     <value>PAC服务器运行中。</value>
+  </data>
+  <data name="ParseKeyCodeFail" xml:space="preserve">
+    <value>尝试解释热键名失败！请检查ProxySetter的热键设置。</value>
+  </data>
+  <data name="RegistHotkeyFail" xml:space="preserve">
+    <value>尝试注册全局热键失败，请检查热键是否已被其他软件占用。</value>
   </data>
   <data name="SetAsSysProxy" xml:space="preserve">
     <value>设为系统代理</value>

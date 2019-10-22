@@ -22,7 +22,7 @@ end
 local function ReadAllLines(self)
     local lines = assert(io.lines(self.filename))
     local t = {}
-    for line in io.lines() do
+    for line in lines do
        t[#t+1] = line
     end
     return t

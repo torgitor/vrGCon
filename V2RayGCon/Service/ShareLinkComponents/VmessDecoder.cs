@@ -34,66 +34,82 @@ namespace V2RayGCon.Service.ShareLinkComponents
         #endregion
 
         #region private methods
-        Model.Data.Vmess ConfigString2Vmess(string config)
+        bool TryParseConfig(string config, out JObject json)
         {
-            JObject json;
+            json = null;
             try
             {
                 json = JObject.Parse(config);
+                return json != null;
             }
-            catch
+            catch { }
+            return false;
+        }
+
+        bool TryDetectConfigVersion(
+            Func<string, string, string> GetStr,
+            out bool isUseV4,
+            out string root)
+        {
+            isUseV4 = (GetStr("outbounds.0", "protocol")?.ToLower()) == "vmess";
+            root = isUseV4 ? "outbounds.0" : "outbound";
+            if (isUseV4)
+            {
+                return true;
+            }
+
+            if (GetStr(root, "protocol")?.ToLower() == "vmess")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        Model.Data.Vmess ConfigString2Vmess(string config)
+        {
+            if (!TryParseConfig(config, out JObject json))
             {
                 return null;
             }
 
             var GetStr = Lib.Utils.GetStringByPrefixAndKeyHelper(json);
-            var isUseV4 = (GetStr("outbounds.0", "protocol")?.ToLower()) == "vmess";
-            var root = isUseV4 ? "outbounds.0" : "outbound";
-            if (!isUseV4)
+            if (!TryDetectConfigVersion(GetStr, out bool isUseV4, out string root))
             {
-                var protocol = GetStr(root, "protocol")?.ToLower();
-                if (protocol == null || protocol != "vmess")
-                {
-                    return null;
-                }
+                return null;
             }
 
-            var prefix = root + "." + "settings.vnext.0";
-            Model.Data.Vmess vmess = new Model.Data.Vmess
-            {
-                v = "2",
-                ps = GetStr("v2raygcon", "alias")
-            };
-            vmess.add = GetStr(prefix, "address");
-            vmess.port = GetStr(prefix, "port");
-            vmess.id = GetStr(prefix, "users.0.id");
-            vmess.aid = GetStr(prefix, "users.0.alterId");
+            var basicPrefix = root + "." + "settings.vnext.0";
+            Model.Data.Vmess vmess = ExtractBasicInfo(GetStr, basicPrefix);
 
-            prefix = root + "." + "streamSettings";
-            vmess.net = GetStr(prefix, "network");
-            vmess.tls = GetStr(prefix, "security");
+            var streamPrefix = root + "." + "streamSettings";
+            vmess.net = GetStr(streamPrefix, "network");
+            vmess.tls = GetStr(streamPrefix, "security");
 
             switch (vmess.net)
             {
                 case "quic":
-                    vmess.type = GetStr(prefix, "quicSettings.header.type");
-                    vmess.host = GetStr(prefix, "quicSettings.security");
-                    vmess.path = GetStr(prefix, "quicSettings.key");
+                    vmess.type = GetStr(streamPrefix, "quicSettings.header.type");
+                    vmess.host = GetStr(streamPrefix, "quicSettings.security");
+                    vmess.path = GetStr(streamPrefix, "quicSettings.key");
                     break;
                 case "tcp":
-                    vmess.type = GetStr(prefix, "tcpSettings.header.type");
+                    vmess.type = GetStr(streamPrefix, "tcpSettings.header.type");
+                    if (vmess.type?.ToLower() == "http")
+                    {
+                        ExtractTcpHttpSettings(json, isUseV4, vmess);
+                    }
                     break;
                 case "kcp":
-                    vmess.type = GetStr(prefix, "kcpSettings.header.type");
+                    vmess.type = GetStr(streamPrefix, "kcpSettings.header.type");
                     break;
                 case "ws":
-                    vmess.path = GetStr(prefix, "wsSettings.path");
-                    vmess.host = GetStr(prefix, "wsSettings.headers.Host");
+                    vmess.path = GetStr(streamPrefix, "wsSettings.path");
+                    vmess.host = GetStr(streamPrefix, "wsSettings.headers.Host");
                     break;
                 case "h2":
                     try
                     {
-                        vmess.path = GetStr(prefix, "httpSettings.path");
+                        vmess.path = GetStr(streamPrefix, "httpSettings.path");
                         var hosts = isUseV4 ?
                             json["outbounds"][0]["streamSettings"]["httpSettings"]["host"] :
                             json["outbound"]["streamSettings"]["httpSettings"]["host"];
@@ -104,6 +120,41 @@ namespace V2RayGCon.Service.ShareLinkComponents
                 default:
                     break;
             }
+            return vmess;
+        }
+
+        void ExtractTcpHttpSettings(JObject json, bool isUseV4, Model.Data.Vmess vmess)
+        {
+            try
+            {
+                var path = isUseV4 ?
+                    json["outbounds"][0]["streamSettings"]["tcpSettings"]["header"]["request"]["path"] :
+                    json["outbound"]["streamSettings"]["tcpSettings"]["header"]["request"]["path"];
+                vmess.path = Lib.Utils.JArray2Str(path as JArray);
+            }
+            catch { }
+            try
+            {
+                var hosts = isUseV4 ?
+                    json["outbounds"][0]["streamSettings"]["tcpSettings"]["header"]["request"]["headers"]["Host"] :
+                    json["outbound"]["streamSettings"]["tcpSettings"]["header"]["request"]["headers"]["Host"];
+                vmess.host = Lib.Utils.JArray2Str(hosts as JArray);
+            }
+            catch { }
+        }
+
+        Model.Data.Vmess ExtractBasicInfo(
+            Func<string, string, string> GetStr, string prefix)
+        {
+            Model.Data.Vmess vmess = new Model.Data.Vmess
+            {
+                v = "2",
+                ps = GetStr("v2raygcon", "alias")
+            };
+            vmess.add = GetStr(prefix, "address");
+            vmess.port = GetStr(prefix, "port");
+            vmess.id = GetStr(prefix, "users.0.id");
+            vmess.aid = GetStr(prefix, "users.0.alterId");
             return vmess;
         }
 
@@ -138,48 +189,61 @@ namespace V2RayGCon.Service.ShareLinkComponents
                 return JToken.Parse(@"{}");
             }
 
-            var cmin = Resource.Resx.StrConst.config_min;
+            if (streamType == "tcp" && vmess.type == "http")
+            {
+                streamType = "tcp_http";
+            }
             var streamToken = cache.tpl.LoadTemplate(streamType);
             try
             {
-                switch (streamType)
-                {
-                    case "quic":
-                        streamToken["quicSettings"]["header"]["type"] = vmess.type; // quic.type
-                        streamToken["quicSettings"]["security"] = vmess.host; // quic.security
-                        streamToken["quicSettings"]["key"] = vmess.path; // quic.key
-                        break;
-                    case "tcp":
-                        streamToken["tcpSettings"]["header"]["type"] = vmess.type;
-                        break;
-                    case "kcp":
-                        streamToken["kcpSettings"]["header"]["type"] = vmess.type;
-                        break;
-                    case "ws":
-                        streamToken["wsSettings"]["path"] =
-                            string.IsNullOrEmpty(vmess.v) ? vmess.host : vmess.path;
-                        if (vmess.v == "2" && !string.IsNullOrEmpty(vmess.host))
-                        {
-                            streamToken["wsSettings"]["headers"]["Host"] = vmess.host;
-                        }
-                        break;
-                    case "h2":
-                        streamToken["httpSettings"]["path"] = vmess.path;
-                        streamToken["httpSettings"]["host"] = Lib.Utils.Str2JArray(vmess.host);
-                        break;
-                }
+                FillStreamSettingsDetail(vmess, streamType, streamToken);
             }
             catch { }
 
             try
             {
-                streamToken["security"] =
-                    vmess.tls?.ToLower() == "tls" ?
-                    "tls" : "none";
+                streamToken["security"] = (vmess.tls?.ToLower() == "tls") ? "tls" : "none";
             }
             catch { }
 
             return streamToken;
+        }
+
+        private static void FillStreamSettingsDetail(Model.Data.Vmess vmess, string streamType, JToken streamToken)
+        {
+            switch (streamType)
+            {
+                case "quic":
+                    streamToken["quicSettings"]["header"]["type"] = vmess.type; // quic.type
+                    streamToken["quicSettings"]["security"] = vmess.host; // quic.security
+                    streamToken["quicSettings"]["key"] = vmess.path; // quic.key
+                    break;
+                case "tcp":
+                    streamToken["tcpSettings"]["header"]["type"] = vmess.type;
+                    break;
+                case "tcp_http":
+                    streamToken["tcpSettings"]["header"]["type"] = vmess.type;
+                    streamToken["tcpSettings"]["header"]["request"]["path"] =
+                        Lib.Utils.Str2JArray(string.IsNullOrEmpty(vmess.path) ? "/" : vmess.path);
+                    streamToken["tcpSettings"]["header"]["request"]["headers"]["Host"] =
+                        Lib.Utils.Str2JArray(vmess.host);
+                    break;
+                case "kcp":
+                    streamToken["kcpSettings"]["header"]["type"] = vmess.type;
+                    break;
+                case "ws":
+                    streamToken["wsSettings"]["path"] =
+                        string.IsNullOrEmpty(vmess.v) ? vmess.host : vmess.path;
+                    if (vmess.v == "2" && !string.IsNullOrEmpty(vmess.host))
+                    {
+                        streamToken["wsSettings"]["headers"]["Host"] = vmess.host;
+                    }
+                    break;
+                case "h2":
+                    streamToken["httpSettings"]["path"] = vmess.path;
+                    streamToken["httpSettings"]["host"] = Lib.Utils.Str2JArray(vmess.host);
+                    break;
+            }
         }
         #endregion
 
